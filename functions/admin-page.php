@@ -287,7 +287,7 @@ function codeable_transcactions_stats_cb() {
         <h2 class="text-center"><?php echo __('Your highscore for this range'); ?></h2>
       </div>
 
-      <div class="col-md-2">
+      <div class="col-md-4 text-center">
         <div class="column_inner">
           <div class="maindata">
             <div class="label"><?php echo __('Best month'); ?></div>
@@ -295,7 +295,7 @@ function codeable_transcactions_stats_cb() {
           </div>
         </div>
       </div>
-      <div class="col-md-2">
+      <div class="col-md-4 text-center">
         <div class="column_inner">
           <div class="maindata">
             <div class="label"><?php echo __('Revenue Best', 'wpcable'); ?></div>
@@ -303,35 +303,11 @@ function codeable_transcactions_stats_cb() {
           </div>
         </div>
       </div>
-      <div class="col-md-2">
-        <div class="column_inner">
-          <div class="maindata">
-            <div class="label"><?php echo __('Fees Best', 'wpcable'); ?></div>
-            <span class="value">$<?php echo wpcable_money($max_month_totals['fee_amount']); ?></span>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="column_inner">
-          <div class="maindata">
-            <div class="label"><?php echo __('Total Best', 'wpcable'); ?></div>
-            <span class="value">$<?php echo wpcable_money($max_month_totals['total_cost']); ?></span>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2">
+      <div class="col-md-4 text-center">
         <div class="column_inner">
           <div class="maindata">
             <div class="label"><?php echo __('Revenue', 'wpcable'); ?></div>
             <span class="value">$<?php echo wpcable_money($all_month_totals['revenue']); ?></span>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="column_inner">
-          <div class="maindata">
-            <div class="label"><?php echo __('Total', 'wpcable'); ?></div>
-            <span class="value">$<?php echo wpcable_money($all_month_totals['total_cost']); ?></span>
           </div>
         </div>
       </div>
