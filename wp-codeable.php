@@ -45,7 +45,7 @@ final class wpcable {
     require_once( WPCABLE_FUNCTIONS_DIR.'/admin-page.php' );
     require_once( WPCABLE_FUNCTIONS_DIR.'/formatting.php' );
     require_once( WPCABLE_CLASSES_DIR.'/api_calls.php' );
-    require_once( WPCABLE_CLASSES_DIR.'/transcactions.php' );
+    require_once(WPCABLE_CLASSES_DIR . '/transactions.php');
     require_once( WPCABLE_CLASSES_DIR.'/stats.php' );
     require_once( WPCABLE_CLASSES_DIR.'/clients.php' );
 
@@ -192,4 +192,3 @@ function wpcable_admin_scripts($hook) {
 }
 add_action( 'admin_enqueue_scripts', 'wpcable_admin_scripts' );
 
-?>
