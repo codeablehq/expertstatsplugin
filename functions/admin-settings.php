@@ -38,7 +38,17 @@ function codeable_register_settings(){
 
 function codeable_settings_callback() {
   global $wpdb;
-  
+
+
+  if (!is_ssl()) {
+    ?>
+
+    <div class="update-nag notice">
+      <p><?php echo __('Please consider installing this plugin on a secure website', 'wpcable'); ?></p>
+    </div>
+
+  <?php }
+
   set_time_limit(300);
   
   $wpcable_settings_fields = wpcable_settings_fields();
