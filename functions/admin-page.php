@@ -18,26 +18,26 @@ function wpcable_register_menu_page() {
 add_action( 'admin_menu', 'wpcable_register_menu_page' );
 
 function codeable_transcactions_stats_cb() {
-  
+
   add_thickbox();
-  
+
   $account_details    = get_option('wpcable_account_details');
   $average_task_size  = get_option('wpcable_average');
   $balance            = get_option('wpcable_balance');
   $revenue            = get_option('wpcable_revenue');
-  
+
   $wpcable_stats = new wpcable_stats;
-  
+
   $get_first_task   = $wpcable_stats->get_first_task();
   $get_last_task    = $wpcable_stats->get_last_task();
-  
+
   $first_day    = date('d', strtotime($get_first_task['dateadded']));
   $first_month  = date('m', strtotime($get_first_task['dateadded']));
   $first_year   = date('Y', strtotime($get_first_task['dateadded']));
   $last_day     = date('d', strtotime($get_last_task['dateadded']));
   $last_month   = date('m', strtotime($get_last_task['dateadded']));
   $last_year    = date('Y', strtotime($get_last_task['dateadded']));
-  
+
   if (!isset($_GET['date_from'])) {
     $_GET['date_from'] = $first_year .'-'.$first_month;
     $from_day   = $first_day;
@@ -48,7 +48,7 @@ function codeable_transcactions_stats_cb() {
     $from_month = date('m', strtotime($_GET['date_from']).'-01');
     $from_year  = date('Y', strtotime($_GET['date_from']).'-01');
   }
-  
+
   if (!isset($_GET['date_to'])) {
     $_GET['date_to'] = $last_year .'-'.$last_month;
     $to_day   = $last_day;
@@ -59,58 +59,58 @@ function codeable_transcactions_stats_cb() {
     $to_month = date('m', strtotime($_GET['date_to']).'-01');
     $to_year  = date('Y', strtotime($_GET['date_to']).'-01');
   }
-  
+
   $month_totals = $wpcable_stats->get_month_range_totals($from_month, $from_year, $to_month, $to_year);
-    
+
   $get_amounts_range = $wpcable_stats->get_amounts_range($from_day, $from_month, $from_year, $to_day, $to_month, $to_year);
-    
+
   $chart_amounts_range = array();
   foreach ($get_amounts_range as $range => $num_of_tasks) {
     $chart_amounts_range[] = '["'.$range.'", '.$num_of_tasks.']';
   }
-    
+
   $max_month_totals = max($month_totals);
   $max_month_totals_key = array_keys($month_totals, max($month_totals));
-  
+
   $all_month_totals = array();
   foreach($month_totals as $mt) {
     $all_month_totals['revenue'] = $all_month_totals['revenue'] + $mt['revenue'];
     $all_month_totals['total_cost'] = $all_month_totals['total_cost'] + $mt['total_cost'];
   }
-  
-  $averages     = $wpcable_stats->get_months_average($from_month, $from_year, $to_month, $to_year); 
+
+  $averages     = $wpcable_stats->get_months_average($from_month, $from_year, $to_month, $to_year);
   $all_averages = $wpcable_stats->get_dates_average($first_day, $first_month, $first_year, $last_day, $last_month, $last_year);
-  
+
   $wpcable_clients = new wpcable_clients;
-  
+
   $clients_data = $wpcable_clients->get_clients();
-      
+
   $chart_categories     = array();
   $chart_contractor_fee = array();
   $chart_revenue        = array();
   $chart_total_cost     = array();
   $chart_tasks_count    = array();
-  
+
   foreach($month_totals as $yearmonth => $amounts) {
-    
+
     $chart_categories[$yearmonth]     = "'".wordwrap($yearmonth, 4, '-', true)."'";
     $chart_contractor_fee[$yearmonth] = floatval($amounts['fee_amount']);
     $chart_revenue[$yearmonth]        = floatval($amounts['revenue']);
     $chart_total_cost[$yearmonth]     = floatval($amounts['total_cost']);
     $chart_tasks_count[$yearmonth]    = intval($amounts['tasks']);
-    
+
   }
-  
+
   $chart_tasks_count_json = json_encode($chart_tasks_count);
   $chart_revenue_json = json_encode($chart_revenue);
 
   ?>
-  
+
   <div class="wrap cable_stats_wrap">
     <h1><?php echo __('Codeable Stats', 'wpcable'); ?></h1>
-  
+
     <div class="clearfix spacer"></div>
-    
+
     <div class="row match_height">
       <div class="col-md-1 avatar_column">
         <div class="column_inner">
@@ -123,7 +123,7 @@ function codeable_transcactions_stats_cb() {
           <div class="maindata">
             <div class="label"><?php echo $account_details['role']; ?></div>
           </div>
-          
+
           <span><?php echo $account_details['first_name'] .'<br />'. $account_details['last_name']; ?></span>
           <br />
           <span><?php echo __('ID', 'wpcable') .': '. $account_details['id']; ?></span>
@@ -141,7 +141,7 @@ function codeable_transcactions_stats_cb() {
           </div>
         </div>
       </div>
-      
+
       <div class="col-md-2">
         <div class="column_inner">
           <div class="maindata">
@@ -150,9 +150,9 @@ function codeable_transcactions_stats_cb() {
           </div>
         </div>
       </div>
-      
 
-        
+
+
         <div class="col-md-2">
           <div class="column_inner">
             <div class="maindata">
@@ -165,7 +165,7 @@ function codeable_transcactions_stats_cb() {
           </div>
         </div>
 
-      
+
       <div class="col-md-2">
         <div class="column_inner">
           <div class="maindata">
@@ -209,7 +209,7 @@ function codeable_transcactions_stats_cb() {
           </table>
         </div>
       </div>
-      
+
       <div class="col-md-2">
         <div class="column_inner">
           <div class="maindata">
@@ -229,12 +229,12 @@ function codeable_transcactions_stats_cb() {
                 <td>
                   <span class="label"><?php echo __('Total', 'wpcable'); ?></span>
                 </td>
-                <td> 
+                <td>
                   <span class="value">$<?php echo wpcable_money($averages['total_cost']); ?></span>
                 </td>
               </tr>
               <tr>
-                <td> 
+                <td>
                   <span class="label"><?php echo __('Fees', 'wpcable'); ?></span>
                 </td>
                 <td>
@@ -247,12 +247,12 @@ function codeable_transcactions_stats_cb() {
         </div>
       </div>
     </div>
-    
+
     <div class="clearfix spacer"></div>
-    
+
     <form method="get" id="date_form" data-start-year="<?php echo $first_year; ?>" data-end-year="<?php echo $last_year; ?>">
       <input type="hidden" name="page" value="codeable_transcactions_stats" />
-    
+
       <div class="row match_height">
         <div class="col-md-4">
         </div>
@@ -262,26 +262,26 @@ function codeable_transcactions_stats_cb() {
             <input class="datepicker" type="text" id="date_from" name="date_from" value="<?php echo $_GET['date_from']; ?>" data-icon="<?php echo WPCABLE_URI.'/assets/images/icon_datepicker_blue.png'; ?>">
           </div>
         </div>
-        
+
         <div class="col-md-2">
           <div class="maindata">
             <label class="label" for="date_to"><?php echo __('End date', 'wpcable'); ?></label>
             <input class="datepicker" type="text" id="date_to" name="date_to" value="<?php echo $_GET['date_to']; ?>" data-icon="<?php echo WPCABLE_URI.'/assets/images/icon_datepicker_blue.png'; ?>">
           </div>
         </div>
-        
+
         <div class="col-md-2">
           <div class="maindata">
             <label class="label">&nbsp;</label>
             <button class="button button-primary"><?php echo __('Set date', 'wpcable'); ?></button>
           </div>
         </div>
-      
+
       </div>
     </form>
-    
+
     <div class="clearfix spacer"></div>
-    
+
     <div class="row bests match_height">
       <div class="col-md-12">
         <h2 class="text-center"><?php echo __('Your highscore for this range'); ?></h2>
@@ -336,57 +336,57 @@ function codeable_transcactions_stats_cb() {
         </div>
       </div>
     </div>
-    
+
     <div class="clearfix spacer"></div>
-    
+
     <div class="row">
       <div class="col-md-12">
         <div class="whitebox">
           <div id="chart_wrap">
-          
-            
-          
+
+
+
           </div>
         </div>
       </div>
     </div>
-    
+
     <div class="clearfix spacer"></div>
-    
+
     <div class="row">
       <div class="col-md-4">
         <div class="whitebox">
           <div id="amounts_range_chart">
-          
-            
-          
+
+
+
           </div>
         </div>
       </div>
-      
+
       <div class="col-md-8">
         <div class="whitebox">
           <div id="tasks_per_month_chart">
-          
-            
-          
+
+
+
           </div>
         </div>
       </div>
-      
+
     </div>
 
-    
+
     <div class="clearfix spacer"></div>
-    
+
     <div class="row clients_row">
       <div class="col-md-12">
-        
-        <h3><?php echo __('Clients Data', 'wpcable'); ?></h3>
-      
+
+        <h3><?php echo __('Clients Data', 'wpcable'); ?> <small><em>(<?php echo __('all time, order by revenue', 'wpcable'); ?>)</em></small></h3>
+
         <div class="whitebox">
           <div id="clients_wrap">
-            
+
             <table class="datatable widefat fixed striped posts" id="clients_table">
               <thead>
                 <th class="avatar">Avatar</th>
@@ -400,7 +400,7 @@ function codeable_transcactions_stats_cb() {
               </thead>
               <tbody>
             <?php
-              
+
               foreach($clients_data['clients'] as $client_id => $client) {
 
                 if ($client['client_id'] == '') { continue; }
@@ -411,51 +411,51 @@ function codeable_transcactions_stats_cb() {
                     <td>
                       <a href="#TB_inline?width=1000&height=550&inlineId=client_info_<?php echo $client_id; ?>" class="thickbox"><?php echo $client['full_name']; ?></a>
                       <div style="display:none;" id="client_info_<?php echo $client_id; ?>">
-                      
+
                         <h2><?php echo $client['full_name']; ?></h2>
 
                         <div class="clearfix spacer"></div>
-                        
+
                         <table class="datatable datatable_inner widefat fixed striped posts">
                           <thead>
                             <th>Task</th>
-                            <th>Pref.</th>
                             <th>Paid</th>
-                            <th>Type</th>
+                            <th>Revenue</th>
                             <th>Fee</th>
-                            <th>$</th>
                             <th>Refund</th>
+                            <th>Pref.</th>
+                            <th>Type</th>
                             <th>Pro</th>
                           </thead>
                           <tbody>
-                        <?php 
-                        
+                        <?php
+
                           foreach ($client['transactions'] as $tron) {
                             ?>
                               <tr class="<?php echo ($tron['is_refund'] == 1 ? 'refund' : 'complete'); ?>">
                                 <td>
                                   <a href="https://app.codeable.io/tasks/<?php echo ($tron['parent_task_id'] > 0 ? $tron['parent_task_id'] : $tron['task_id']); ?>/workroom" target="_blank">
-                                    <?php echo $tron['task_title'] .' - '. $tron['task_id']; ?>
+                                    <?php echo ($tron['task_title'] ? $tron['task_title'] : 'Subtask of: ' . $tron['parent_task_id'] ) . ' - ' . $tron['task_id']; ?>
                                   </a>
                                 </td>
-                                <td><?php echo ($tron['preferred'] == 0 ? 'N' : 'Y'); ?></td>
                                 <td><?php echo $tron['dateadded']; ?></td>
-                                <td><?php echo $tron['task_type']; ?></td>
-                                <td><?php echo wpcable_money($tron['fee_amount']); ?></td>
                                 <td><?php echo wpcable_money($tron['revenue']); ?></td>
+                                <td><?php echo wpcable_money($tron['fee_amount']); ?></td>
                                 <td><?php echo ($tron['is_refund'] == 0 ? 'N' : 'Y'); ?></td>
+                                <td><?php echo ($tron['preferred'] == 0 ? 'N' : 'Y'); ?></td>
+                                <td><?php echo $tron['task_type']; ?></td>
                                 <td><?php echo ($tron['pro'] == 0 ? 'N' : 'Y'); ?></td>
                               </tr>
                             <?php
                           }
-                        
+
                         ?>
                           </tbody>
                         </table>
                       </div>
                     </td>
                     <td><?php echo $client['last_sign_in_at']; ?></td>
-                    <td><?php echo intval($client['total_tasks']); ?></td>
+                    <td><a href="#TB_inline?width=1000&height=550&inlineId=client_info_<?php echo $client_id; ?>" class="thickbox"><?php echo intval($client['total_tasks']); ?></a></td>
                     <td><?php echo intval($client['tasks']); ?></td>
                     <td><?php echo intval($client['subtasks']); ?></td>
                     <td>$<?php echo wpcable_money($client['revenue'] / intval($client['total_tasks'])); ?></td>
@@ -463,26 +463,26 @@ function codeable_transcactions_stats_cb() {
                   </tr>
                 <?php
               }
-            
+
             ?>
-          
+
               </tbody>
             </table>
           </div>
         </div>
       </div>
     </div>
-    
+
   </div>
-  
-  
+
+
   <script>
 
   jQuery(function () {
-    
+
     var $chart_tasks_count_json = <?php echo $chart_tasks_count_json; ?>;
     var $chart_revenue_json     = <?php echo $chart_revenue_json; ?>;
-        
+
     Highcharts.chart('chart_wrap', {
           chart: {
               type: 'areaspline'
@@ -527,8 +527,8 @@ function codeable_transcactions_stats_cb() {
               visible: false
           }]
       });
-      
-      
+
+
       Highcharts.chart('amounts_range_chart', {
           chart: {
               type: 'pie',
@@ -561,8 +561,8 @@ function codeable_transcactions_stats_cb() {
               ]
           }]
       });
-      
-      
+
+
       Highcharts.chart('tasks_per_month_chart', {
           chart: {
               type: 'column'
@@ -602,13 +602,11 @@ function codeable_transcactions_stats_cb() {
 
           }]
       });
-      
-      
+
+
   });
   </script>
-  
-  
+
+
   <?php
 }
-
-?>
