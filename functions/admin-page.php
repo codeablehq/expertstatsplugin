@@ -493,14 +493,14 @@ function codeable_transcactions_stats_cb() {
           series: [{
               name: '<?php echo __('Total Cost', 'wpcable'); ?>',
               data: [<?php echo implode(', ', $chart_total_cost); ?>],
-              visible: false
+              visible: true
           }, {
               name: '<?php echo __('Revenue', 'wpcable'); ?>',
               data: [<?php echo implode(', ', $chart_revenue); ?>]
           }, {
               name: '<?php echo __('Fees', 'wpcable'); ?>',
               data: [<?php echo implode(', ', $chart_contractor_fee); ?>],
-              visible: false
+              visible: true
           }]
       });
 
