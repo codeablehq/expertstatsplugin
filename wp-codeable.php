@@ -192,3 +192,9 @@ function wpcable_admin_scripts($hook) {
 }
 add_action( 'admin_enqueue_scripts', 'wpcable_admin_scripts' );
 
+add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), 'wpcable_action_links' );
+
+function wpcable_action_links( $links ) {
+  $links =  array('<a href="'. esc_url( get_admin_url(null, 'admin.php?page=codeable_settings') ) .'">Settings</a>') + $links;
+  return $links;
+}
