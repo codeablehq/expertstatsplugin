@@ -18,7 +18,7 @@ function wpcable_settings_fields() {
 add_action('admin_menu', 'wpcable_xls_options', 100);
 
 function wpcable_xls_options() {
-    add_submenu_page( 'options-general.php', 'Codeable settings', 'Codeable settings', 'manage_options', 'codeable_settings', 'codeable_settings_callback' ); 
+    add_submenu_page( 'codeable_transcactions_stats', 'Settings', 'Settings', 'manage_options', 'codeable_settings', 'codeable_settings_callback' );
     add_action( 'admin_init', 'codeable_register_settings' );
 }
 
