@@ -151,8 +151,8 @@ function codeable_settings_callback() {
           
           <p><small><?php echo __('Be sure that you set PHP timeout to 120 or more on your first fetch or if you have deleted the cached data', 'wpcable'); ?></small></p>
         
-          <a href="options-general.php?page=codeable_settings&fetchdata=true" class="button button-large button-action"><?php echo __('Fetch remote data', 'wooxls'); ?></a> 
-          <a href="options-general.php?page=codeable_settings&flushdata=true" class="button button-large button-danger"><?php echo __('Delete cached data', 'wooxls'); ?></a> 
+          <a href="admin.php?page=codeable_settings&fetchdata=true" class="button button-large button-action"><?php echo __('Fetch remote data', 'wooxls'); ?></a>
+          <a href="admin.php?page=codeable_settings&flushdata=true" class="button button-large button-danger"><?php echo __('Delete cached data', 'wooxls'); ?></a>
         <?php } ?>
 
     </div>
