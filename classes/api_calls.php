@@ -11,10 +11,10 @@ class wpcable_api_calls {
   public $auth_token = '';
   
   
-  public function __construct() {
+  public function __construct($email, $password) {
     
-    $this->email = get_option('wpcable_email');
-    $this->password = get_option('wpcable_password');
+    $this->email = $email;
+    $this->password = $password;
   }
   
   public function login() {

@@ -12,7 +12,7 @@ class wpcable_transcactions
   public $tables = array();
 
 
-  public function __construct()
+  public function __construct($email, $password)
   {
 
     global $wpdb;
@@ -23,7 +23,7 @@ class wpcable_transcactions
       'amounts'       => $wpdb->prefix . 'codeable_amounts'
     );
 
-    $this->api_calls = new wpcable_api_calls;
+    $this->api_calls = new wpcable_api_calls($email, $password);
 
   }
 
