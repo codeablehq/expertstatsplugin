@@ -11,7 +11,7 @@ function wpcable_register_menu_page() {
         'manage_options',
         'codeable_transcactions_stats',
         'codeable_transcactions_stats_cb',
-        plugins_url( 'wp-codeable/assets/images/codeable_16x16.png' ),
+        plugins_url( 'expertstatsplugin/assets/images/codeable_16x16.png' ),
         85
     );
 }

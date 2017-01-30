@@ -45,7 +45,7 @@ final class wpcable {
     require_once( WPCABLE_FUNCTIONS_DIR.'/admin-page.php' );
     require_once( WPCABLE_FUNCTIONS_DIR.'/formatting.php' );
     require_once( WPCABLE_CLASSES_DIR.'/api_calls.php' );
-    require_once(WPCABLE_CLASSES_DIR . '/transactions.php');
+    require_once( WPCABLE_CLASSES_DIR . '/transactions.php');
     require_once( WPCABLE_CLASSES_DIR.'/stats.php' );
     require_once( WPCABLE_CLASSES_DIR.'/clients.php' );
 
@@ -72,7 +72,7 @@ add_action('wp', 'wpcable_cronstarter_activation');
 function wpcable_install() {
   global $wpdb;
   
-  $wpcable_transcactions_version = '0.0.1';
+  $wpcable_transcactions_version = '0.0.2';
   
   if (get_option('wpcable_transcactions_version') != $wpcable_transcactions_version) {
     
