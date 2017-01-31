@@ -11,7 +11,7 @@ function wpcable_register_menu_page() {
         'manage_options',
         'codeable_transcactions_stats',
         'codeable_transcactions_stats_cb',
-        plugins_url( 'expertstatsplugin/assets/images/codeable_16x16.png' ),
+        plugins_url( 'assets/images/codeable_16x16.png', dirname(__FILE__) ),
         85
     );
 }
@@ -111,49 +111,43 @@ function codeable_transcactions_stats_cb() {
 
     <div class="clearfix spacer"></div>
 
-    <div class="row match_height">
-      <div class="col-md-1 avatar_column">
-        <div class="column_inner">
-          <img class="round" src="<?php echo $account_details['avatar']['large_url']; ?>" />
-          <div class="rating" data-score="<?php echo $account_details['stats']['avg_rating']; ?>"></div>
+    <div class="flex-row first-stats-row">
+
+        <div class="box user-info">
+            <div class="avatar">
+              <img class="round" src="<?php echo $account_details['avatar']['large_url']; ?>" />
+              <div class="rating" data-score="<?php echo $account_details['stats']['avg_rating']; ?>"></div>
+            </div>
+            <div class="details">
+                <div class="label role"><?php echo $account_details['role']; ?></div>
+                <span class="name"><?php echo $account_details['first_name'] .' '. $account_details['last_name']; ?></span>
+                <span class="user-id"><?php echo __('ID', 'wpcable') .': '. $account_details['id']; ?></span>
+            </div>
         </div>
-      </div>
-      <div class="col-md-1">
-        <div class="column_inner">
-          <div class="maindata">
-            <div class="label"><?php echo $account_details['role']; ?></div>
-          </div>
 
-          <span><?php echo $account_details['first_name'] .'<br />'. $account_details['last_name']; ?></span>
-          <br />
-          <span><?php echo __('ID', 'wpcable') .': '. $account_details['id']; ?></span>
+        <div class="box completed-tasks">
+            <div class="column_inner">
+              <div class="maindata">
+                <div class="label"><?php echo __('Completed Tasks', 'wpcable'); ?></div>
+                <div class="value"><?php echo $account_details['completed_tasks_count']; ?></div>
+              </div>
+              <div class="footerdata">
+                <span class="label"><?php echo __('Tasks', 'wpcable'); ?></span>: <span class="value"><?php echo $account_details['tasks_count']; ?></span><br />
+                <span class="label"><?php echo __('Refunded', 'wpcable'); ?></span>: <span class="value"><?php echo $clients_data['totals']['refunds']; ?></span>
+              </div>
+            </div>
         </div>
-      </div>
-      <div class="col-md-2">
-        <div class="column_inner">
-          <div class="maindata">
-            <div class="label"><?php echo __('Completed Tasks', 'wpcable'); ?></div>
-            <div class="value"><?php echo $account_details['completed_tasks_count']; ?></div>
-          </div>
-          <div class="footerdata">
-            <span class="label"><?php echo __('Tasks', 'wpcable'); ?></span>: <span class="value"><?php echo $account_details['tasks_count']; ?></span><br />
-            <span class="label"><?php echo __('Refunded', 'wpcable'); ?></span>: <span class="value"><?php echo $clients_data['totals']['refunds']; ?></span>
-          </div>
+
+        <div class="box balance">
+            <div class="column_inner">
+              <div class="maindata">
+                <div class="label"><?php echo __('Balance', 'wpcable'); ?></div>
+                <div class="value">$<?php echo wpcable_money($balance); ?></div>
+              </div>
+            </div>
         </div>
-      </div>
 
-      <div class="col-md-2">
-        <div class="column_inner">
-          <div class="maindata">
-            <div class="label"><?php echo __('Balance', 'wpcable'); ?></div>
-            <div class="value">$<?php echo wpcable_money($balance); ?></div>
-          </div>
-        </div>
-      </div>
-
-
-
-        <div class="col-md-2">
+        <div class="box total-revenue">
           <div class="column_inner">
             <div class="maindata">
               <div class="label"><?php echo __('Total Revenue', 'wpcable'); ?></div>
@@ -165,124 +159,123 @@ function codeable_transcactions_stats_cb() {
           </div>
         </div>
 
+    </div>
+    <!-- end row  -->
 
-      <div class="col-md-2">
-        <div class="column_inner">
-          <div class="maindata">
-            <div class="label"><?php echo __('Conversions', 'wpcable'); ?></div>
-          </div>
-          <table class="stats_table">
-            <tbody>
-              <tr>
-                <td>
-                  <span class="label"><?php echo __('Month conversion', 'wpcable'); ?></span>
-                </td>
-                <td>
-                  <span class="value"><?php echo $account_details['stats']['estimated_completed_conversion_1_month'] * 100; ?>%</span>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <span class="label"><?php echo __('6 Month conversion', 'wpcable'); ?></span>
-                </td>
-                <td>
-                  <span class="value"><?php echo $account_details['stats']['estimated_completed_conversion_6_months'] * 100; ?>%</span>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <span class="label"><?php echo __('Average task', 'wpcable'); ?></span>
-                </td>
-                <td>
-                  <span class="value">$<?php echo wpcable_money($average_task_size) ?></span>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <span class="label"><?php echo __('Average including subtasks', 'wpcable'); ?></span>
-                </td>
-                <td>
-                  <span class="value">$<?php echo wpcable_money($all_averages['revenue']) ?></span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <!--  Row  -->
+    <div class="flex-row second-stats-row">
 
-      <div class="col-md-2">
-        <div class="column_inner">
-          <div class="maindata">
-            <div class="label"><?php echo __('Monthly averages', 'wpcable'); ?></div>
-          </div>
-          <table class="stats_table">
-            <tbody>
-              <tr>
-                <td>
-                  <span class="label"><?php echo __('Revenue', 'wpcable'); ?></span>
-                </td>
-                <td>
-                  <span class="value">$<?php echo wpcable_money($averages['revenue']); ?></span>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <span class="label"><?php echo __('Total', 'wpcable'); ?></span>
-                </td>
-                <td>
-                  <span class="value">$<?php echo wpcable_money($averages['total_cost']); ?></span>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <span class="label"><?php echo __('Fees', 'wpcable'); ?></span>
-                </td>
-                <td>
-                  <span class="value">$<?php echo wpcable_money($averages['contractor_fee']); ?></span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <small><?php echo __('The above are from', 'wpcable').' '. $from_month .'-'. $from_year.' '. __('to', 'wpcable').' '.$to_month.'-'.$to_year; ?></small>
+        <div class="box conversions">
+            <div class="column_inner">
+                <div class="maindata">
+                    <div class="label"><?php echo __('Conversions', 'wpcable'); ?></div>
+                </div>
+                <table class="stats_table">
+                    <tbody>
+                    <tr>
+                        <td>
+                            <span class="label"><?php echo __('Month conversion', 'wpcable'); ?></span>
+                        </td>
+                        <td>
+                            <span class="value"><?php echo $account_details['stats']['estimated_completed_conversion_1_month'] * 100; ?>%</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="label"><?php echo __('6 Month conversion', 'wpcable'); ?></span>
+                        </td>
+                        <td>
+                            <span class="value"><?php echo $account_details['stats']['estimated_completed_conversion_6_months'] * 100; ?>%</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="label"><?php echo __('Average task', 'wpcable'); ?></span>
+                        </td>
+                        <td>
+                            <span class="value">$<?php echo wpcable_money($average_task_size) ?></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="label"><?php echo __('Average including subtasks', 'wpcable'); ?></span>
+                        </td>
+                        <td>
+                            <span class="value">$<?php echo wpcable_money($all_averages['revenue']) ?></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-      </div>
+
+        <div class="box monthly-averages">
+            <div class="column_inner">
+                <div class="maindata">
+                    <div class="label"><?php echo __('Monthly averages', 'wpcable'); ?></div>
+                </div>
+                <table class="stats_table">
+                    <tbody>
+                    <tr>
+                        <td>
+                            <span class="label"><?php echo __('Revenue', 'wpcable'); ?></span>
+                        </td>
+                        <td>
+                            <span class="value">$<?php echo wpcable_money($averages['revenue']); ?></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="label"><?php echo __('Total', 'wpcable'); ?></span>
+                        </td>
+                        <td>
+                            <span class="value">$<?php echo wpcable_money($averages['total_cost']); ?></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="label"><?php echo __('Fees', 'wpcable'); ?></span>
+                        </td>
+                        <td>
+                            <span class="value">$<?php echo wpcable_money($averages['contractor_fee']); ?></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <small><?php echo __('The above are from', 'wpcable').' '. $from_month .'-'. $from_year.' '. __('to', 'wpcable').' '.$to_month.'-'.$to_year; ?></small>
+            </div>
+        </div>
+
     </div>
 
-    <div class="clearfix spacer"></div>
 
-    <form method="get" id="date_form" data-start-year="<?php echo $first_year; ?>" data-end-year="<?php echo $last_year; ?>">
-      <input type="hidden" name="page" value="codeable_transcactions_stats" />
+    <div class="flex-row box date-filters">
+        <form method="get" id="date_form" data-start-year="<?php echo $first_year; ?>" data-end-year="<?php echo $last_year; ?>">
+            <input type="hidden" name="page" value="codeable_transcactions_stats" />
 
-      <div class="row match_height">
-        <div class="col-md-4">
-        </div>
-        <div class="col-md-2">
-          <div class="maindata">
-            <label class="label" for="date_from"><?php echo __('Start date', 'wpcable'); ?></label>
-            <input class="datepicker" type="text" id="date_from" name="date_from" value="<?php echo $_GET['date_from']; ?>" data-icon="<?php echo WPCABLE_URI.'/assets/images/icon_datepicker_blue.png'; ?>">
-          </div>
-        </div>
+                <div class="section">
+                    <label class="label" for="date_from"><?php echo __('Start date', 'wpcable'); ?></label>
+                    <input class="datepicker" type="text" id="date_from" name="date_from" value="<?php echo $_GET['date_from']; ?>" data-icon="<?php echo WPCABLE_URI.'/assets/images/icon_datepicker_blue.png'; ?>">
+                </div>
 
-        <div class="col-md-2">
-          <div class="maindata">
-            <label class="label" for="date_to"><?php echo __('End date', 'wpcable'); ?></label>
-            <input class="datepicker" type="text" id="date_to" name="date_to" value="<?php echo $_GET['date_to']; ?>" data-icon="<?php echo WPCABLE_URI.'/assets/images/icon_datepicker_blue.png'; ?>">
-          </div>
-        </div>
 
-        <div class="col-md-2">
-          <div class="maindata">
-            <label class="label">&nbsp;</label>
-            <button class="button button-primary"><?php echo __('Set date', 'wpcable'); ?></button>
-          </div>
-        </div>
+                <div class="section">
+                    <label class="label" for="date_to"><?php echo __('End date', 'wpcable'); ?></label>
+                    <input class="datepicker" type="text" id="date_to" name="date_to" value="<?php echo $_GET['date_to']; ?>" data-icon="<?php echo WPCABLE_URI.'/assets/images/icon_datepicker_blue.png'; ?>">
+                </div>
 
-      </div>
-    </form>
+
+                <button class="set-date button button-primary"><?php echo __('Set date', 'wpcable'); ?></button>
+
+
+            </div>
+        </form>
+    </div>
+
 
     <div class="clearfix spacer"></div>
 
-    <div class="row bests match_height">
+    <div class="row bests">
       <div class="col-md-12">
         <h2 class="text-center"><?php echo __('Your highscore for this range'); ?></h2>
       </div>
