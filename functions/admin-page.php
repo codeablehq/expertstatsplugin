@@ -119,8 +119,11 @@ function codeable_transcactions_stats_cb() {
               <div class="rating" data-score="<?php echo $account_details['stats']['avg_rating']; ?>"></div>
             </div>
             <div class="details">
-                <div class="label role"><?php echo $account_details['role']; ?></div>
+                <div class="codeable-logo">
+                   <?php  echo '<img src="' . esc_url( plugins_url( 'assets/images/codeable-full.png', dirname(__FILE__) ) ) . '" > '; ?>
+                </div>
                 <span class="name"><?php echo $account_details['first_name'] .' '. $account_details['last_name']; ?></span>
+                <span class="label role"><?php echo $account_details['role']; ?></span>
                 <span class="user-id"><?php echo __('ID', 'wpcable') .': '. $account_details['id']; ?></span>
             </div>
         </div>
