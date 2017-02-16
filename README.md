@@ -1,6 +1,7 @@
-# Codeable Expert Stats Readme
-Contributors: Spyros Vlachopoulos, Panagiotis Synetos, John Leskas
-Tested up to: WordPress 4.7.2
+# Codeable Expert Stats Plugin Readme
+*Contributors:* Spyros Vlachopoulos, Panagiotis Synetos, John Leskas
+
+*Tested up to:* WordPress 4.7.2
 
 Codeable Expert Stats plugin makes it easy for you to track and monitor your success as an expert on Codeable via an easy-to-understand dashboard for your personal/agency WordPress site.
 
