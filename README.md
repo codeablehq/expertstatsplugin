@@ -44,8 +44,3 @@ Be sure that you set PHP timeout to 120 or more on your first fetch or if you ha
 2. Client Data
 
 3. Client Data Detail Modal
-
-### Changelog
-
-*0.0.1*
-* Initial build
