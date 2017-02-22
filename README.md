@@ -7,7 +7,7 @@ Codeable Expert Stats plugin makes it easy for you to track and monitor your suc
 
 ### Description
 
-The dashboard and stats provided by the Codeable web app for experts is a bit lackluster which leaves a big gap for actively monitoring and tracking your success. This plugin aims to solve that problem by providing the data in a visual format that experts can learn from, track progress, and optimize their performance as Codeable experts. Now you can visualize your own performance on Codeable in many new ways and know where you need to focus to improve and grow on Codeable. 
+The dashboard and stats provided by the Codeable web app for experts is a bit lackluster which leaves a big gap for actively monitoring and tracking your success. This plugin aims to solve that problem by providing the data in a visual format that experts can learn from, track progress, and optimize their performance as Codeable experts. Now you can visualize your own performance on Codeable in many new ways and know where you need to focus to improve and grow on Codeable.
 
 ### Features
 
@@ -20,6 +20,7 @@ The dashboard and stats provided by the Codeable web app for experts is a bit la
 7. Tasks per month bar graph
 8. Client data - Fully sortable by revenue, avg. per task, total tasks, more…
 9. Client data - Individual client detail modal
+
 
 ### Installation
 
@@ -42,7 +43,7 @@ Be sure that you set PHP timeout to 120 or more on your first fetch or if you ha
 
 2. Client Data
 
-3. Client Data Detail Modal 
+3. Client Data Detail Modal
 
 ### Changelog
 
