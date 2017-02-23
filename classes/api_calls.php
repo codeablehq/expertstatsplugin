@@ -122,7 +122,3 @@ class wpcable_api_calls {
 
   
 }
-new wpcable_api_calls();
-
-
-?>

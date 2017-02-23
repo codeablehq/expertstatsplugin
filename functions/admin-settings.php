@@ -247,5 +247,3 @@ function codeable_settings_callback()
   </style>
   <?php
 }
-
-?>

@@ -32,7 +32,7 @@ class wpcable_clients {
     $lastdate = '';
     
     $wpcable_stats = new wpcable_stats;
-    
+
     // get first and last task if no date is set
     if ($from_month == '' && $from_year == '') {
       $get_first_task   = $wpcable_stats->get_first_task();
@@ -132,5 +132,3 @@ class wpcable_clients {
   }
   
 }
-
-?>
