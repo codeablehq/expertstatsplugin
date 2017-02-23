@@ -1,11 +1,12 @@
 <?php
 /**
 * Plugin Name: WP Codeable
-* Plugin URI: http://nitroweb.gr
+* Plugin URI: hhttp://community.codeable.io/
 * Description: Get your Codeable data
 * Version: 0.0.1
 * Author: Spyros Vlachopoulos
-* Author URI: http://nitroweb.gr
+* Contributors: Panagiotis Synetos, John Leskas
+* Author URI: https://codeable.io/developers/spyros-vlachopoulos/
 * License: GPL2
 * Text Domain: wpcable
 */
@@ -143,6 +144,11 @@ function wpcable_install() {
     $dbDelta = dbDelta( $sql );
     
     update_option( 'wpcable_transcactions_version', $wpcable_transcactions_version );
+    
+    // set default scan method
+    if (get_option('wpcable_what_to_check') == false) {
+      update_option( 'wpcable_what_to_check', '0' );
+    }
     
   }
   

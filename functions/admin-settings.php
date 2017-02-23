@@ -105,7 +105,7 @@ function codeable_settings_callback()
 
     ?>
     <div class="updated notice">
-      <p><?php echo $total . ' ' . __('new entries', 'wpcable'); ?></p>
+      <p><?php echo $total . ' ' . __('new entries', 'wpcable'); ?>! <a href="<?php echo admin_url('admin.php?page=codeable_transcactions_stats'); ?>"><?php echo __('See the stats', 'wpcable'); ?></a></p>
     </div>
     <?php
   }
@@ -172,7 +172,7 @@ function codeable_settings_callback()
                   <label class="wpcable_label" for="wpcable_' . $key . '">' . $label . '</label> 
                 </th>
                 <td>
-                <input id="wpcable_' . $key . '" type="' . ($key == 'password' ? 'password' : 'text') . '" name="wpcable_' . $key . '" value="" />
+                <input id="wpcable_' . $key . '" type="' . ($key == 'password' ? 'password' : 'text') . '" name="wpcable_' . $key . '" value="" autocomplete="new-password" />
                 </td>
                 
               </tr>';
@@ -185,17 +185,12 @@ function codeable_settings_callback()
         </tbody>
       </table>
 
-      <?php
-
-
-      // if (get_option('wpcable_email') != '' && get_option('wpcable_password') != '') { ?>
-
         <p>
           <small><?php echo __('Be sure that you set PHP timeout to 120 or more on your first fetch or if you have deleted the cached data', 'wpcable'); ?></small>
         </p>
         <input name="submit" id="" class="button button-large button-action" value="<?php echo __('Fetch remote data', 'wpcable'); ?>" type="submit">
         <a href="admin.php?page=codeable_settings&flushdata=true" class="button button-large button-danger"><?php echo __('Delete cached data', 'wpcable'); ?></a>
-      <?php // } ?>
+
     </form>
   </div>
 

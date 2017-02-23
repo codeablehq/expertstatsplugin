@@ -59,50 +59,95 @@ function codeable_transcactions_stats_cb() {
     $to_month = date('m', strtotime($_GET['date_to']).'-01');
     $to_year  = date('Y', strtotime($_GET['date_to']).'-01');
   }
-
-  $month_totals = $wpcable_stats->get_month_range_totals($from_month, $from_year, $to_month, $to_year);
-
+  
+  if (!isset($_GET['chart_display_method'])) {
+    $_GET['chart_display_method'] = 'months';
+    $chart_display_method = 'months';
+  } else {
+    $chart_display_method = $_GET['chart_display_method'];
+  }
+  
+  $averages     = $wpcable_stats->get_months_average($from_month, $from_year, $to_month, $to_year);
+  $all_averages = $wpcable_stats->get_dates_average($first_day, $first_month, $first_year, $last_day, $last_month, $last_year);
+  $wpcable_clients = new wpcable_clients;
+  $clients_data = $wpcable_clients->get_clients();
+  
   $get_amounts_range = $wpcable_stats->get_amounts_range($from_day, $from_month, $from_year, $to_day, $to_month, $to_year);
-
   $chart_amounts_range = array();
   foreach ($get_amounts_range as $range => $num_of_tasks) {
     $chart_amounts_range[] = '["'.$range.'", '.$num_of_tasks.']';
   }
+  
+  if ($chart_display_method == 'months') {
+  
+    $month_totals = $wpcable_stats->get_month_range_totals($from_month, $from_year, $to_month, $to_year);
 
-  $max_month_totals = max($month_totals);
-  $max_month_totals_key = array_keys($month_totals, max($month_totals));
+    $max_month_totals = max($month_totals);
+    $max_month_totals_key = array_keys($month_totals, max($month_totals));
 
-  $all_month_totals = array();
-  foreach($month_totals as $mt) {
-    $all_month_totals['revenue'] = $all_month_totals['revenue'] + $mt['revenue'];
-    $all_month_totals['total_cost'] = $all_month_totals['total_cost'] + $mt['total_cost'];
+    $all_month_totals = array();
+    foreach($month_totals as $mt) {
+      $all_month_totals['revenue'] = $all_month_totals['revenue'] + $mt['revenue'];
+      $all_month_totals['total_cost'] = $all_month_totals['total_cost'] + $mt['total_cost'];
+    }
+
+    $chart_categories     = array();
+    $chart_contractor_fee = array();
+    $chart_revenue        = array();
+    $chart_total_cost     = array();
+    $chart_tasks_count    = array();
+
+    foreach($month_totals as $yearmonth => $amounts) {
+
+      $chart_categories[$yearmonth]     = "'".wordwrap($yearmonth, 4, '-', true)."'";
+      $chart_contractor_fee[$yearmonth] = floatval($amounts['fee_amount']);
+      $chart_revenue[$yearmonth]        = floatval($amounts['revenue']);
+      $chart_total_cost[$yearmonth]     = floatval($amounts['total_cost']);
+      $chart_tasks_count[$yearmonth]    = intval($amounts['tasks']);
+
+    }
+
+    $chart_tasks_count_json = json_encode($chart_tasks_count);
+    $chart_revenue_json = json_encode($chart_revenue);
+  
+  } else {
+
+    $days_totals = $wpcable_stats->get_days($from_day, $from_month, $from_year, $to_day, $to_month, $to_year);
+    
+
+    $max_month_totals = max($days_totals);
+    $max_month_totals_key = array_keys($days_totals, max($days_totals));
+    $max_month_totals_key[0] = wordwrap($max_month_totals_key[0], 6, '-', true);
+
+    $all_month_totals = array();
+    foreach($days_totals as $mt) {
+      $all_month_totals['revenue'] = $all_month_totals['revenue'] + $mt['revenue'];
+      $all_month_totals['total_cost'] = $all_month_totals['total_cost'] + $mt['total_cost'];
+    }
+
+    $chart_categories     = array();
+    $chart_contractor_fee = array();
+    $chart_revenue        = array();
+    $chart_total_cost     = array();
+    $chart_tasks_count    = array();
+
+    foreach($days_totals as $yearmonthday => $amounts) {
+      
+      $date_array = array();
+      $date_array = date_parse_from_format('Ymd', $yearmonthday);
+      
+      $chart_categories[$yearmonthday]     = "'".$date_array['year'] .'-'. sprintf("%02d", $date_array['month']) .'-'. sprintf("%02d", $date_array['day']) ."'" ;
+      $chart_contractor_fee[$yearmonthday] = floatval($amounts['fee_amount']);
+      $chart_revenue[$yearmonthday]        = floatval($amounts['revenue']);
+      $chart_total_cost[$yearmonthday]     = floatval($amounts['total_cost']);
+      $chart_tasks_count[$yearmonthday]    = intval($amounts['tasks']);
+    }
+    
+
+    $chart_tasks_count_json = json_encode($chart_tasks_count);
+    $chart_revenue_json = json_encode($chart_revenue);
+    
   }
-
-  $averages     = $wpcable_stats->get_months_average($from_month, $from_year, $to_month, $to_year);
-  $all_averages = $wpcable_stats->get_dates_average($first_day, $first_month, $first_year, $last_day, $last_month, $last_year);
-
-  $wpcable_clients = new wpcable_clients;
-
-  $clients_data = $wpcable_clients->get_clients();
-
-  $chart_categories     = array();
-  $chart_contractor_fee = array();
-  $chart_revenue        = array();
-  $chart_total_cost     = array();
-  $chart_tasks_count    = array();
-
-  foreach($month_totals as $yearmonth => $amounts) {
-
-    $chart_categories[$yearmonth]     = "'".wordwrap($yearmonth, 4, '-', true)."'";
-    $chart_contractor_fee[$yearmonth] = floatval($amounts['fee_amount']);
-    $chart_revenue[$yearmonth]        = floatval($amounts['revenue']);
-    $chart_total_cost[$yearmonth]     = floatval($amounts['total_cost']);
-    $chart_tasks_count[$yearmonth]    = intval($amounts['tasks']);
-
-  }
-
-  $chart_tasks_count_json = json_encode($chart_tasks_count);
-  $chart_revenue_json = json_encode($chart_revenue);
 
   ?>
 
@@ -268,12 +313,19 @@ function codeable_transcactions_stats_cb() {
                 </div>
 
 
+                <div class="section">
+                    <label class="label" for="chart_display_method"><?php echo __('Chart display', 'wpcable'); ?></label>:&nbsp;&nbsp;
+                    Months&nbsp;<input type="radio" name="chart_display_method" value="months" <?php echo ($chart_display_method == 'months' ? 'checked="checked"' : ''); ?> />
+                    Days&nbsp;<input type="radio" name="chart_display_method" value="days" <?php echo ($chart_display_method == 'days' ? 'checked="checked"' : ''); ?> />
+                </div>
+
+
                 <button class="set-date button button-primary"><?php echo __('Set date', 'wpcable'); ?></button>
 
 
             </div>
         </form>
-    </div>
+
 
 
     <div class="clearfix spacer"></div>
@@ -460,7 +512,7 @@ function codeable_transcactions_stats_cb() {
               type: 'areaspline'
           },
           title: {
-              text: "<?php echo __('Monthly money chart', 'wpcable'); ?>"
+              text: "<?php echo $chart_display_method == 'days' ? __('Daily money chart', 'wpcable') : __('Monthly money chart', 'wpcable'); ?>"
           },
           subtitle: {
               text: "<?php echo __('We\'re Only in It for the Money', 'wpcable'); ?>"
@@ -483,7 +535,7 @@ function codeable_transcactions_stats_cb() {
           },
           tooltip: {
             formatter: function() {
-              return '<b>' + this.x + '</b><br /></br >'+ this.series.name +': $<b>' + this.y + '</b><br /><?php echo __('Tasks', 'wpcable'); ?>: '+ $chart_tasks_count_json[this.x.replace('-','')];
+              return '<b>' + this.x + '</b><br /></br >'+ this.series.name +': $<b>' + this.y + '</b><br /><?php echo __('Tasks', 'wpcable'); ?>: '+ $chart_tasks_count_json[replaceAll(this.x ,'-','')];
             }
           },
           series: [{
@@ -540,7 +592,7 @@ function codeable_transcactions_stats_cb() {
               type: 'column'
           },
           title: {
-              text: '<?php echo __('Tasks per Month', 'wpcable'); ?>'
+              text: '<?php echo $chart_display_method == 'days' ? __('Tasks per Day', 'wpcable') : __('Tasks per Month', 'wpcable'); ?>'
           },
           subtitle: {
               text: '-'
@@ -559,7 +611,7 @@ function codeable_transcactions_stats_cb() {
           },
           tooltip: {
               formatter: function() {
-                return this.x +'<br />-<br />'+ this.series.name +': <b>' + this.y +'</b><br />Revenue:<b>$'+ parseFloat($chart_revenue_json[this.x.replace('-','')])+'</b>';
+                return this.x +'<br />-<br />'+ this.series.name +': <b>' + this.y +'</b><br />Revenue:<b>$'+ parseFloat($chart_revenue_json[replaceAll(this.x, '-','')])+'</b>';
               }
           },
           plotOptions: {
@@ -574,6 +626,13 @@ function codeable_transcactions_stats_cb() {
 
           }]
       });
+      
+      function escapeRegExp(str) {
+        return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+      }
+      function replaceAll(str, find, replace) {
+        return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+      }
 
 
   });

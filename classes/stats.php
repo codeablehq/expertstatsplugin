@@ -52,6 +52,56 @@ class wpcable_stats {
     
   }
   
+  public function get_days($from_day, $from_month, $from_year, $to_day, $to_month, $to_year) {
+    
+    global $wpdb;
+    
+    $first_date = date('Y-m-d H:i:s', strtotime($from_year.'-'.$from_month.'-'.$from_day));
+    $last_date = date('Y-m-d H:i:s', strtotime($to_year.'-'.$to_month.'-'. $to_day .' 23:59:59'));
+    
+    $query = " 
+      SELECT
+        fee_amount as fee_amount,
+        credit_fee_amount as contractor_fee,
+        credit_revenue_amount as revenue,
+        debit_user_amount as total_cost,
+        dateadded
+      FROM 
+        ". $this->tables['transcactions'] ." LEFT JOIN ". $this->tables['amounts'] ."
+      ON
+        ". $this->tables['transcactions'] .".task_id = ". $this->tables['amounts'] .".task_id
+      WHERE 
+            `description` = 'task_completion'
+        AND (dateadded BETWEEN '". $first_date ."' AND '". $last_date ."')
+    ";
+    
+    $result = $wpdb->get_results( $query, ARRAY_A );
+    
+    $days_totals = array();
+    foreach($result as $single_payment) {
+      
+      $datekey = date('Ymd', strtotime($single_payment['dateadded']));
+      
+      if (isset($days_totals[$datekey])) {
+        
+        $days_totals[$datekey]['fee_amount']      += $single_payment['fee_amount'];
+        $days_totals[$datekey]['contractor_fee']  += $single_payment['contractor_fee'];
+        $days_totals[$datekey]['revenue']         += $single_payment['revenue'];
+        $days_totals[$datekey]['total_cost']      += $single_payment['total_cost'];
+        $days_totals[$datekey]['tasks']           = $days_totals[$datekey]['tasks'] + 1;
+
+      } else {
+        
+        $days_totals[$datekey] = $single_payment;
+        $days_totals[$datekey]['tasks'] = 1;
+        
+      }
+    }
+    
+    return $days_totals;
+    
+  }
+  
   public function get_dates_average($from_day, $from_month, $from_year, $to_day, $to_month, $to_year) {
     
     global $wpdb;

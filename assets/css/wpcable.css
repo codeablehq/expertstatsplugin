@@ -78,6 +78,7 @@ img.round { border-radius: 50%; }
   margin: 15px 0 10px;
   color: #333e48;
   font-size: 1.3rem;
+  line-height: normal;
   font-weight: 500;
   display: block;
 }

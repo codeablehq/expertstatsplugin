@@ -38,7 +38,7 @@ jQuery(document).ready(function() {
   
   jQuery('.datatable_inner').each(function () {
     jQuery(this).DataTable( {
-        "order": [[ 2, "desc" ]]
+        "order": [[ 1, "desc" ]]
     });
   });
   var dtable = jQuery('#clients_table').DataTable( {
