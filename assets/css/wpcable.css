@@ -275,11 +275,16 @@ table .avatar {
 /******************/
 #TB_ajaxContent {
   width: 100% !important;
-  height: 768px !important;
+  height: auto !important;
+  position: relative;
 }
 
 div#TB_window {
-  width: 100% !important;
-  max-width: 1200px !important;
-  left: 30%;
+  width: auto !important;
+  left: 30px !important;
+  right: 30px !important;
+  top: 30px !important;
+  bottom: 30px !important;
+  margin: 0 !important;
+  overflow: auto !important;
 }
