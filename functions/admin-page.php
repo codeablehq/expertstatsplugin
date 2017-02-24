@@ -46,8 +46,8 @@ function codeable_transcactions_stats_cb() {
 		$from_year         = $first_year;
 	} else {
 		$from_day   = '01';
-		$from_month = date( 'm', strtotime( $_GET['date_from'] ) . '-01' );
-		$from_year  = date( 'Y', strtotime( $_GET['date_from'] ) . '-01' );
+		$from_month = date( 'm', strtotime( $_GET['date_from'] . '-01' ) );
+		$from_year  = date( 'Y', strtotime( $_GET['date_from'] . '-01' ) );
 	}
 
 	if ( ! isset( $_GET['date_to'] ) ) {
@@ -56,9 +56,9 @@ function codeable_transcactions_stats_cb() {
 		$to_month        = $last_month;
 		$to_year         = $last_year;
 	} else {
-		$to_day   = date( 't', strtotime( $_GET['date_to'] ) . '-01' );
-		$to_month = date( 'm', strtotime( $_GET['date_to'] ) . '-01' );
-		$to_year  = date( 'Y', strtotime( $_GET['date_to'] ) . '-01' );
+		$to_day   = date( 't', strtotime( $_GET['date_to'] . '-01' ) );
+		$to_month = date( 'm', strtotime( $_GET['date_to'] . '-01' ) );
+		$to_year  = date( 'Y', strtotime( $_GET['date_to'] . '-01' ) );
 	}
 
 	if ( ! isset( $_GET['chart_display_method'] ) ) {
@@ -86,7 +86,8 @@ function codeable_transcactions_stats_cb() {
 		$max_month_totals     = max( $month_totals );
 		$max_month_totals_key = array_keys( $month_totals, max( $month_totals ) );
 
-		$all_month_totals = array();
+		$all_month_totals            = array();
+		$all_month_totals['revenue'] = $all_month_totals['total_cost'] = '';
 		foreach ( $month_totals as $mt ) {
 			$all_month_totals['revenue']    = $all_month_totals['revenue'] + $mt['revenue'];
 			$all_month_totals['total_cost'] = $all_month_totals['total_cost'] + $mt['total_cost'];
@@ -170,7 +171,7 @@ function codeable_transcactions_stats_cb() {
                     </div>
                     <span class="name"><?php echo $account_details['first_name'] . ' ' . $account_details['last_name']; ?></span>
                     <span class="label role"><?php echo $account_details['role']; ?></span>
-                    <span class="user-id"><?php echo __( 'ID', 'wpcable' ) . ': ' . $account_details['id']; ?></span>
+                    <span class="user-id"><?php echo __( 'ID', 'wpcable' ) . ': <a href="https://app.codeable.io/tasks/new?preferredContractor=' . $account_details['id'] . '" target="_blank" title="' . __( 'Direct hire link', 'wpcable' ) . '">' . $account_details['id']; ?></a></span>
                 </div>
             </div>
 
@@ -327,18 +328,17 @@ function codeable_transcactions_stats_cb() {
                 <div class="section">
                     <label class="label"
                            for="chart_display_method"><?php echo __( 'Chart display', 'wpcable' ); ?></label>:&nbsp;&nbsp;
-                    Months&nbsp;<input type="radio" name="chart_display_method"
-                                       value="months" <?php echo( $chart_display_method == 'months' ? 'checked="checked"' : '' ); ?> />
-                    Days&nbsp;<input type="radio" name="chart_display_method"
-                                     value="days" <?php echo( $chart_display_method == 'days' ? 'checked="checked"' : '' ); ?> />
+					<?php echo __( 'Months', 'wpcable' ); ?>&nbsp;<input type="radio" name="chart_display_method"
+                                                                         value="months" <?php echo( $chart_display_method == 'months' ? 'checked="checked"' : '' ); ?> />
+					<?php echo __( 'Days', 'wpcable' ); ?>&nbsp;<input type="radio" name="chart_display_method"
+                                                                       value="days" <?php echo( $chart_display_method == 'days' ? 'checked="checked"' : '' ); ?> />
                 </div>
 
 
                 <button class="set-date button button-primary"><?php echo __( 'Set date', 'wpcable' ); ?></button>
 
-
+            </form>
         </div>
-        </form>
 
 
         <div class="clearfix spacer"></div>
