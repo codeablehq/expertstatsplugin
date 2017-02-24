@@ -6,6 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 
-function wpcable_money($money) {
-  return number_format($money, 2, '.', ',');
+function wpcable_money( $money ) {
+	return number_format( $money, 2, '.', ',' );
 }
