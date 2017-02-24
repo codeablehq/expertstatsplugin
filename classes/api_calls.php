@@ -37,24 +37,24 @@ class wpcable_api_calls {
 			"Authorization: Bearer " . $this->auth_token
 		);
 
-		$transcaction = $this->get_curl( $url, $args, 'get', $CURLOPT_HTTPHEADER );
+		$transaction = $this->get_curl( $url, $args, 'get', $CURLOPT_HTTPHEADER );
 
-		return $transcaction;
+		return $transaction;
 
 	}
 
 	public function transactions_full( $maxpage = 999999 ) {
 
-		$transcactions = array();
+		$transactions = array();
 
 		$page = 1;
 		while ( $page < $maxpage ) {
 			$single_page = $this->transactions_page( $page ++ );
 
 			if ( empty( $single_page['transactions'] ) ) {
-				return $transcactions;
+				return $transactions;
 			} else {
-				$transcactions = array_merge( $transcactions, $single_page['transactions'] );
+				$transactions = array_merge( $transactions, $single_page['transactions'] );
 			}
 		}
 
