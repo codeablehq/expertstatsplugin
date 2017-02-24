@@ -37,9 +37,9 @@ class wpcable_api_calls {
 			"Authorization: Bearer " . $this->auth_token
 		);
 
-		$transaction = $this->get_curl( $url, $args, 'get', $CURLOPT_HTTPHEADER );
+		$transactions = $this->get_curl( $url, $args, 'get', $CURLOPT_HTTPHEADER );
 
-		return $transaction;
+		return $transactions;
 
 	}
 
