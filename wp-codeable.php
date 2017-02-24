@@ -157,7 +157,7 @@ function wpcable_install() {
 
 register_activation_hook( __FILE__, 'wpcable_install' );
 
-// on uninstall
+// on deactivation
 function wpcable_deactivate() {
 
 	require_once plugin_dir_path( __FILE__ ) . 'classes/deactivator.php';
