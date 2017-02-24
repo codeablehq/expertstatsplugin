@@ -98,7 +98,7 @@ class wpcable_transcactions
           }
 
 
-          // check if transcactions already exists
+          // check if transactions already exists
           $check_client = $wpdb->get_results("SELECT count(*) as totalrows FROM " . $this->tables['clients'] . " WHERE client_id = '" . $tr['task_client']['id'] . "'");
 
           // if the client record exists then return total
