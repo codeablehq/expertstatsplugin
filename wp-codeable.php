@@ -3,9 +3,9 @@
 * Plugin Name: WP Codeable
 * Plugin URI: https://github.com/codeablehq/blackbook/wiki/Expert-Stats-Plugin
 * Description: Get your Codeable data
-* Version: 0.0.1
+* Version: 0.0.2
 * Author: Spyros Vlachopoulos
-* Contributors: Panagiotis Synetos, John Leskas
+* Contributors: Panagiotis Synetos, John Leskas, Justin Frydman
 * Author URI: https://codeable.io/developers/spyros-vlachopoulos/
 * License: GPL2
 * Text Domain: wpcable
