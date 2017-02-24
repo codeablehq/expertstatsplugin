@@ -28,7 +28,7 @@ Note: SSL enabled sites highly encouraged for the use of this plugin please.
 
 1. Upload the `expertstatsplugin-master` folder and it's contents to the `/wp-content/plugins/` directory or install the .zip via the WP plugins panel in your WordPress admin dashboard
 2. Activate the plugin through the 'Plugins' menu in WordPress
-3. That's it! You should now be able to access the Plugin's options via `Codeable Stats` link on WordPress dashboard menu.  You will need to enter your Codeable Username and Password under Settings then ‘Fetch remove data’.
+3. That's it! You should now be able to access the Plugin's options via `Codeable Stats` link on WordPress dashboard menu.  You will need to enter your Codeable Username and Password under Settings then ‘Fetch remote data’.
 
 ### Frequently Asked Questions
 
