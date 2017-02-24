@@ -27,7 +27,7 @@ class wpcable_deactivator {
 	 *
 	 * @since    0.0.3
 	 */
-	public static function remove_cronjobs() {
+	private static function remove_cronjobs() {
 
 		// find out when the last event was scheduled
 		$timestamp = wp_next_scheduled( 'wpcable_cronjob' );

@@ -72,7 +72,7 @@ class wpcable_uninstall {
 	 *
 	 * @since    0.0.3
 	 */
-	public static function remove_plugin_options() {
+	private static function remove_plugin_options() {
 
 		$prefix = 'wpcable_';
 
@@ -96,7 +96,7 @@ class wpcable_uninstall {
 	 *
 	 * @since    0.0.3
 	 */
-	public static function remove_plugin_tables() {
+	private static function remove_plugin_tables() {
 		global $wpdb;
 
 		$prefix = $wpdb->prefix;
