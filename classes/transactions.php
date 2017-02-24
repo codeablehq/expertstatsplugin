@@ -57,7 +57,7 @@ class wpcable_transcactions {
 				// get all data to the DB
 				foreach ( $single_page['transactions'] as $tr ) {
 
-					// check if transcactions already exists
+					// check if transactions already exists
 					$check = $wpdb->get_results( "SELECT count(*) as totalrows FROM " . $this->tables['transcactions'] . " WHERE id = '" . $tr['id'] . "'" );
 
 					// if the record exists then return total
