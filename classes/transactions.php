@@ -88,13 +88,13 @@ class wpcable_transcactions
             'client_id'      => $tr['task_client']['id']
           );
 
-          $insert_transcaction = $wpdb->insert(
+          $insert_transaction = $wpdb->insert(
             $this->tables['transcactions'],
             $new_tr
           );
 
-          if ($insert_transcaction === false) {
-            die('could not insert transcactions ' . $tr['id'] . ':' . $wpdb->print_error());
+          if ($insert_transaction === false) {
+            die('could not insert transactions ' . $tr['id'] . ':' . $wpdb->print_error());
           }
 
 
