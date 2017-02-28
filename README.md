@@ -40,9 +40,9 @@ Be sure that you set PHP timeout to 120 or more on your first fetch or if you ha
 
 ### Screenshots
 
-1.  [![Money Charts](https://raw.githubusercontent.com/codeablehq/expertstatsplugin/master/screenshot1-money-charts.png?token=ACPiMX4GRnmFUQzH1KXutE40Y23hf5Pjks5Yvq0bwA%3D%3D)]()
+[![Money Charts](https://raw.githubusercontent.com/codeablehq/expertstatsplugin/master/screenshot1-money-charts.png?token=ACPiMX4GRnmFUQzH1KXutE40Y23hf5Pjks5Yvq0bwA%3D%3D)]()
 
 
-2.  [![Client Data](https://github.com/codeablehq/expertstatsplugin/raw/master/screenshot2-client-data.png)]()
+[![Client Data](https://github.com/codeablehq/expertstatsplugin/raw/master/screenshot2-client-data.png)]()
 
-3. [![Client Data Detail Modal ](https://github.com/codeablehq/expertstatsplugin/raw/master/screenshot3-client-detail-modal.png)]()
+[![Client Data Detail Modal ](https://github.com/codeablehq/expertstatsplugin/raw/master/screenshot3-client-detail-modal.png)]()
