@@ -9,6 +9,7 @@
  * Author URI: https://codeable.io/developers/spyros-vlachopoulos/
  * License: GPL2
  * Text Domain: wpcable
+ * GitHub Plugin URI: https://github.com/codeablehq/expertstatsplugin
  */
 
 
