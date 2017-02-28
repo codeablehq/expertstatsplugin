@@ -1,3 +1,4 @@
+[![Codeable](https://img.shields.io/badge/Codeable-Experts-blue.svg)]()
 # Codeable Expert Stats Plugin Readme
 *Contributors:* Spyros Vlachopoulos, Panagiotis Synetos, John Leskas
 
