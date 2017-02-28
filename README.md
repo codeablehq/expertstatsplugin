@@ -6,6 +6,11 @@
 
 Codeable Expert Stats plugin makes it easy for you to track and monitor your success as an expert on Codeable via an easy-to-understand dashboard for your personal/agency WordPress site.
 
+
+### Processes
+
+If you are opening an issue please use labels!
+
 ### Description
 
 The dashboard and stats provided by the Codeable web app for experts is a bit lackluster which leaves a big gap for actively monitoring and tracking your success. This plugin aims to solve that problem by providing the data in a visual format that experts can learn from, track progress, and optimize their performance as Codeable experts. Now you can visualize your own performance on Codeable in many new ways and know where you need to focus to improve and grow on Codeable.
