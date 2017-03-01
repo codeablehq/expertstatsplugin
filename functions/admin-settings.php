@@ -40,15 +40,20 @@ function codeable_register_settings() {
 function codeable_settings_callback() {
 	global $wpdb;
 
+    if( ! empty($_GET['wpcable_error']) && $_GET['wpcable_error'] === 'credentials') : ?>
 
-	if ( ! is_ssl() ) {
-		?>
+        <div class="notice notice-error">
+            <p><?php echo __( 'Invalid username or password', 'wpcable' ) ?></p>
+        </div>
+
+    <?php endif;
+	if( ! is_ssl() ) : ?>
 
         <div class="update-nag notice">
             <p><?php echo __( 'Please consider installing this plugin on a secure website', 'wpcable' ); ?></p>
         </div>
 
-	<?php }
+	<?php endif;
 
 	set_time_limit( 300 );
 

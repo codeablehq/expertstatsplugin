@@ -24,6 +24,14 @@ class wpcable_api_calls {
 		$login_call       = $this->get_curl( $url, $args );
 		$this->auth_token = $login_call['auth_token'];
 
+		// credential error checking
+		if( isset($login_call['errors']) ) {
+			if( ! empty($login_call['errors'][0]['message']) && $login_call['errors'][0]['message'] === 'Invalid credentials' ) {
+				wp_safe_redirect( admin_url('admin.php?page=codeable_settings&wpcable_error=credentials') );
+				exit;
+			}
+		}
+
 		// return $this->auth_token;
 		return $login_call;
 	}
