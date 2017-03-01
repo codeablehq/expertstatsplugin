@@ -44,7 +44,7 @@ class wpcable_cache {
 	 * @since    0.0.6
 	 * @param    string    $cache_key     The unique cache key to use.
 	 */
-	public function __construct( $cache_key = false, $cache_expires = 1600 ) {
+	public function __construct( $cache_key = false, $cache_expires = 0 ) {
 
 		if( ! $cache_key ) {
 			throw new \Exception('No cache key provided.');
