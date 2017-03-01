@@ -351,7 +351,7 @@ class wpcable_stats {
 
 		if( $data === false ) {
 			$data = $wpdb->get_results( $query, ARRAY_A );
-			$cache->set( $result );
+			$cache->set( $data );
 		}
 
 		return $data;
