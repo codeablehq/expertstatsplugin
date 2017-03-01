@@ -20,5 +20,6 @@
 * Text changes on charts
 
 *0.0.6*
+* Added invalid credentials logic and admin notice
 * Added WordPress Object Caching to stats and client DB calls
 
