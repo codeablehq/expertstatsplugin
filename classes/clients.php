@@ -48,20 +48,20 @@ class wpcable_clients {
 		}
 
 		$query = " 
-      SELECT
-        *
-      FROM 
-        " . $this->tables['transactions'] . " 
-        LEFT JOIN " . $this->tables['clients'] . "
-      ON
-        " . $this->tables['transactions'] . ".client_id = " . $this->tables['clients'] . ".client_id
-        LEFT JOIN " . $this->tables['amounts'] . "
-      ON 
-        " . $this->tables['transactions'] . ".task_ID = " . $this->tables['amounts'] . ".task_ID
-      WHERE 
-            `description` = 'task_completion' OR `description` = 'partial_refund'
-        AND (dateadded BETWEEN '" . $firstdate . "' AND '" . $lastdate . "')
-    ";
+	      SELECT
+	        *
+	      FROM 
+	        " . $this->tables['transactions'] . " 
+	        LEFT JOIN " . $this->tables['clients'] . "
+	      ON
+	        " . $this->tables['transactions'] . ".client_id = " . $this->tables['clients'] . ".client_id
+	        LEFT JOIN " . $this->tables['amounts'] . "
+	      ON 
+	        " . $this->tables['transactions'] . ".task_ID = " . $this->tables['amounts'] . ".task_ID
+	      WHERE 
+	            `description` = 'task_completion' OR `description` = 'partial_refund'
+	        AND (dateadded BETWEEN '" . $firstdate . "' AND '" . $lastdate . "')
+	    ";
 
 		$result = $wpdb->get_results( $query, ARRAY_A );
 
