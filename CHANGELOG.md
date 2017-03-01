@@ -18,3 +18,7 @@
 
 *0.0.5*
 * Text changes on charts
+
+*0.0.6*
+* Added WordPress Object Caching to stats and client DB calls
+

@@ -24,8 +24,6 @@ class wpcable_clients {
 
 	public function get_clients( $from_month = '', $from_year = '', $to_month = '', $to_year = '' ) {
 
-		global $wpdb;
-
 		$clients = array();
 
 		$firstdate = '';
@@ -63,7 +61,9 @@ class wpcable_clients {
 	        AND (dateadded BETWEEN '" . $firstdate . "' AND '" . $lastdate . "')
 	    ";
 
-		$result = $wpdb->get_results( $query, ARRAY_A );
+		// check cache
+		$cache_key = 'clients_' . $firstdate . '_' . $lastdate;
+		$result = $this->check_cache( $cache_key, $query );
 
 		// echo '<pre>'.print_r($result, true).'</pre>';
 
@@ -132,6 +132,36 @@ class wpcable_clients {
 
 			return sqrt( array_sum( $devs ) / ( count( $devs ) - 1 ) );
 		}
+	}
+
+	/**
+	 * Checks and sets cached data
+	 *
+	 * @since   0.0.6
+	 * @author Justin Frydman
+	 *
+	 * @param bool $key     The unique cache key
+	 * @param bool $query   The query to check
+	 *
+	 * @return mixed    The raw or cached data
+	 * @throws Exception
+	 */
+	private function check_cache( $key = false, $query = false ) {
+		global $wpdb;
+
+		if( !$key || !$query ) {
+			throw new Exception('No cache key or query provided');
+		}
+
+		$cache = new wpcable_cache( $key );
+		$data = $cache->get();
+
+		if( $data === false ) {
+			$data = $wpdb->get_results( $query, ARRAY_A );
+			$cache->set( $data );
+		}
+
+		return $data;
 	}
 
 }
