@@ -30,6 +30,15 @@ class wpcable_cache {
 	const ITTR_KEY = 'wpcable_ittr';
 
 	/**
+	 * The query containing data we may need to cache
+	 *
+	 * @since    0.0.6
+	 * @access   public
+	 * @var      mixed    $query    The query containing data we may need to cache.
+	 */
+	private $query;
+
+	/**
 	 * The amount of seconds to store in the cache
 	 *
 	 * @since    0.0.6
@@ -44,10 +53,14 @@ class wpcable_cache {
 	 * @since    0.0.6
 	 * @param    string    $cache_key     The unique cache key to use.
 	 */
-	public function __construct( $cache_key = false, $cache_expires = 0 ) {
+	public function __construct( $cache_key = false, $query = false, $cache_expires = 0 ) {
 
 		if( ! $cache_key ) {
 			throw new Exception('No cache key provided.');
+		}
+
+		if( $query ) {
+			$this->query = $query;
 		}
 
 		if( $cache_expires ) {
@@ -61,7 +74,8 @@ class wpcable_cache {
 	/**
 	 * Iterates the cache value
 	 *
-	 * @return  int     The current cache iteration
+	 * @since    0.0.6
+	 * @return   int     The current cache iteration
 	 */
 	private function get_cache_iteration() {
 
@@ -78,7 +92,8 @@ class wpcable_cache {
 	/**
 	 * Returns the cached value for the provided key
 	 *
-	 * @return  mixed   The cache value
+	 * @since    0.0.6
+	 * @return   mixed   The cache value
 	 */
 	public function get() {
 		return wp_cache_get( $this->cache_key );
@@ -87,7 +102,8 @@ class wpcable_cache {
 	/**
 	 * Set data in the object cache
 	 *
-	 * @param   $data   The data to cache
+	 * @since    0.0.6
+	 * @param    $data   The data to cache
 	 */
 	public function set( $data ) {
 		wp_cache_set( $this->cache_key, $data, null, $this->cache_expires );
@@ -98,6 +114,25 @@ class wpcable_cache {
 	 */
 	public static function flush() {
 		wp_cache_incr( self::ITTR_KEY );
+	}
+
+	/**
+	 * Check the cache for data and prime it if needed
+	 *
+	 * @since    0.0.6
+	 * @return   mixed
+	 */
+	public function check() {
+		global $wpdb;
+
+		$data = $this->get();
+
+		if( $data === false ) {
+			$data = $wpdb->get_results( $this->query, ARRAY_A );
+			$this->set( $data );
+		}
+
+		return $data;
 	}
 
 }

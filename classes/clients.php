@@ -147,21 +147,10 @@ class wpcable_clients {
 	 * @throws Exception
 	 */
 	private function check_cache( $key = false, $query = false ) {
-		global $wpdb;
 
-		if( !$key || !$query ) {
-			throw new Exception('No cache key or query provided');
-		}
+		$cache = new wpcable_cache( $key, $query );
+		return $cache->check();
 
-		$cache = new wpcable_cache( $key );
-		$data = $cache->get();
-
-		if( $data === false ) {
-			$data = $wpdb->get_results( $query, ARRAY_A );
-			$cache->set( $data );
-		}
-
-		return $data;
 	}
 
 }
