@@ -267,7 +267,7 @@ function codeable_transcactions_stats_cb() {
             <div class="box monthly-averages">
                 <div class="column_inner">
                     <div class="maindata">
-                        <div class="label"><?php echo __( 'Monthly averages', 'wpcable' ); ?></div>
+                        <div class="label"><?php echo __( 'Monthly Averages', 'wpcable' ); ?></div>
                     </div>
                     <table class="stats_table">
                         <tbody>
@@ -345,13 +345,13 @@ function codeable_transcactions_stats_cb() {
 
         <div class="row bests">
             <div class="col-md-12">
-                <h2 class="text-center"><?php echo __( 'Your highscore for this range' ); ?></h2>
+                <h2 class="text-center"><?php echo __( 'Your Highscore for This Range' ); ?></h2>
             </div>
 
             <div class="col-md-4 text-center">
                 <div class="column_inner">
                     <div class="maindata">
-                        <div class="label"><?php echo __( 'Best month' ); ?></div>
+                        <div class="label"><?php echo __( 'Best Month' ); ?></div>
                         <span class="value"><?php echo wordwrap( $max_month_totals_key[0], 4, '-', true ); ?></span>
                     </div>
                 </div>

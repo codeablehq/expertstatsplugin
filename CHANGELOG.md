@@ -12,3 +12,9 @@
 * Added deactivator class for future deactivation logic
 * Added uninstall.php to completely remove all data on deletion
 * Spelling fixes
+
+*0.0.4*
+* Testing GIT update
+
+*0.0.5*
+* Text changes on charts
