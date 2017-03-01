@@ -32,9 +32,6 @@ class wpcable_api_calls {
 			}
 		}
 
-		// flush object cache
-		wpcable_cache::flush();
-
 		// return $this->auth_token;
 		return $login_call;
 	}

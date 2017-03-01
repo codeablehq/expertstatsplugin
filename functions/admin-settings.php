@@ -105,6 +105,10 @@ function codeable_settings_callback() {
 
 			$wpcable_transcactions = new wpcable_transcactions( $email, $password );
 			$total                 = $wpcable_transcactions->store_transactions();
+
+			// flush object cache
+			wpcable_cache::flush();
+
 		}
 
 		?>
