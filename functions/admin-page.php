@@ -531,10 +531,10 @@ function codeable_transcactions_stats_cb() {
                     type: 'areaspline'
                 },
                 title: {
-                    text: "<?php echo $chart_display_method == 'days' ? __( 'Daily money chart', 'wpcable' ) : __( 'Monthly money chart', 'wpcable' ); ?>"
+                    text: "<?php echo $chart_display_method == 'days' ? __( 'Daily money chart', 'wpcable' ) : __( 'Monthly Money Chart', 'wpcable' ); ?>"
                 },
                 subtitle: {
-                    text: "<?php echo __( 'We\'re Only in It for the Money', 'wpcable' ); ?>"
+                    text: "<?php echo __( 'You Earned It!', 'wpcable' ); ?>"
                 },
                 xAxis: {
                     categories: [<?php echo implode( ', ', $chart_categories ); ?>]
@@ -581,7 +581,7 @@ function codeable_transcactions_stats_cb() {
                     }
                 },
                 title: {
-                    text: '<?php echo __( 'Amounts range', 'wpcable' ); ?>'
+                    text: '<?php echo __( 'Amounts Range', 'wpcable' ); ?>'
                 },
                 subtitle: {
                     text: '<?php echo __( 'Your tasks budget groups', 'wpcable' ); ?>'
