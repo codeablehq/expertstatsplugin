@@ -24,28 +24,29 @@ class wpcable_stats {
 
 	public function get_dates_totals( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year ) {
 
-		global $wpdb;
-
 		$first_date = date( 'Y-m-d H:i:s', strtotime( $from_year . '-' . $from_month . '-' . $from_day ) );
 		$last_date  = date( 'Y-m-d H:i:s', strtotime( $to_year . '-' . $to_month . '-' . $to_day . ' 23:59:59' ) );
 
 		$query = " 
-      SELECT
-        SUM(fee_amount) as fee_amount,
-        SUM(credit_fee_amount) as contractor_fee,
-        SUM(credit_revenue_amount) as revenue,
-        SUM(debit_user_amount) as total_cost,
-        count(1) as tasks
-      FROM 
-        " . $this->tables['transcactions'] . " LEFT JOIN " . $this->tables['amounts'] . "
-      ON
-        " . $this->tables['transcactions'] . ".task_id = " . $this->tables['amounts'] . ".task_id
-      WHERE 
-            `description` = 'task_completion'
-        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
-    ";
+	      SELECT
+	        SUM(fee_amount) as fee_amount,
+	        SUM(credit_fee_amount) as contractor_fee,
+	        SUM(credit_revenue_amount) as revenue,
+	        SUM(debit_user_amount) as total_cost,
+	        count(1) as tasks
+	      FROM 
+	        " . $this->tables['transcactions'] . " LEFT JOIN " . $this->tables['amounts'] . "
+	      ON
+	        " . $this->tables['transcactions'] . ".task_id = " . $this->tables['amounts'] . ".task_id
+	      WHERE 
+	            `description` = 'task_completion'
+	        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
+	    ";
 
-		$result        = $wpdb->get_results( $query, ARRAY_A );
+		// check cache
+		$cache_key = 'date_totals_' . $first_date . '_' . $last_date;
+		$result = $this->check_cache( $cache_key, $query );
+
 		$single_result = array_shift( $result );
 
 		return $single_result;
@@ -54,28 +55,28 @@ class wpcable_stats {
 
 	public function get_days( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year ) {
 
-		global $wpdb;
-
 		$first_date = date( 'Y-m-d H:i:s', strtotime( $from_year . '-' . $from_month . '-' . $from_day ) );
 		$last_date  = date( 'Y-m-d H:i:s', strtotime( $to_year . '-' . $to_month . '-' . $to_day . ' 23:59:59' ) );
 
 		$query = " 
-      SELECT
-        fee_amount as fee_amount,
-        credit_fee_amount as contractor_fee,
-        credit_revenue_amount as revenue,
-        debit_user_amount as total_cost,
-        dateadded
-      FROM 
-        " . $this->tables['transcactions'] . " LEFT JOIN " . $this->tables['amounts'] . "
-      ON
-        " . $this->tables['transcactions'] . ".task_id = " . $this->tables['amounts'] . ".task_id
-      WHERE 
-            `description` = 'task_completion'
-        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
-    ";
+	      SELECT
+	        fee_amount as fee_amount,
+	        credit_fee_amount as contractor_fee,
+	        credit_revenue_amount as revenue,
+	        debit_user_amount as total_cost,
+	        dateadded
+	      FROM 
+	        " . $this->tables['transcactions'] . " LEFT JOIN " . $this->tables['amounts'] . "
+	      ON
+	        " . $this->tables['transcactions'] . ".task_id = " . $this->tables['amounts'] . ".task_id
+	      WHERE 
+	            `description` = 'task_completion'
+	        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
+	    ";
 
-		$result = $wpdb->get_results( $query, ARRAY_A );
+		// check cache
+		$cache_key = 'days_' . $first_date . '_' . $last_date;
+		$result = $this->check_cache( $cache_key, $query );
 
 		$days_totals = array();
 		foreach ( $result as $single_payment ) {
@@ -104,27 +105,28 @@ class wpcable_stats {
 
 	public function get_dates_average( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year ) {
 
-		global $wpdb;
-
 		$first_date = date( 'Y-m-d H:i:s', strtotime( $from_year . '-' . $from_month . '-' . $from_day ) );
 		$last_date  = date( 'Y-m-d H:i:s', strtotime( $to_year . '-' . $to_month . '-' . $to_day . ' 23:59:59' ) );
 
 		$query = " 
-      SELECT
-        AVG(fee_amount) as fee_amount,
-        AVG(credit_fee_amount) as contractor_fee,
-        AVG(credit_revenue_amount) as revenue,
-        AVG(debit_user_amount) as total_cost
-      FROM 
-        " . $this->tables['transcactions'] . " LEFT JOIN " . $this->tables['amounts'] . "
-      ON
-        " . $this->tables['transcactions'] . ".task_id = " . $this->tables['amounts'] . ".task_id
-      WHERE 
-            `description` = 'task_completion'
-        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
-    ";
+	      SELECT
+	        AVG(fee_amount) as fee_amount,
+	        AVG(credit_fee_amount) as contractor_fee,
+	        AVG(credit_revenue_amount) as revenue,
+	        AVG(debit_user_amount) as total_cost
+	      FROM 
+	        " . $this->tables['transcactions'] . " LEFT JOIN " . $this->tables['amounts'] . "
+	      ON
+	        " . $this->tables['transcactions'] . ".task_id = " . $this->tables['amounts'] . ".task_id
+	      WHERE 
+	            `description` = 'task_completion'
+	        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
+	    ";
 
-		$result        = $wpdb->get_results( $query, ARRAY_A );
+		// check cache
+		$cache_key = 'dates_average' . $first_date . '_' . $last_date;
+		$result = $this->check_cache( $cache_key, $query );
+
 		$single_result = array_shift( $result );
 
 		return $single_result;
@@ -208,44 +210,45 @@ class wpcable_stats {
 
 	public function get_first_task() {
 
-		global $wpdb;
-
 		$query = " 
-      SELECT
-        *
-      FROM 
-        " . $this->tables['transcactions'] . " LEFT JOIN " . $this->tables['amounts'] . "
-      ON
-        " . $this->tables['transcactions'] . ".task_id = " . $this->tables['amounts'] . ".task_id
-      WHERE 
-            `description` = 'task_completion'
-      ORDER BY " . $this->tables['transcactions'] . ".id ASC
-      LIMIT 0,1
-    ";
+		      SELECT
+		        *
+		      FROM 
+		        " . $this->tables['transcactions'] . " LEFT JOIN " . $this->tables['amounts'] . "
+		      ON
+		        " . $this->tables['transcactions'] . ".task_id = " . $this->tables['amounts'] . ".task_id
+		      WHERE 
+		            `description` = 'task_completion'
+		      ORDER BY " . $this->tables['transcactions'] . ".id ASC
+		      LIMIT 0,1
+		    ";
 
-		$result = $wpdb->get_results( $query, ARRAY_A );
+		// check cache
+		$cache_key = 'first_task';
+		$result = $this->check_cache( $cache_key, $query );
+
 
 		return array_shift( $result );
 	}
 
 	public function get_last_task() {
 
-		global $wpdb;
-
 		$query = " 
-      SELECT
-        *
-      FROM 
-        " . $this->tables['transcactions'] . " LEFT JOIN " . $this->tables['amounts'] . "
-      ON
-        " . $this->tables['transcactions'] . ".task_id = " . $this->tables['amounts'] . ".task_id
-      WHERE 
-            `description` = 'task_completion'
-      ORDER BY " . $this->tables['transcactions'] . ".id DESC
-      LIMIT 0,1
-    ";
+	      SELECT
+	        *
+	      FROM 
+	        " . $this->tables['transcactions'] . " LEFT JOIN " . $this->tables['amounts'] . "
+	      ON
+	        " . $this->tables['transcactions'] . ".task_id = " . $this->tables['amounts'] . ".task_id
+	      WHERE 
+	            `description` = 'task_completion'
+	      ORDER BY " . $this->tables['transcactions'] . ".id DESC
+	      LIMIT 0,1
+	    ";
 
-		$result = $wpdb->get_results( $query, ARRAY_A );
+		// check cache
+		$cache_key = 'last_task';
+		$result = $this->check_cache( $cache_key, $query );
 
 		return array_shift( $result );
 	}
@@ -259,24 +262,24 @@ class wpcable_stats {
 
 	public function get_amounts_range( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year ) {
 
-		global $wpdb;
-
 		$first_date = date( 'Y-m-d H:i:s', strtotime( $from_year . '-' . $from_month . '-' . $from_day ) );
 		$last_date  = date( 'Y-m-d H:i:s', strtotime( $to_year . '-' . $to_month . '-' . $to_day . ' 23:59:59' ) );
 
 		$query = " 
-      SELECT
-        credit_revenue_amount
-      FROM 
-        " . $this->tables['transcactions'] . " LEFT JOIN " . $this->tables['amounts'] . "
-      ON
-        " . $this->tables['transcactions'] . ".task_id = " . $this->tables['amounts'] . ".task_id
-      WHERE 
-            `description` = 'task_completion'
-        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
-    ";
+	      SELECT
+	        credit_revenue_amount
+	      FROM 
+	        " . $this->tables['transcactions'] . " LEFT JOIN " . $this->tables['amounts'] . "
+	      ON
+	        " . $this->tables['transcactions'] . ".task_id = " . $this->tables['amounts'] . ".task_id
+	      WHERE 
+	            `description` = 'task_completion'
+	        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
+	    ";
 
-		$result = $wpdb->get_results( $query, ARRAY_A );
+		// check cache
+		$cache_key = 'amounts_range_' . $first_date . '_' . $last_date;
+		$result = $this->check_cache( $cache_key, $query );
 
 		$variance   = array();
 		$milestones = array( 0, 100, 300, 500, 1000, 3000, 5000, 10000, 20000 );
@@ -299,29 +302,59 @@ class wpcable_stats {
 
 	public function get_tasks_per_month( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year ) {
 
-		global $wpdb;
-
 		$first_date = date( 'Y-m-d H:i:s', strtotime( $from_year . '-' . $from_month . '-' . $from_day ) );
 		$last_date  = date( 'Y-m-d H:i:s', strtotime( $to_year . '-' . $to_month . '-' . $to_day . ' 23:59:59' ) );
 
 		$query = " 
-      SELECT
-        DATE_FORMAT(dateadded,'%Y-%m') as dateadded, count(1) as tasks_per_month
-      FROM 
-        " . $this->tables['transcactions'] . "
-      WHERE 
-            `description` = 'task_completion'
-        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
-      GROUP BY 
-        YEAR(dateadded), MONTH(dateadded) DESC
-      ORDER BY 
-        `dateadded` ASC
-    ";
+	      SELECT
+	        DATE_FORMAT(dateadded,'%Y-%m') as dateadded, count(1) as tasks_per_month
+	      FROM 
+	        " . $this->tables['transcactions'] . "
+	      WHERE 
+	            `description` = 'task_completion'
+	        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
+	      GROUP BY 
+	        YEAR(dateadded), MONTH(dateadded) DESC
+	      ORDER BY 
+	        `dateadded` ASC
+	    ";
 
-		$result = $wpdb->get_results( $query, ARRAY_A );
+		// check cache
+		$cache_key = 'tasks_per_month_' . $first_date . '_' . $last_date;
+		$result = $this->check_cache( $cache_key, $query );
 
 		return $result;
 
+	}
+
+	/**
+	 * Checks and sets cached data
+	 *
+	 * @since   0.0.6
+	 * @author Justin Frydman
+	 *
+	 * @param bool $key     The unique cache key
+	 * @param bool $query   The query to check
+	 *
+	 * @return mixed    The raw or cached data
+	 * @throws Exception
+	 */
+	private function check_cache( $key = false, $query = false ) {
+		global $wpdb;
+
+		if( !$key || !$query ) {
+			throw new Exception('No cache key or query provided');
+		}
+
+		$cache = new wpcable_cache( $key );
+		$data = $cache->get();
+
+		if( $data === false ) {
+			$data = $wpdb->get_results( $query, ARRAY_A );
+			$cache->set( $result );
+		}
+
+		return $data;
 	}
 
 }

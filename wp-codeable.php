@@ -43,6 +43,7 @@ final class wpcable {
 
 	private function includes() {
 		// require_once( 'classes/cpt.php' );
+		require_once( WPCABLE_CLASSES_DIR . '/object_cache.php' );
 		require_once( WPCABLE_FUNCTIONS_DIR . '/admin-settings.php' );
 		require_once( WPCABLE_FUNCTIONS_DIR . '/admin-page.php' );
 		require_once( WPCABLE_FUNCTIONS_DIR . '/formatting.php' );
