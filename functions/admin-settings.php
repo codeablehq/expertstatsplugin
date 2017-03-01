@@ -88,6 +88,9 @@ function codeable_settings_callback() {
 			}
 		}
 
+        // flush object cache
+		wpcable_cache::flush();
+
 	}
 
 
