@@ -25,7 +25,7 @@ class wpcable_transcactions {
 	}
 
 
-	// return the number of transcactions stored
+	// return the number of transactions stored
 	public function store_transactions( $maxpage = 999999 ) {
 
 		global $wpdb;
