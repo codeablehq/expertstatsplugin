@@ -69,7 +69,7 @@ class wpcable_api_calls {
 	}
 
 
-	function get_curl( $url, $args, $method = 'post', $CURLOPT_HTTPHEADER = '' ) {
+	private function get_curl( $url, $args, $method = 'post', $CURLOPT_HTTPHEADER = '' ) {
 
 		try {
 			$ch = curl_init();
@@ -127,6 +127,5 @@ class wpcable_api_calls {
 
 		}
 	}
-
 
 }
