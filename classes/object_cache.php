@@ -47,7 +47,7 @@ class wpcable_cache {
 	public function __construct( $cache_key = false, $cache_expires = 0 ) {
 
 		if( ! $cache_key ) {
-			throw new \Exception('No cache key provided.');
+			throw new Exception('No cache key provided.');
 		}
 
 		if( $cache_expires ) {
