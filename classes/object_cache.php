@@ -125,6 +125,10 @@ class wpcable_cache {
 	public function check() {
 		global $wpdb;
 
+		if( empty($this->query) ) {
+			throw new Exception('You must provide a query in order to prime the cache');
+		}
+
 		$data = $this->get();
 
 		if( $data === false ) {

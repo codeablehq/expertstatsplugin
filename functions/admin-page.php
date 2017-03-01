@@ -437,75 +437,79 @@ function codeable_transcactions_stats_cb() {
                             <tbody>
 							<?php
 
-							foreach ( $clients_data['clients'] as $client_id => $client ) {
+                            if( is_array($clients_data['clients']) ) {
 
-								if ( $client['client_id'] == '' ) {
-									continue;
-								}
+	                            foreach ( $clients_data['clients'] as $client_id => $client ) {
 
-								?>
-                                <tr id="client_<?php echo $client['client_id']; ?>">
-                                    <td class="avatar"><img class="round" src="<?php echo $client['avatar']; ?>"/></td>
-                                    <td>
-                                        <a href="#TB_inline?width=1000&height=550&inlineId=client_info_<?php echo $client_id; ?>"
-                                           class="thickbox"><?php echo $client['full_name']; ?></a>
-                                        <div style="display:none;" id="client_info_<?php echo $client_id; ?>">
+		                            if ( $client['client_id'] == '' ) {
+			                            continue;
+		                            }
 
-                                            <h2><?php echo $client['full_name']; ?></h2>
+		                            ?>
+                                    <tr id="client_<?php echo $client['client_id']; ?>">
+                                        <td class="avatar"><img class="round" src="<?php echo $client['avatar']; ?>"/>
+                                        </td>
+                                        <td>
+                                            <a href="#TB_inline?width=1000&height=550&inlineId=client_info_<?php echo $client_id; ?>"
+                                               class="thickbox"><?php echo $client['full_name']; ?></a>
+                                            <div style="display:none;" id="client_info_<?php echo $client_id; ?>">
 
-                                            <div class="clearfix spacer"></div>
+                                                <h2><?php echo $client['full_name']; ?></h2>
 
-                                            <table class="datatable datatable_inner widefat fixed striped posts">
-                                                <thead>
-                                                <th>Task</th>
-                                                <th>Paid</th>
-                                                <th>Revenue</th>
-                                                <th>Fee</th>
-                                                <th>Refund</th>
-                                                <th>Pref.</th>
-                                                <th>Type</th>
-                                                <th>Pro</th>
-                                                </thead>
-                                                <tbody>
-												<?php
+                                                <div class="clearfix spacer"></div>
 
-												foreach ( $client['transactions'] as $tron ) {
-													?>
-                                                    <tr class="<?php echo( $tron['is_refund'] == 1 ? 'refund' : 'complete' ); ?>">
-                                                        <td>
-                                                            <a href="https://app.codeable.io/tasks/<?php echo( $tron['parent_task_id'] > 0 ? $tron['parent_task_id'] : $tron['task_id'] ); ?>/workroom"
-                                                               target="_blank">
-																<?php echo ( $tron['task_title'] ? $tron['task_title'] : 'Subtask of: ' . $tron['parent_task_id'] ) . ' - ' . $tron['task_id']; ?>
-                                                            </a>
-                                                        </td>
-                                                        <td><?php echo $tron['dateadded']; ?></td>
-                                                        <td><?php echo wpcable_money( $tron['revenue'] ); ?></td>
-                                                        <td><?php echo wpcable_money( $tron['fee_amount'] ); ?></td>
-                                                        <td><?php echo( $tron['is_refund'] == 0 ? 'N' : 'Y' ); ?></td>
-                                                        <td><?php echo( $tron['preferred'] == 0 ? 'N' : 'Y' ); ?></td>
-                                                        <td><?php echo $tron['task_type']; ?></td>
-                                                        <td><?php echo( $tron['pro'] == 0 ? 'N' : 'Y' ); ?></td>
-                                                    </tr>
-													<?php
-												}
+                                                <table class="datatable datatable_inner widefat fixed striped posts">
+                                                    <thead>
+                                                    <th>Task</th>
+                                                    <th>Paid</th>
+                                                    <th>Revenue</th>
+                                                    <th>Fee</th>
+                                                    <th>Refund</th>
+                                                    <th>Pref.</th>
+                                                    <th>Type</th>
+                                                    <th>Pro</th>
+                                                    </thead>
+                                                    <tbody>
+						                            <?php
 
-												?>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                    <td><?php echo $client['last_sign_in_at']; ?></td>
-                                    <td>
-                                        <a href="#TB_inline?width=1000&height=550&inlineId=client_info_<?php echo $client_id; ?>"
-                                           class="thickbox"><?php echo intval( $client['total_tasks'] ); ?></a></td>
-                                    <td><?php echo intval( $client['tasks'] ); ?></td>
-                                    <td><?php echo intval( $client['subtasks'] ); ?></td>
-                                    <td>
-                                        $<?php echo wpcable_money( $client['revenue'] / intval( $client['total_tasks'] ) ); ?></td>
-                                    <td>$<?php echo wpcable_money( $client['revenue'] ); ?></td>
-                                </tr>
-								<?php
-							}
+						                            foreach ( $client['transactions'] as $tron ) {
+							                            ?>
+                                                        <tr class="<?php echo( $tron['is_refund'] == 1 ? 'refund' : 'complete' ); ?>">
+                                                            <td>
+                                                                <a href="https://app.codeable.io/tasks/<?php echo( $tron['parent_task_id'] > 0 ? $tron['parent_task_id'] : $tron['task_id'] ); ?>/workroom"
+                                                                   target="_blank">
+										                            <?php echo ( $tron['task_title'] ? $tron['task_title'] : 'Subtask of: ' . $tron['parent_task_id'] ) . ' - ' . $tron['task_id']; ?>
+                                                                </a>
+                                                            </td>
+                                                            <td><?php echo $tron['dateadded']; ?></td>
+                                                            <td><?php echo wpcable_money( $tron['revenue'] ); ?></td>
+                                                            <td><?php echo wpcable_money( $tron['fee_amount'] ); ?></td>
+                                                            <td><?php echo( $tron['is_refund'] == 0 ? 'N' : 'Y' ); ?></td>
+                                                            <td><?php echo( $tron['preferred'] == 0 ? 'N' : 'Y' ); ?></td>
+                                                            <td><?php echo $tron['task_type']; ?></td>
+                                                            <td><?php echo( $tron['pro'] == 0 ? 'N' : 'Y' ); ?></td>
+                                                        </tr>
+							                            <?php
+						                            }
+
+						                            ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </td>
+                                        <td><?php echo $client['last_sign_in_at']; ?></td>
+                                        <td>
+                                            <a href="#TB_inline?width=1000&height=550&inlineId=client_info_<?php echo $client_id; ?>"
+                                               class="thickbox"><?php echo intval( $client['total_tasks'] ); ?></a></td>
+                                        <td><?php echo intval( $client['tasks'] ); ?></td>
+                                        <td><?php echo intval( $client['subtasks'] ); ?></td>
+                                        <td>
+                                            $<?php echo wpcable_money( $client['revenue'] / intval( $client['total_tasks'] ) ); ?></td>
+                                        <td>$<?php echo wpcable_money( $client['revenue'] ); ?></td>
+                                    </tr>
+		                            <?php
+	                            }
+                            }
 
 							?>
 
