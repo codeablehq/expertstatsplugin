@@ -36,7 +36,7 @@ Note: SSL enabled sites highly encouraged for the use of this plugin please.
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. That's it! You should now be able to access the Plugin's options via `Codeable Stats` link on WordPress dashboard menu.  You will need to enter your Codeable Username and Password under Settings then ‘Fetch remote data’.
 
-### Get Automatic Updates When New Versions Released 
+### Get Automatic Updates When New Versions Released (Since version 0.0.4)
 Use GitHub Updater plugin to allow automatic updates of this plugin from the GitHub repo.
 
 Follow these steps:
