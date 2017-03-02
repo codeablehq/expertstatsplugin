@@ -36,6 +36,29 @@ Note: SSL enabled sites highly encouraged for the use of this plugin please.
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. That's it! You should now be able to access the Plugin's options via `Codeable Stats` link on WordPress dashboard menu.  You will need to enter your Codeable Username and Password under Settings then ‘Fetch remote data’.
 
+### Get Automatic Updates When New Versions Released 
+Use GitHub Updater plugin to allow automatic updates of this plugin from the GitHub repo.
+
+Follow these steps:
+
+1. Download and install the plugin https://github.com/afragen/github-updater to your wp site;
+2. Ensure you have access to the private repo for this plugin!
+3. In Github, click your picture (top right) to get the dropdown; and hit "Settings"
+4. Under here select "Personal Access Tokens" and generate a new token (or use an existing one with the right permissions!) - give it a name like "github updater" or similar for future reference.
+5. Check (tick, select) the box next to "Repo" and the three under this can stay selected.
+6. Copy your token and keep it in a safe place if you want to use it again.
+7. On your wp website, open Settings > Github Updater and if you already have the expertstatsplugin installed, this will show up. You will need to place your key to get updates.
+
+If you don't have it installed, you can:
+
+1. Hit the "Add plugin" tab
+2. Paste in https://github.com/codeablehq/expertstatsplugin/ under URL
+3. Leave the "github" part
+4. Paste in the github key you just generated,
+5. Hit "Install plugin"
+
+This will give you the normal WP update notification when a new version ships, and its a 1 click update.
+
 ### Frequently Asked Questions
 
 *There was a problem fetching remote data from Codeable*
