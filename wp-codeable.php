@@ -187,6 +187,20 @@ function wpcable_admin_scripts( $hook ) {
 		time(),
 		true
 	);
+	wp_enqueue_script(
+		'highcharts_export_js',
+		plugins_url( 'assets/js/exporting.js', __FILE__ ),
+		array( 'jquery', 'highchartsjs' ),
+		time(),
+		true
+	);
+	wp_enqueue_script(
+		'highcharts_offline_export_js',
+		plugins_url( 'assets/js/offline-exporting.js', __FILE__ ),
+		array( 'jquery', 'highcharts_export_js' ),
+		time(),
+		true
+	);
 	wp_enqueue_style( 'jquery-ui-datepicker' );
 
 	wp_enqueue_script( 'highcharts3djs', plugins_url( 'assets/js/highcharts-3d.js', __FILE__ ), array( 'highchartsjs' ) );

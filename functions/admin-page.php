@@ -531,6 +531,18 @@ function codeable_transcactions_stats_cb() {
             var $chart_revenue_json = <?php echo $chart_revenue_json; ?>;
 
             Highcharts.chart('chart_wrap', {
+                exporting: {
+                    chartOptions: { // specific options for the exported image
+                        plotOptions: {
+                            series: {
+                                dataLabels: {
+                                    enabled: true
+                                }
+                            }
+                        }
+                    },
+                    fallbackToExportServer: false
+                },
                 chart: {
                     type: 'areaspline'
                 },
@@ -577,6 +589,18 @@ function codeable_transcactions_stats_cb() {
 
 
             Highcharts.chart('amounts_range_chart', {
+                exporting: {
+                    chartOptions: { // specific options for the exported image
+                        plotOptions: {
+                            series: {
+                                dataLabels: {
+                                    enabled: true
+                                }
+                            }
+                        }
+                    },
+                    fallbackToExportServer: false
+                },
                 chart: {
                     type: 'pie',
                     options3d: {
@@ -611,6 +635,18 @@ function codeable_transcactions_stats_cb() {
 
 
             Highcharts.chart('tasks_per_month_chart', {
+                exporting: {
+                    chartOptions: { // specific options for the exported image
+                        plotOptions: {
+                            series: {
+                                dataLabels: {
+                                    enabled: true
+                                }
+                            }
+                        }
+                    },
+                    fallbackToExportServer: false
+                },
                 chart: {
                     type: 'column'
                 },
