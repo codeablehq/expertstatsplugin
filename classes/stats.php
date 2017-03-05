@@ -326,6 +326,93 @@ class wpcable_stats {
 		return $result;
 
 	}
+  
+  public function get_tasks_type( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year ) {
+
+		$first_date = date( 'Y-m-d H:i:s', strtotime( $from_year . '-' . $from_month . '-' . $from_day ) );
+		$last_date  = date( 'Y-m-d H:i:s', strtotime( $to_year . '-' . $to_month . '-' . $to_day . ' 23:59:59' ) );
+
+		$query = " 
+	      SELECT
+	        task_type, 
+          COUNT(id) as count,
+          SUM(debit_user_amount) as user_amount,
+          SUM(credit_revenue_amount) as revenue,
+          SUM(credit_fee_amount) as fee
+	      FROM 
+	        " . $this->tables['transcactions'] . " LEFT JOIN " . $this->tables['amounts'] . "
+	      ON
+	        " . $this->tables['transcactions'] . ".task_id = " . $this->tables['amounts'] . ".task_id
+	      WHERE 
+	            `description` = 'task_completion' 
+	        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
+        GROUP BY task_type
+	    ";
+
+		// check cache
+		$cache_key = 'tasks_type_' . $first_date . '_' . $last_date;
+		$result = $this->check_cache( $cache_key, $query );
+    
+    $out = array();
+    
+    foreach ($result as $res) {
+        
+        if (!$res['revenue']) { 
+          continue; 
+        }
+        
+        $out[$res['task_type']] = $res;
+
+    }
+
+		return $out;
+
+	}
+  
+  public function get_preferred_count( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year ) {
+
+		$first_date = date( 'Y-m-d H:i:s', strtotime( $from_year . '-' . $from_month . '-' . $from_day ) );
+		$last_date  = date( 'Y-m-d H:i:s', strtotime( $to_year . '-' . $to_month . '-' . $to_day . ' 23:59:59' ) );
+
+		$query = " 
+	      SELECT
+	        preferred, 
+          COUNT(id) as count,
+          SUM(debit_user_amount) as user_amount,
+          SUM(credit_revenue_amount) as revenue,
+          SUM(credit_fee_amount) as fee
+	      FROM 
+	        " . $this->tables['transcactions'] . " LEFT JOIN " . $this->tables['amounts'] . "
+	      ON
+	        " . $this->tables['transcactions'] . ".task_id = " . $this->tables['amounts'] . ".task_id
+	      WHERE 
+	            `description` = 'task_completion' 
+          AND (preferred = 1 OR preferred = 0)  
+	        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
+        GROUP BY preferred
+	    ";
+
+		// check cache
+		$cache_key = 'preferred_count_' . $first_date . '_' . $last_date;
+		$result = $this->check_cache( $cache_key, $query );
+    
+    $out = array(
+      'preferred'     => 0,
+      'nonpreferred'  => 0
+    );
+    
+    foreach ($result as $res) {
+      if ($res['preferred'] == 1) {
+        $out['preferred'] = $res;
+      }
+      if ($res['preferred'] == 0) {
+        $out['nonpreferred'] = $res;
+      }
+    }
+
+		return $out;
+
+	}
 
 	/**
 	 * Checks and sets cached data

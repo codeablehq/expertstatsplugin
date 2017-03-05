@@ -70,14 +70,34 @@ function codeable_transcactions_stats_cb() {
 
 	$averages        = $wpcable_stats->get_months_average( $from_month, $from_year, $to_month, $to_year );
 	$all_averages    = $wpcable_stats->get_dates_average( $first_day, $first_month, $first_year, $last_day, $last_month, $last_year );
+	$preferred_count = $wpcable_stats->get_preferred_count( $first_day, $first_month, $first_year, $last_day, $last_month, $last_year );
 	$wpcable_clients = new wpcable_clients;
 	$clients_data    = $wpcable_clients->get_clients();
+  
+  echo '<pre>'.print_r($get_tasks_type, true).'</pre>';
 
 	$get_amounts_range   = $wpcable_stats->get_amounts_range( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year );
 	$chart_amounts_range = array();
 	foreach ( $get_amounts_range as $range => $num_of_tasks ) {
 		$chart_amounts_range[] = '["' . $range . '", ' . $num_of_tasks . ']';
 	}
+
+	$get_tasks_type =   $wpcable_stats->get_tasks_type( $first_day, $first_month, $first_year, $last_day, $last_month, $last_year );
+  
+  $type_categories     = array();
+  $type_contractor_fee = array();
+  $type_revenue        = array();
+  $type_tasks_count    = array();
+  
+  foreach ($get_tasks_type as $type => $type_data) {
+
+    $type_categories[ $type ]     = "'" . $type . "'";
+    $type_contractor_fee[ $type ] = floatval( $type_data['fee'] );
+    $type_revenue[ $type ]        = floatval( $type_data['revenue'] );
+    $type_tasks_count[ $type ]    = intval( $type_data['count'] );
+  }
+  
+  $type_tasks_count_json  = json_encode( $type_tasks_count );
 
 	if ( $chart_display_method == 'months' ) {
 
@@ -409,6 +429,30 @@ function codeable_transcactions_stats_cb() {
             </div>
 
         </div>
+        
+        <div class="clearfix spacer"></div>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="whitebox">
+                    <div id="preferred_chart">
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="whitebox">
+                    <div id="tasks_type">
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
 
 
         <div class="clearfix spacer"></div>
@@ -529,6 +573,7 @@ function codeable_transcactions_stats_cb() {
 
             var $chart_tasks_count_json = <?php echo $chart_tasks_count_json; ?>;
             var $chart_revenue_json = <?php echo $chart_revenue_json; ?>;
+            var $type_tasks_count_json = <?php echo $type_tasks_count_json; ?>;
 
             Highcharts.chart('chart_wrap', {
                 exporting: {
@@ -685,6 +730,126 @@ function codeable_transcactions_stats_cb() {
 
                 }]
             });
+            
+            
+            // preferred semi circle donut
+            Highcharts.chart('preferred_chart', {
+                exporting: {
+                    chartOptions: {
+                        plotOptions: {
+                            series: {
+                                dataLabels: {
+                                    enabled: true
+                                }
+                            }
+                        }
+                    },
+                    fallbackToExportServer: false
+                },
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+                },
+                title: {
+                    text: 'Preferred vs non Preferred',
+                    align: 'center'
+                },
+                subtitle: {
+                  text: '<b>Revenue</b> | Preferred: $<?php echo wpcable_money($preferred_count['preferred']['revenue']); ?> | Non Preferred: $<?php echo wpcable_money($preferred_count['nonpreferred']['revenue']); ?>'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b> {point.y} ( {point.percentage:.1f}% )</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        dataLabels: {
+                            enabled: true,
+                            distance: -50,
+                            style: {
+                                fontWeight: 'bold',
+                                color: 'white'
+                            }
+                        },
+                        startAngle: -90,
+                        endAngle: 90,
+                        center: ['50%', '75%']
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    name: 'Number of tasks',
+                    innerSize: '50%',
+                    data: [
+                        ['Preferred',     <?php echo $preferred_count['preferred']['count']; ?>],
+                        ['Non Preferred', <?php echo $preferred_count['nonpreferred']['count']; ?>],
+                        {
+                            name: 'Proprietary or Undetectable',
+                            y: 0.2,
+                            dataLabels: {
+                                enabled: false
+                            }
+                        }
+                    ]
+                }]
+            });
+            
+            
+            // task type chart
+            Highcharts.chart('tasks_type', {
+                exporting: {
+                    chartOptions: { // specific options for the exported image
+                        plotOptions: {
+                            series: {
+                                dataLabels: {
+                                    enabled: true
+                                }
+                            }
+                        }
+                    },
+                    fallbackToExportServer: false
+                },
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: '<?php echo __( 'Tasks Types', 'wpcable' ); ?>'
+                },
+                subtitle: {
+                    text: '-'
+                },
+                xAxis: {
+                    categories: [
+                      <?php echo implode( ',', $type_categories ); ?>
+                    ]
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: '<?php echo __( 'Revenue', 'wpcable' ); ?>'
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                tooltip: {
+                    formatter: function () {
+                        return this.x + '<br />-<br />' + this.series.name + ': <b>$' + this.y + '</b><br />Tasks:<b>' + parseFloat($type_tasks_count_json[this.x]) + '</b><br />Average:<b>' + ( parseFloat(this.y / parseFloat($type_tasks_count_json[this.x])).toFixed(2) ) + '</b>';
+                    }
+                },
+                plotOptions: {
+                    column: {
+                        borderWidth: 0,
+                        colorByPoint: true
+                    }
+                },
+                series: [{
+                    name: ['<?php echo __( 'Revenue', 'wpcable' ); ?>'],
+                    data: [<?php echo implode( ',', $type_revenue ); ?>]
+
+                }]
+            });
+            
 
             function escapeRegExp(str) {
                 return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
