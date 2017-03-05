@@ -70,11 +70,9 @@ function codeable_transcactions_stats_cb() {
 
 	$averages        = $wpcable_stats->get_months_average( $from_month, $from_year, $to_month, $to_year );
 	$all_averages    = $wpcable_stats->get_dates_average( $first_day, $first_month, $first_year, $last_day, $last_month, $last_year );
-	$preferred_count = $wpcable_stats->get_preferred_count( $first_day, $first_month, $first_year, $last_day, $last_month, $last_year );
+	$preferred_count = $wpcable_stats->get_preferred_count( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year );
 	$wpcable_clients = new wpcable_clients;
 	$clients_data    = $wpcable_clients->get_clients();
-  
-  echo '<pre>'.print_r($get_tasks_type, true).'</pre>';
 
 	$get_amounts_range   = $wpcable_stats->get_amounts_range( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year );
 	$chart_amounts_range = array();
@@ -82,7 +80,7 @@ function codeable_transcactions_stats_cb() {
 		$chart_amounts_range[] = '["' . $range . '", ' . $num_of_tasks . ']';
 	}
 
-	$get_tasks_type =   $wpcable_stats->get_tasks_type( $first_day, $first_month, $first_year, $last_day, $last_month, $last_year );
+	$get_tasks_type =   $wpcable_stats->get_tasks_type( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year );
   
   $type_categories     = array();
   $type_contractor_fee = array();
