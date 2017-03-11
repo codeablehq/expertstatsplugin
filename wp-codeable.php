@@ -47,6 +47,7 @@ final class wpcable {
 		require_once( WPCABLE_FUNCTIONS_DIR . '/admin-settings.php' );
 		require_once( WPCABLE_FUNCTIONS_DIR . '/admin-page.php' );
 		require_once( WPCABLE_FUNCTIONS_DIR . '/formatting.php' );
+		require_once( WPCABLE_FUNCTIONS_DIR . '/pert-calculator.php' );
 		require_once( WPCABLE_CLASSES_DIR . '/api_calls.php' );
 		require_once( WPCABLE_CLASSES_DIR . '/transactions.php' );
 		require_once( WPCABLE_CLASSES_DIR . '/stats.php' );
