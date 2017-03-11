@@ -20,7 +20,6 @@ add_action( 'admin_menu', 'wpcable_options', 100 );
 
 function wpcable_options() {
 	add_submenu_page( 'codeable_transcactions_stats', 'Settings', 'Settings', 'manage_options', 'codeable_settings', 'codeable_settings_callback' );
-	add_submenu_page( 'codeable_transcactions_stats', 'Estimate', 'Estimate', 'manage_options', 'codeable_estimate', 'codeable_estimate_callback' );
 	add_action( 'admin_init', 'codeable_register_settings' );
 }
 
