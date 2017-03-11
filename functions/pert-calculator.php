@@ -111,6 +111,12 @@ function codeable_estimate_callback() {
                 $('#estimate_pessimistic').val(Math.round(estimate_with_fees_pessimistic * 100) / 100);
                 return false;
             });
+
+            $('#reset_estimates').on('click', function(e) {
+                e.stopPropagation();
+
+                $('input:not(#hourly_rate):not(#contractor_fee)').val('');
+            });
             
         });
     </script>
