@@ -35,10 +35,23 @@ function codeable_estimate_callback() {
 
             <div id="totals" class="section">
                 <div class="field">
-                    <span class="label">PERT Estimate (hours): </span><input id="estimate_hours" type="number" value="" readonly="readonly"/>
+                    <span class="label">PERT Standard Estimate (hours): </span><input id="estimate_hours_standard" type="number" value="" readonly="readonly"/>
                 </div>
                 <div class="field">
                     <span class="label">Estimate for client <br/>(including fees, in $ ): </span><input id="estimate" type="number" value="" readonly="readonly"/>
+                    <p class="description">
+                        Take these metrics as consideration if you put more weight on the realistic value. (Proper documentation, clear scope etc.)</p>
+                </div>
+            </div>
+
+            <div id="totals_pessimistic" class="section">
+                <div class="field">
+                    <span class="label">PERT Cautious Estimate (hours): </span><input id="estimate_hours_pessimistic" type="number" value="" readonly="readonly"/>
+                </div>
+                <div class="field">
+                    <span class="label">Estimate for client <br/>(including fees, in $ ): </span><input id="estimate_pessimistic" type="number" value="" readonly="readonly"/>
+                    <p class="description">
+                        Take these metrics as consideration if you put more weight on the pessimistic value. (Not proper documentation, not so clear scope etc.)</p>
                 </div>
             </div>
 
@@ -61,7 +74,7 @@ function codeable_estimate_callback() {
         }
         .label {
             display: inline-block;
-            width: 15em;
+            width: 17em;
         }
         .description {
             font-size: 95%;
@@ -83,14 +96,22 @@ function codeable_estimate_callback() {
                 var likely = parseFloat($('#likely_estimate').val());
                 var pessimistic = parseFloat($('#pessimistic_estimate').val());
 
-                var estimate_hours = (optimistic + 4 * likely + pessimistic) / 6;
-                var estimate = estimate_hours * $('#hourly_rate').val();
-                var estimate_with_fees = estimate / (1 - ($('#contractor_fee').val() / 100));
+                var estimate_hours_standard = (optimistic + 4 * likely + pessimistic) / 6;
+                var estimate_hours_pessimistic = (optimistic + 2 * likely + 3 * pessimistic) / 6;
 
-                $('#estimate_hours').val(round(estimate_hours, 0.5));
-                $('#estimate').val(Math.round(estimate_with_fees * 100) / 100);
+                var estimate_standard = estimate_hours_standard * $('#hourly_rate').val();
+                var estimate_pessimistic = estimate_hours_pessimistic * $('#hourly_rate').val();
+                var estimate_with_fees_standard = estimate_standard / (1 - ($('#contractor_fee').val() / 100));
+                var estimate_with_fees_pessimistic = estimate_pessimistic / (1 - ($('#contractor_fee').val() / 100));
+
+                $('#estimate_hours_standard').val(round(estimate_hours_standard, 0.5));
+                $('#estimate_hours_pessimistic').val(round(estimate_hours_pessimistic, 0.5));
+
+                $('#estimate').val(Math.round(estimate_with_fees_standard * 100) / 100);
+                $('#estimate_pessimistic').val(Math.round(estimate_with_fees_pessimistic * 100) / 100);
                 return false;
             });
+            
         });
     </script>
     <?php
