@@ -22,3 +22,8 @@
 *0.0.6 (2017-03-01)*
 * Added invalid credentials logic and admin notice [#29](https://github.com/codeablehq/expertstatsplugin/issues/29) @defunctl 
 * Added WordPress Object Caching to stats and client DB calls [#19](https://github.com/codeablehq/expertstatsplugin/issues/19) @defunctl
+
+*0.0.7 (2017-03-15)*
+* PERT Calculator - @jin0x , @jonathanbossenger
+* New charts - @spyrosvl
+* Added offline export support via Highcharts JS @spyrosvl

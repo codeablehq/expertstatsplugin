@@ -26,6 +26,7 @@ The dashboard and stats provided by the Codeable web app for experts is a bit la
 7. Tasks per month bar graph
 8. Client data - Fully sortable by revenue, avg. per task, total tasks, more…
 9. Client data - Individual client detail modal
+10. PERT Calculator
 
 
 ### Installation
