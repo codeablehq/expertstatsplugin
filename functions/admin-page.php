@@ -111,11 +111,13 @@ function codeable_transcactions_stats_cb() {
 			$all_month_totals['total_cost'] = $all_month_totals['total_cost'] + $mt['total_cost'];
 		}
 
-		$chart_categories     = array();
-		$chart_contractor_fee = array();
-		$chart_revenue        = array();
-		$chart_total_cost     = array();
-		$chart_tasks_count    = array();
+		$chart_categories       = array();
+		$chart_contractor_fee   = array();
+		$chart_revenue          = array();
+		$chart_revenue_avg      = array();
+		$chart_total_cost       = array();
+		$chart_tasks_count      = array();
+		$chart_tasks_count_avg  = array();
 
 		foreach ( $month_totals as $yearmonth => $amounts ) {
 
@@ -145,11 +147,13 @@ function codeable_transcactions_stats_cb() {
 			$all_month_totals['total_cost'] = $all_month_totals['total_cost'] + $mt['total_cost'];
 		}
 
-		$chart_categories     = array();
-		$chart_contractor_fee = array();
-		$chart_revenue        = array();
-		$chart_total_cost     = array();
-		$chart_tasks_count    = array();
+		$chart_categories       = array();
+		$chart_contractor_fee   = array();
+		$chart_revenue          = array();
+		$chart_revenue_avg      = array();
+		$chart_total_cost       = array();
+		$chart_tasks_count      = array();
+    $chart_tasks_count_avg  = array();
 
 		foreach ( $days_totals as $yearmonthday => $amounts ) {
 
@@ -168,6 +172,9 @@ function codeable_transcactions_stats_cb() {
 		$chart_revenue_json     = json_encode( $chart_revenue );
 
 	}
+  
+  $chart_revenue_avg      = array_fill(0, count($chart_revenue), round(array_sum($chart_revenue) / count($chart_revenue), 2));
+  $chart_tasks_count_avg = array_fill(0, count($chart_tasks_count), round(array_sum($chart_tasks_count) / count($chart_tasks_count), 2));
 
 	?>
 
@@ -369,7 +376,7 @@ function codeable_transcactions_stats_cb() {
             <div class="col-md-4 text-center">
                 <div class="column_inner">
                     <div class="maindata">
-                        <div class="label"><?php echo __( 'Best Month' ); ?></div>
+                        <div class="label"><?php echo $chart_display_method == 'days' ? __( 'Best Day', 'wpcable' ) : __( 'Best Month' ); ?></div>
                         <span class="value"><?php echo wordwrap( $max_month_totals_key[0], 4, '-', true ); ?></span>
                     </div>
                 </div>
@@ -627,6 +634,15 @@ function codeable_transcactions_stats_cb() {
                     name: '<?php echo __( 'Fees', 'wpcable' ); ?>',
                     data: [<?php echo implode( ', ', $chart_contractor_fee ); ?>],
                     visible: true
+                }, {
+                    name: '<?php echo __( 'Average', 'wpcable' ); ?>',
+                    type: 'spline',
+                    data: [<?php echo implode( ', ', $chart_revenue_avg ); ?>],
+                    visible: false,
+                    marker: {
+                        enabled: false
+                    },
+                    dashStyle: 'shortdot'
                 }]
             });
 
@@ -725,6 +741,17 @@ function codeable_transcactions_stats_cb() {
                 series: [{
                     name: '<?php echo __( 'Tasks', 'wpcable' ); ?>',
                     data: [<?php echo implode( ',', $chart_tasks_count ); ?>]
+
+                },
+                {
+                    name: '<?php echo __( 'Average', 'wpcable' ); ?>',
+                    type: 'spline',
+                    data: [<?php echo implode( ',', $chart_tasks_count_avg ); ?>],
+                    visible: false,
+                    marker: {
+                        enabled: false
+                    },
+                    dashStyle: 'shortdot'
 
                 }]
             });
