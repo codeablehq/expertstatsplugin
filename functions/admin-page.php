@@ -173,8 +173,20 @@ function codeable_transcactions_stats_cb() {
 
 	}
   
-  $chart_revenue_avg      = array_fill(0, count($chart_revenue), round(array_sum($chart_revenue) / count($chart_revenue), 2));
-  $chart_tasks_count_avg = array_fill(0, count($chart_tasks_count), round(array_sum($chart_tasks_count) / count($chart_tasks_count), 2));
+  $fromDT = new DateTime($from_year.'-'.$from_month.'-'.$from_day);
+  $toDT = new DateTime($to_year.'-'.$to_month.'-'.$to_day);
+
+  $datediff = date_diff($fromDT, $toDT);
+  
+  if ($chart_display_method == 'months') {
+    $datediffcount = $datediff->format('%m') + ($datediff->format('%y') * 12) + 1;
+  }
+  if ($chart_display_method == 'days') {
+    $datediffcount = $datediff->format('%a');
+  }
+  
+  $chart_revenue_avg      = array_fill(0, count($chart_revenue), round(array_sum($chart_revenue) / $datediffcount, 2));
+  $chart_tasks_count_avg = array_fill(0, count($chart_tasks_count), round(array_sum($chart_tasks_count) / $datediffcount, 2));
 
 	?>
 
