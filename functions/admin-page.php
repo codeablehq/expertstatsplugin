@@ -650,7 +650,7 @@ function codeable_transcactions_stats_cb() {
                     name: '<?php echo __( 'Average', 'wpcable' ); ?>',
                     type: 'spline',
                     data: [<?php echo implode( ', ', $chart_revenue_avg ); ?>],
-                    visible: false,
+                    visible: true,
                     marker: {
                         enabled: false
                     },
@@ -759,7 +759,7 @@ function codeable_transcactions_stats_cb() {
                     name: '<?php echo __( 'Average', 'wpcable' ); ?>',
                     type: 'spline',
                     data: [<?php echo implode( ',', $chart_tasks_count_avg ); ?>],
-                    visible: false,
+                    visible: true,
                     marker: {
                         enabled: false
                     },

@@ -27,3 +27,7 @@
 * PERT Calculator - @jin0x , @jonathanbossenger
 * New charts - @spyrosvl
 * Added offline export support via Highcharts JS @spyrosvl
+
+*0.0.9 (2017-03-23)*
+* Average in charts - @spyrosvl
+* Condition to change text between best month/day - @spyrosvl
