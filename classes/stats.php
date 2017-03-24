@@ -281,7 +281,16 @@ class wpcable_stats {
 		$cache_key = 'amounts_range_' . $first_date . '_' . $last_date;
 		$result = $this->check_cache( $cache_key, $query );
 
-		$variance   = array();
+		$variance   = array(
+      '0-100'       => 0,
+      '100-300'     => 0,
+      '300-500'     => 0,
+      '500-1000'    => 0,
+      '1000-3000'   => 0,
+      '3000-5000'   => 0,
+      '5000-10000'  => 0,
+      '10000-20000' => 0
+    );
 		$milestones = array( 0, 100, 300, 500, 1000, 3000, 5000, 10000, 20000 );
 
 		foreach ( $result as $amount ) {
@@ -413,6 +422,167 @@ class wpcable_stats {
 		return $out;
 
 	}
+  
+  
+  // returns an array with all stats
+  public function get_all_stats($from_day, $from_month, $from_year, $to_day, $to_month, $to_year, $chart_display_method = 'months') {
+    
+    $stats = array();
+    
+    $averages             = $this->get_months_average( $from_month, $from_year, $to_month, $to_year );
+    $preferred_count      = $this->get_preferred_count( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year );
+    $get_amounts_range    = $this->get_amounts_range( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year );
+    
+    $chart_amounts_range  = array();
+    $get_available_ranges = array();
+    foreach ( $get_amounts_range as $range => $num_of_tasks ) {
+      $chart_amounts_range[] = '["' . $range . '", ' . $num_of_tasks . ']';
+      $get_available_ranges[] = '"'.$range.'"';
+    }
+    
+    $get_tasks_type =   $this->get_tasks_type( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year );
+  
+    $type_categories     = array();
+    $type_contractor_fee = array();
+    $type_revenue        = array();
+    $type_tasks_count    = array();
+    
+    foreach ($get_tasks_type as $type => $type_data) {
+
+      $type_categories[ $type ]     = "'" . $type . "'";
+      $type_contractor_fee[ $type ] = floatval( $type_data['fee'] );
+      $type_revenue[ $type ]        = floatval( $type_data['revenue'] );
+      $type_tasks_count[ $type ]    = intval( $type_data['count'] );
+    }
+    
+    $type_tasks_count_json  = json_encode( $type_tasks_count );
+    
+    if ( $chart_display_method == 'months' ) {
+
+      $month_totals = $this->get_month_range_totals( $from_month, $from_year, $to_month, $to_year );
+
+      $max_month_totals     = max( $month_totals );
+      $max_month_totals_key = array_keys( $month_totals, max( $month_totals ) );
+
+      $all_month_totals            = array();
+      $all_month_totals['revenue'] = $all_month_totals['total_cost'] = '';
+      foreach ( $month_totals as $mt ) {
+        $all_month_totals['revenue']    = $all_month_totals['revenue'] + $mt['revenue'];
+        $all_month_totals['total_cost'] = $all_month_totals['total_cost'] + $mt['total_cost'];
+      }
+
+      $chart_categories       = array();
+      $chart_dates            = array();
+      $chart_contractor_fee   = array();
+      $chart_revenue          = array();
+      $chart_revenue_avg      = array();
+      $chart_total_cost       = array();
+      $chart_tasks_count      = array();
+      $chart_tasks_count_avg  = array();
+
+      foreach ( $month_totals as $yearmonth => $amounts ) {
+
+        $chart_categories[ $yearmonth ]     = "'" . wordwrap( $yearmonth, 4, '-', true ) . "'";
+        $chart_dates[]                      = wordwrap( $yearmonth, 4, '-', true );
+        $chart_contractor_fee[ $yearmonth ] = floatval( $amounts['fee_amount'] );
+        $chart_revenue[ $yearmonth ]        = floatval( $amounts['revenue'] );
+        $chart_total_cost[ $yearmonth ]     = floatval( $amounts['total_cost'] );
+        $chart_tasks_count[ $yearmonth ]    = intval( $amounts['tasks'] );
+
+      }
+
+      $chart_tasks_count_json = json_encode( $chart_tasks_count );
+      $chart_revenue_json     = json_encode( $chart_revenue );
+
+    } else {
+
+      $days_totals = $this->get_days( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year );
+
+
+      $max_month_totals        = max( $days_totals );
+      $max_month_totals_key    = array_keys( $days_totals, max( $days_totals ) );
+      $max_month_totals_key[0] = wordwrap( $max_month_totals_key[0], 6, '-', true );
+
+      $all_month_totals = array();
+      foreach ( $days_totals as $mt ) {
+        if (!isset($all_month_totals['revenue'])) { $all_month_totals['revenue'] = 0; }
+        if (!isset($all_month_totals['total_cost'])) { $all_month_totals['total_cost'] = 0; }
+        
+        $all_month_totals['revenue']    = $all_month_totals['revenue'] + $mt['revenue'];
+        $all_month_totals['total_cost'] = $all_month_totals['total_cost'] + $mt['total_cost'];
+      }
+
+      $chart_categories       = array();
+      $chart_dates            = array();
+      $chart_contractor_fee   = array();
+      $chart_revenue          = array();
+      $chart_revenue_avg      = array();
+      $chart_total_cost       = array();
+      $chart_tasks_count      = array();
+      $chart_tasks_count_avg  = array();
+
+      foreach ( $days_totals as $yearmonthday => $amounts ) {
+
+        $date_array = array();
+        $date_array = date_parse_from_format( 'Ymd', $yearmonthday );
+
+        $chart_categories[ $yearmonthday ]     = "'" . $date_array['year'] . '-' . sprintf( "%02d", $date_array['month'] ) . '-' . sprintf( "%02d", $date_array['day'] ) . "'";
+        $chart_dates[]                         = $date_array['year'] . '-' . sprintf( "%02d", $date_array['month'] ) . '-' . sprintf( "%02d", $date_array['day'] );
+        $chart_contractor_fee[ $yearmonthday ] = floatval( $amounts['fee_amount'] );
+        $chart_revenue[ $yearmonthday ]        = floatval( $amounts['revenue'] );
+        $chart_total_cost[ $yearmonthday ]     = floatval( $amounts['total_cost'] );
+        $chart_tasks_count[ $yearmonthday ]    = intval( $amounts['tasks'] );
+      }
+
+
+      $chart_tasks_count_json = json_encode( $chart_tasks_count );
+      $chart_revenue_json     = json_encode( $chart_revenue );
+
+    }
+    
+    $chart_dates_json   = json_encode($chart_dates);
+    
+    $fromDT   = new DateTime($from_year.'-'.$from_month.'-'.$from_day);
+    $toDT     = new DateTime($to_year.'-'.$to_month.'-'.$to_day);
+
+    $datediff = date_diff($fromDT, $toDT);
+    
+    if ($chart_display_method == 'months') {
+      $datediffcount = $datediff->format('%m') + ($datediff->format('%y') * 12) + 1;
+    }
+    if ($chart_display_method == 'days') {
+      $datediffcount = $datediff->format('%a');
+    }
+    
+    $chart_revenue_avg      = array_fill(0, count($chart_revenue), round(array_sum($chart_revenue) / $datediffcount, 2));
+    $chart_tasks_count_avg  = array_fill(0, count($chart_tasks_count), round(array_sum($chart_tasks_count) / $datediffcount, 2));
+    
+    $stats['averages']                = $averages;
+    $stats['preferred_count']         = $preferred_count;
+    $stats['chart_amounts_range']     = $chart_amounts_range;
+    $stats['get_available_ranges']    = $get_available_ranges;
+    $stats['type_categories']         = $type_categories;
+    $stats['type_contractor_fee']     = $type_contractor_fee;
+    $stats['type_revenue']            = $type_revenue;
+    $stats['type_tasks_count']        = $type_tasks_count;
+    $stats['type_tasks_count_json']   = $type_tasks_count_json;
+    $stats['max_month_totals']        = $max_month_totals;
+    $stats['max_month_totals_key']    = $max_month_totals_key;
+    $stats['all_month_totals']        = $all_month_totals;
+    $stats['chart_categories']        = $chart_categories;
+    $stats['chart_dates']             = $chart_dates;
+    $stats['chart_dates_json']        = $chart_dates_json;
+    $stats['chart_contractor_fee']    = $chart_contractor_fee;
+    $stats['chart_revenue']           = $chart_revenue;
+    $stats['chart_revenue_avg']       = $chart_revenue_avg;
+    $stats['chart_total_cost']        = $chart_total_cost;
+    $stats['chart_tasks_count']       = $chart_tasks_count;
+    $stats['chart_tasks_count_avg']   = $chart_tasks_count_avg;
+    $stats['chart_tasks_count_json']  = $chart_tasks_count_json;
+    $stats['chart_revenue_json']      = $chart_revenue_json;
+    
+    return $stats;
+  }
 
 	/**
 	 * Checks and sets cached data

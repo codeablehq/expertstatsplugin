@@ -1,4 +1,9 @@
 jQuery(document).ready(function () {
+  
+    jQuery('.compareicon').click(function() {
+      jQuery('.compareto').toggle();
+      jQuery('#compare_date_from, #compare_date_to').val('');
+    });
 
     jQuery('div[data-score]').raty({
         cancel: false,

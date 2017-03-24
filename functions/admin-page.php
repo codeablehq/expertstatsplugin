@@ -60,6 +60,23 @@ function codeable_transcactions_stats_cb() {
 		$to_month = date( 'm', strtotime( $_GET['date_to'] . '-01' ) );
 		$to_year  = date( 'Y', strtotime( $_GET['date_to'] . '-01' ) );
 	}
+  
+  $is_compare = '';
+  
+  if ( isset( $_GET['compare_date_from'] ) ) {
+    $compare_from_day   = '01';
+		$compare_from_month = date( 'm', strtotime( $_GET['compare_date_from'] . '-01' ) );
+		$compare_from_year  = date( 'Y', strtotime( $_GET['compare_date_from'] . '-01' ) );
+    $is_compare = 'is_compare';
+	}
+
+	if ( isset( $_GET['compare_date_to'] ) ) {
+    $compare_to_day   = date( 't', strtotime( $_GET['compare_date_to'] . '-01' ) );
+		$compare_to_month = date( 'm', strtotime( $_GET['compare_date_to'] . '-01' ) );
+		$compare_to_year  = date( 'Y', strtotime( $_GET['compare_date_to'] . '-01' ) );
+    $is_compare = 'is_compare';
+	}
+  
 
 	if ( ! isset( $_GET['chart_display_method'] ) ) {
 		$_GET['chart_display_method'] = 'months';
@@ -68,126 +85,26 @@ function codeable_transcactions_stats_cb() {
 		$chart_display_method = $_GET['chart_display_method'];
 	}
 
-	$averages        = $wpcable_stats->get_months_average( $from_month, $from_year, $to_month, $to_year );
+  // get initial stats
+  $get_all_stats = $wpcable_stats->get_all_stats($from_day, $from_month, $from_year, $to_day, $to_month, $to_year, $chart_display_method);
+  
+  foreach($get_all_stats as $stats_key => $stats_data) {
+    ${$stats_key} = $stats_data;
+  }
+  
+  // get compare stats
+  if ($is_compare) {
+    $get_compare_stats = $wpcable_stats->get_all_stats($compare_from_day, $compare_from_month, $compare_from_year, $compare_to_day, $compare_to_month, $compare_to_year, $chart_display_method);
+  
+    foreach($get_compare_stats as $compare_stats_key => $compare_stats_data) {
+      ${'compare_'.$compare_stats_key} = $compare_stats_data;
+    }
+  }
+  
 	$all_averages    = $wpcable_stats->get_dates_average( $first_day, $first_month, $first_year, $last_day, $last_month, $last_year );
-	$preferred_count = $wpcable_stats->get_preferred_count( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year );
 	$wpcable_clients = new wpcable_clients;
 	$clients_data    = $wpcable_clients->get_clients();
-
-	$get_amounts_range   = $wpcable_stats->get_amounts_range( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year );
-	$chart_amounts_range = array();
-	foreach ( $get_amounts_range as $range => $num_of_tasks ) {
-		$chart_amounts_range[] = '["' . $range . '", ' . $num_of_tasks . ']';
-	}
-
-	$get_tasks_type =   $wpcable_stats->get_tasks_type( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year );
-  
-  $type_categories     = array();
-  $type_contractor_fee = array();
-  $type_revenue        = array();
-  $type_tasks_count    = array();
-  
-  foreach ($get_tasks_type as $type => $type_data) {
-
-    $type_categories[ $type ]     = "'" . $type . "'";
-    $type_contractor_fee[ $type ] = floatval( $type_data['fee'] );
-    $type_revenue[ $type ]        = floatval( $type_data['revenue'] );
-    $type_tasks_count[ $type ]    = intval( $type_data['count'] );
-  }
-  
-  $type_tasks_count_json  = json_encode( $type_tasks_count );
-
-	if ( $chart_display_method == 'months' ) {
-
-		$month_totals = $wpcable_stats->get_month_range_totals( $from_month, $from_year, $to_month, $to_year );
-
-		$max_month_totals     = max( $month_totals );
-		$max_month_totals_key = array_keys( $month_totals, max( $month_totals ) );
-
-		$all_month_totals            = array();
-		$all_month_totals['revenue'] = $all_month_totals['total_cost'] = '';
-		foreach ( $month_totals as $mt ) {
-			$all_month_totals['revenue']    = $all_month_totals['revenue'] + $mt['revenue'];
-			$all_month_totals['total_cost'] = $all_month_totals['total_cost'] + $mt['total_cost'];
-		}
-
-		$chart_categories       = array();
-		$chart_contractor_fee   = array();
-		$chart_revenue          = array();
-		$chart_revenue_avg      = array();
-		$chart_total_cost       = array();
-		$chart_tasks_count      = array();
-		$chart_tasks_count_avg  = array();
-
-		foreach ( $month_totals as $yearmonth => $amounts ) {
-
-			$chart_categories[ $yearmonth ]     = "'" . wordwrap( $yearmonth, 4, '-', true ) . "'";
-			$chart_contractor_fee[ $yearmonth ] = floatval( $amounts['fee_amount'] );
-			$chart_revenue[ $yearmonth ]        = floatval( $amounts['revenue'] );
-			$chart_total_cost[ $yearmonth ]     = floatval( $amounts['total_cost'] );
-			$chart_tasks_count[ $yearmonth ]    = intval( $amounts['tasks'] );
-
-		}
-
-		$chart_tasks_count_json = json_encode( $chart_tasks_count );
-		$chart_revenue_json     = json_encode( $chart_revenue );
-
-	} else {
-
-		$days_totals = $wpcable_stats->get_days( $from_day, $from_month, $from_year, $to_day, $to_month, $to_year );
-
-
-		$max_month_totals        = max( $days_totals );
-		$max_month_totals_key    = array_keys( $days_totals, max( $days_totals ) );
-		$max_month_totals_key[0] = wordwrap( $max_month_totals_key[0], 6, '-', true );
-
-		$all_month_totals = array();
-		foreach ( $days_totals as $mt ) {
-			$all_month_totals['revenue']    = $all_month_totals['revenue'] + $mt['revenue'];
-			$all_month_totals['total_cost'] = $all_month_totals['total_cost'] + $mt['total_cost'];
-		}
-
-		$chart_categories       = array();
-		$chart_contractor_fee   = array();
-		$chart_revenue          = array();
-		$chart_revenue_avg      = array();
-		$chart_total_cost       = array();
-		$chart_tasks_count      = array();
-    $chart_tasks_count_avg  = array();
-
-		foreach ( $days_totals as $yearmonthday => $amounts ) {
-
-			$date_array = array();
-			$date_array = date_parse_from_format( 'Ymd', $yearmonthday );
-
-			$chart_categories[ $yearmonthday ]     = "'" . $date_array['year'] . '-' . sprintf( "%02d", $date_array['month'] ) . '-' . sprintf( "%02d", $date_array['day'] ) . "'";
-			$chart_contractor_fee[ $yearmonthday ] = floatval( $amounts['fee_amount'] );
-			$chart_revenue[ $yearmonthday ]        = floatval( $amounts['revenue'] );
-			$chart_total_cost[ $yearmonthday ]     = floatval( $amounts['total_cost'] );
-			$chart_tasks_count[ $yearmonthday ]    = intval( $amounts['tasks'] );
-		}
-
-
-		$chart_tasks_count_json = json_encode( $chart_tasks_count );
-		$chart_revenue_json     = json_encode( $chart_revenue );
-
-	}
-  
-  $fromDT = new DateTime($from_year.'-'.$from_month.'-'.$from_day);
-  $toDT = new DateTime($to_year.'-'.$to_month.'-'.$to_day);
-
-  $datediff = date_diff($fromDT, $toDT);
-  
-  if ($chart_display_method == 'months') {
-    $datediffcount = $datediff->format('%m') + ($datediff->format('%y') * 12) + 1;
-  }
-  if ($chart_display_method == 'days') {
-    $datediffcount = $datediff->format('%a');
-  }
-  
-  $chart_revenue_avg      = array_fill(0, count($chart_revenue), round(array_sum($chart_revenue) / $datediffcount, 2));
-  $chart_tasks_count_avg = array_fill(0, count($chart_tasks_count), round(array_sum($chart_tasks_count) / $datediffcount, 2));
-
+	
 	?>
 
     <div class="wrap cable_stats_wrap">
@@ -309,32 +226,61 @@ function codeable_transcactions_stats_cb() {
                     <table class="stats_table">
                         <tbody>
                         <tr>
-                            <td>
+                            <td class="firstcol">
                                 <span class="label"><?php echo __( 'Revenue', 'wpcable' ); ?></span>
                             </td>
-                            <td>
+                            <td class="text-right">
                                 <span class="value">$<?php echo wpcable_money( $averages['revenue'] ); ?></span>
+                                
                             </td>
+                            <?php if ($is_compare) { ?>
+                                <td class="text-right">
+                                  <span class="value <?php echo wpcable_compare_values($compare_averages['revenue'], $averages['revenue']); ?>">
+                                    $<?php echo wpcable_money( $compare_averages['revenue'] ); ?>
+                                  </span>
+                                </td>
+                            <?php } ?>
                         </tr>
                         <tr>
-                            <td>
+                            <td class="firstcol">
                                 <span class="label"><?php echo __( 'Total', 'wpcable' ); ?></span>
                             </td>
-                            <td>
+                            <td class="text-right">
                                 <span class="value">$<?php echo wpcable_money( $averages['total_cost'] ); ?></span>
+                                
                             </td>
+                            <?php if ($is_compare) { ?>
+                                <td class="text-right">
+                                  <span class="value <?php echo wpcable_compare_values($compare_averages['total_cost'], $averages['total_cost']); ?>">
+                                    $<?php echo wpcable_money( $compare_averages['total_cost'] ); ?>
+                                  </span>
+                                </td>
+                            <?php } ?>
                         </tr>
                         <tr>
-                            <td>
+                            <td class="firstcol">
                                 <span class="label"><?php echo __( 'Fees', 'wpcable' ); ?></span>
                             </td>
-                            <td>
+                            <td class="text-right">
                                 <span class="value">$<?php echo wpcable_money( $averages['contractor_fee'] ); ?></span>
                             </td>
+                            <?php if ($is_compare) { ?>
+                                <td class="text-right">
+                                  <span class="value <?php echo wpcable_compare_values($compare_averages['contractor_fee'], $averages['contractor_fee']); ?>">
+                                    $<?php echo wpcable_money( $compare_averages['contractor_fee'] ); ?>
+                                  </span>
+                                </td>
+                                <?php } ?>
                         </tr>
                         </tbody>
                     </table>
                     <small><?php echo __( 'The above are from', 'wpcable' ) . ' ' . $from_month . '-' . $from_year . ' ' . __( 'to', 'wpcable' ) . ' ' . $to_month . '-' . $to_year; ?></small>
+                    
+                    <?php if ($is_compare) { ?>
+                    <span class="newline">
+                      <small><?php echo __( 'Compared from', 'wpcable' ) . ' ' . $compare_from_month . '-' . $compare_from_year . ' ' . __( 'to', 'wpcable' ) . ' ' . $compare_to_month . '-' . $compare_to_year; ?></small>
+                    </span>
+                    <?php } ?>
                 </div>
             </div>
 
@@ -347,18 +293,40 @@ function codeable_transcactions_stats_cb() {
                 <input type="hidden" name="page" value="codeable_transcactions_stats"/>
 
                 <div class="section">
-                    <label class="label" for="date_from"><?php echo __( 'Start date', 'wpcable' ); ?></label>
-                    <input class="datepicker" type="text" id="date_from" name="date_from"
-                           value="<?php echo $_GET['date_from']; ?>"
+                  <img class="compareicon" src="<?php echo esc_url( plugins_url( 'assets/images/calendar-add.svg', dirname( __FILE__ ) ) ); ?>" width="16" height="16" alt="<?php echo __( 'compare dates', 'wpcable' ); ?>" title="<?php echo __( 'compare dates', 'wpcable' ); ?>">
+                </div>
+                <div class="section">
+                    <div class="datefield">
+                      <label class="label" for="date_from"><?php echo __( 'Start date', 'wpcable' ); ?></label>
+                      <input class="datepicker" type="text" id="date_from" name="date_from"
+                             value="<?php echo $_GET['date_from']; ?>"
+                             data-icon="<?php echo WPCABLE_URI . '/assets/images/icon_datepicker_blue.png'; ?>">
+                    </div>
+                    
+                    <div class="datefield compareto <?php echo $is_compare; ?>">
+                      <label class="label" for="compare_date_from"><?php echo __( 'Compare Start date', 'wpcable' ); ?></label>
+                      <input class="datepicker" type="text" id="compare_date_from" name="compare_date_from"
+                           value="<?php echo $_GET['compare_date_from']; ?>"
                            data-icon="<?php echo WPCABLE_URI . '/assets/images/icon_datepicker_blue.png'; ?>">
+                    </div>
                 </div>
 
 
                 <div class="section">
-                    <label class="label" for="date_to"><?php echo __( 'End date', 'wpcable' ); ?></label>
-                    <input class="datepicker" type="text" id="date_to" name="date_to"
-                           value="<?php echo $_GET['date_to']; ?>"
+                
+                    <div class="datefield">
+                      <label class="label" for="date_to"><?php echo __( 'End date', 'wpcable' ); ?></label>
+                      <input class="datepicker" type="text" id="date_to" name="date_to"
+                             value="<?php echo $_GET['date_to']; ?>"
+                             data-icon="<?php echo WPCABLE_URI . '/assets/images/icon_datepicker_blue.png'; ?>">
+                    </div>
+                  
+                    <div class="datefield compareto <?php echo $is_compare; ?>">
+                      <label class="label" for="compare_date_to"><?php echo __( 'Compare End date', 'wpcable' ); ?></label>
+                      <input class="datepicker" type="text" id="compare_date_to" name="compare_date_to"
+                           value="<?php echo $_GET['compare_date_to']; ?>"
                            data-icon="<?php echo WPCABLE_URI . '/assets/images/icon_datepicker_blue.png'; ?>">
+                    </div>
                 </div>
 
 
@@ -390,6 +358,12 @@ function codeable_transcactions_stats_cb() {
                     <div class="maindata">
                         <div class="label"><?php echo $chart_display_method == 'days' ? __( 'Best Day', 'wpcable' ) : __( 'Best Month' ); ?></div>
                         <span class="value"><?php echo wordwrap( $max_month_totals_key[0], 4, '-', true ); ?></span>
+                        <?php
+                          if ($is_compare) { ?>
+                            <span class="value newline small"><?php echo wordwrap( $compare_max_month_totals_key[0], 4, '-', true ); ?></span> 
+                          <?php
+                          }
+                        ?>
                     </div>
                 </div>
             </div>
@@ -398,6 +372,12 @@ function codeable_transcactions_stats_cb() {
                     <div class="maindata">
                         <div class="label"><?php echo __( 'Revenue Best', 'wpcable' ); ?></div>
                         <span class="value">$<?php echo wpcable_money( $max_month_totals['revenue'] ); ?></span>
+                        <?php
+                          if ($is_compare) { ?>
+                            <span class="value newline small">$<?php echo wpcable_money( $compare_max_month_totals['revenue'] ); ?></span> 
+                          <?php
+                          }
+                        ?>
                     </div>
                 </div>
             </div>
@@ -406,6 +386,12 @@ function codeable_transcactions_stats_cb() {
                     <div class="maindata">
                         <div class="label"><?php echo __( 'Revenue', 'wpcable' ); ?></div>
                         <span class="value">$<?php echo wpcable_money( $all_month_totals['revenue'] ); ?></span>
+                        <?php
+                          if ($is_compare) { ?>
+                            <span class="value newline small">$<?php echo wpcable_money( $compare_all_month_totals['revenue'] ); ?></span> 
+                          <?php
+                          }
+                        ?>
                     </div>
                 </div>
             </div>
@@ -591,6 +577,11 @@ function codeable_transcactions_stats_cb() {
             var $chart_tasks_count_json = <?php echo $chart_tasks_count_json; ?>;
             var $chart_revenue_json = <?php echo $chart_revenue_json; ?>;
             var $type_tasks_count_json = <?php echo $type_tasks_count_json; ?>;
+            
+            var $compare_chart_tasks_count_json = <?php echo (isset($compare_chart_tasks_count_json) ? $compare_chart_tasks_count_json : '""'); ?>;
+            var $compare_chart_revenue_json = <?php echo (isset($compare_chart_revenue_json) ? $compare_chart_revenue_json : '""'); ?>;
+            var $compare_chart_dates_json = <?php echo (isset($compare_chart_dates_json) ? $compare_chart_dates_json : '""'); ?>;
+            var $compare_type_tasks_count_json = <?php echo (isset($compare_type_tasks_count_json) ? $compare_type_tasks_count_json : '""'); ?>;
 
             Highcharts.chart('chart_wrap', {
                 exporting: {
@@ -615,7 +606,8 @@ function codeable_transcactions_stats_cb() {
                     text: "<?php echo __( 'You Earned It!', 'wpcable' ); ?>"
                 },
                 xAxis: {
-                    categories: [<?php echo implode( ', ', $chart_categories ); ?>]
+                    categories: [<?php echo implode( ', ', $chart_categories ); ?>],
+                    type: 'datetime'
                 },
                 yAxis: {
                     title: {
@@ -632,7 +624,11 @@ function codeable_transcactions_stats_cb() {
                 },
                 tooltip: {
                     formatter: function () {
+                      if (!this.series.name.includes("Comparison")) {
                         return '<b>' + this.x + '</b><br /></br >' + this.series.name + ': $<b>' + this.y + '</b><br /><?php echo __( 'Tasks', 'wpcable' ); ?>: ' + $chart_tasks_count_json[replaceAll(this.x, '-', '')];
+                      } else {
+                        return '<b>' + $compare_chart_dates_json[this.series.data.indexOf( this.point )] + '</b><br /></br >' + this.series.name + ': $<b>' + this.y + '</b><br /><?php echo __( 'Tasks', 'wpcable' ); ?>: ' + $compare_chart_tasks_count_json[replaceAll($compare_chart_dates_json[this.series.data.indexOf( this.point )], '-', '')];
+                      }
                     }
                 },
                 series: [{
@@ -655,7 +651,35 @@ function codeable_transcactions_stats_cb() {
                         enabled: false
                     },
                     dashStyle: 'shortdot'
-                }]
+                }<?php if ($is_compare) { ?>,
+                
+                  {
+                      name: '<?php echo __( 'Total Cost (Comparison)', 'wpcable' ); ?>',
+                      data: [<?php echo implode( ', ', $compare_chart_total_cost ); ?>],
+                      visible: true,
+                      dashStyle: 'longdash'
+                  }, {
+                      name: '<?php echo __( 'Revenue (Comparison)', 'wpcable' ); ?>',
+                      data: [<?php echo implode( ', ', $compare_chart_revenue ); ?>],
+                      dashStyle: 'longdash'
+                  }, {
+                      name: '<?php echo __( 'Fees (Comparison)', 'wpcable' ); ?>',
+                      data: [<?php echo implode( ', ', $compare_chart_contractor_fee ); ?>],
+                      visible: true,
+                      dashStyle: 'longdash'
+                  }, {
+                      name: '<?php echo __( 'Average (Comparison)', 'wpcable' ); ?>',
+                      type: 'spline',
+                      data: [<?php echo implode( ', ', $compare_chart_revenue_avg ); ?>],
+                      visible: true,
+                      marker: {
+                          enabled: false
+                      },
+                      dashStyle: 'shortdot'
+                  }
+                
+                <?php } ?>
+                ]
             });
 
 
@@ -673,17 +697,27 @@ function codeable_transcactions_stats_cb() {
                     fallbackToExportServer: false
                 },
                 chart: {
+                    <?php if ($is_compare) { ?>
+                    
+                    type: 'column'
+                    
+                    <?php } else { ?>
                     type: 'pie',
                     options3d: {
                         enabled: true,
                         alpha: 45
                     }
+                    <?php } ?>
                 },
                 title: {
                     text: '<?php echo __( 'Amounts Range', 'wpcable' ); ?>'
                 },
                 subtitle: {
                     text: '<?php echo __( 'Your tasks budget groups', 'wpcable' ); ?>'
+                },
+                xAxis: {
+                    categories: [<?php echo implode( ',', $get_available_ranges ); ?>],
+                    crosshair: true
                 },
                 plotOptions: {
                     pie: {
@@ -698,10 +732,20 @@ function codeable_transcactions_stats_cb() {
                 },
                 series: [{
                     name: '<?php echo __( 'Tasks', 'wpcable' ); ?>',
-                    data: [
-						<?php echo implode( ',', $chart_amounts_range ); ?>
-                    ]
-                }]
+                    data: [<?php echo implode( ',', $chart_amounts_range ); ?>],
+                    pointPadding: 0,
+                    pointPlacement: 0,
+                    color: 'rgba(247,163,92,1)'
+                }<?php if ($is_compare) { ?>,
+                {
+                    name: '<?php echo __( 'Tasks (Comparison)', 'wpcable' ); ?>',
+                    data: [<?php echo implode( ',', $compare_chart_amounts_range ); ?>],
+                    pointPadding: 0,
+                    pointPlacement: 0,
+                    color: 'rgba(244,91,91,.9)'
+                }                
+                <?php } ?>
+                ]
             });
 
 
@@ -741,20 +785,39 @@ function codeable_transcactions_stats_cb() {
                 },
                 tooltip: {
                     formatter: function () {
+                      if (!this.series.name.includes("Comparison")) {
                         return this.x + '<br />-<br />' + this.series.name + ': <b>' + this.y + '</b><br />Revenue:<b>$' + parseFloat($chart_revenue_json[replaceAll(this.x, '-', '')]) + '</b>';
+                      } else {
+                        return $compare_chart_dates_json[this.series.data.indexOf( this.point )] + '<br />-<br />' + this.series.name + ': <b>' + this.y + '</b><br />Revenue:<b>$' + parseFloat($compare_chart_revenue_json[replaceAll($compare_chart_dates_json[this.series.data.indexOf( this.point )], '-', '')]) + '</b>';
+                      }
                     }
                 },
                 plotOptions: {
                     column: {
                         borderWidth: 0,
-                        colorByPoint: true
+                        grouping: false,
+                        shadow: false,
                     }
                 },
                 series: [{
                     name: '<?php echo __( 'Tasks', 'wpcable' ); ?>',
-                    data: [<?php echo implode( ',', $chart_tasks_count ); ?>]
+                    data: [<?php echo implode( ',', $chart_tasks_count ); ?>],
+                    pointPadding: 0.1,
+                    pointPlacement: -0.2,
+                    color: 'rgba(165,170,217,1)'
 
                 },
+                <?php if ($is_compare) { ?>
+                  {
+                    name: '<?php echo __( 'Tasks (Comparison)', 'wpcable' ); ?>',
+                    data: [<?php echo implode( ',', $compare_chart_tasks_count ); ?>],
+                    pointPadding: 0.3,
+                    pointPlacement: -0.2,
+                    color: 'rgba(126,86,134,.9)'
+
+                  },
+                
+                <?php } ?>
                 {
                     name: '<?php echo __( 'Average', 'wpcable' ); ?>',
                     type: 'spline',
@@ -765,9 +828,26 @@ function codeable_transcactions_stats_cb() {
                     },
                     dashStyle: 'shortdot'
 
-                }]
+                }<?php if ($is_compare) { ?>,
+                  {
+                    name: '<?php echo __( 'Average (Comparison)', 'wpcable' ); ?>',
+                    type: 'spline',
+                    data: [<?php echo implode( ',', $compare_chart_tasks_count_avg ); ?>],
+                    visible: true,
+                    marker: {
+                        enabled: false
+                    },
+                    dashStyle: 'shortdot'
+
+                  },
+                
+                <?php } ?>
+                
+                ]
             });
             
+            
+            <?php if (!$is_compare) { ?>
             
             // preferred semi circle donut
             Highcharts.chart('preferred_chart', {
@@ -793,7 +873,7 @@ function codeable_transcactions_stats_cb() {
                     align: 'center'
                 },
                 subtitle: {
-                  text: '<b>Revenue</b> | Preferred: $<?php echo wpcable_money($preferred_count['preferred']['revenue']); ?> | Non Preferred: $<?php echo wpcable_money($preferred_count['nonpreferred']['revenue']); ?>'
+                  text: '<b>Revenue</b> | Preferred: $<?php echo wpcable_money($preferred_count['preferred']['revenue']); ?> | Non Preferred: $<?php echo wpcable_money($preferred_count['nonpreferred']['revenue']); ?><?php if ($is_compare) { ?> <br /><b>Comparison</b> | Preferred: $<?php echo wpcable_money($compare_preferred_count['preferred']['revenue']); ?> | Non Preferred: $<?php echo wpcable_money($compare_preferred_count['nonpreferred']['revenue']); ?> <?php } ?>'
                 },
                 tooltip: {
                     pointFormat: '{series.name}: <b> {point.y} ( {point.percentage:.1f}% )</b>'
@@ -830,6 +910,71 @@ function codeable_transcactions_stats_cb() {
                     ]
                 }]
             });
+            <?php } else  { ?>
+            
+            // preferred comparison column chart
+            Highcharts.chart('preferred_chart', {
+                exporting: {
+                    chartOptions: {
+                        plotOptions: {
+                            series: {
+                                dataLabels: {
+                                    enabled: true
+                                }
+                            }
+                        }
+                    },
+                    fallbackToExportServer: false
+                },
+                chart: {
+                    type: 'column',
+                },
+                title: {
+                    text: 'Preferred vs non Preferred',
+                    align: 'center'
+                },
+                subtitle: {
+                  text: '<b>Revenue</b> | Preferred: $<?php echo wpcable_money($preferred_count['preferred']['revenue']); ?> | Non Preferred: $<?php echo wpcable_money($preferred_count['nonpreferred']['revenue']); ?><?php if ($is_compare) { ?> <br /><b>Comparison</b> | Preferred: $<?php echo wpcable_money($compare_preferred_count['preferred']['revenue']); ?> | Non Preferred: $<?php echo wpcable_money($compare_preferred_count['nonpreferred']['revenue']); ?> <?php } ?>'
+                },
+                xAxis: {
+                    categories: [
+                      "# Preferred Tasks",
+                      "# Non Preferred Tasks"
+                    ],
+                    crosshair: true
+                },
+                tooltip: {
+                    formatter: function () {
+                        return this.series.name + ': <b>' + this.y + ' (' + parseFloat(this.y / this.series.options.totalcount).toFixed(2) * 100 +'%)</b>';
+                    }
+                  
+                    
+                },
+                plotOptions: {
+                    column: {
+                        borderWidth: 0,
+                        grouping: false,
+                        shadow: false,
+                    }
+                },
+                series: [{
+                    name: '# Tasks',
+                    data: [<?php echo $preferred_count['preferred']['count']; ?>, <?php echo $preferred_count['nonpreferred']['count']; ?>],
+                    pointPadding: 0.1,
+                    pointPlacement: -0.2,
+                    color: 'rgba(241,192,192,1)',
+                    totalcount: <?php echo $preferred_count['preferred']['count'] + $preferred_count['nonpreferred']['count']; ?>
+                },{
+                    name: '# Tasks (Comparison)',
+                    data: [<?php echo $compare_preferred_count['preferred']['count']; ?>, <?php echo $compare_preferred_count['nonpreferred']['count']; ?>],
+                    pointPadding: 0.3,
+                    pointPlacement: -0.2,
+                    color: 'rgba(255,64,64,.9)',
+                    totalcount: <?php echo $compare_preferred_count['preferred']['count'] + $compare_preferred_count['nonpreferred']['count']; ?>
+                }]
+            });
+            
+            <?php } ?>
             
             
             // task type chart
@@ -857,7 +1002,13 @@ function codeable_transcactions_stats_cb() {
                 },
                 xAxis: {
                     categories: [
-                      <?php echo implode( ',', $type_categories ); ?>
+                      <?php 
+                        if (!$is_compare) {
+                          echo implode( ',', $type_categories ); 
+                        } else {
+                          echo implode( ',', array_merge($type_categories, $compare_type_categories) ); 
+                        }
+                      ?>
                     ]
                 },
                 yAxis: {
@@ -867,24 +1018,50 @@ function codeable_transcactions_stats_cb() {
                     }
                 },
                 legend: {
+                  <?php if (!$is_compare) { ?>
                     enabled: false
+                  <?php } else { ?>
+                    enabled: true
+                  <?php } ?>
                 },
                 tooltip: {
                     formatter: function () {
+                      if (this.series.name == 'Revenue' ) {
                         return this.x + '<br />-<br />' + this.series.name + ': <b>$' + this.y + '</b><br />Tasks:<b>' + parseFloat($type_tasks_count_json[this.x]) + '</b><br />Average:<b>' + ( parseFloat(this.y / parseFloat($type_tasks_count_json[this.x])).toFixed(2) ) + '</b>';
+                      } else {
+                        return this.x + '<br />-<br />' + this.series.name + ': <b>$' + this.y + '</b><br />Tasks:<b>' + parseFloat($compare_type_tasks_count_json[this.x]) + '</b><br />Average:<b>' + ( parseFloat(this.y / parseFloat($compare_type_tasks_count_json[this.x])).toFixed(2) ) + '</b>';
+                      }
                     }
                 },
                 plotOptions: {
                     column: {
                         borderWidth: 0,
-                        colorByPoint: true
+                        grouping: false,
+                        <?php if (!$is_compare) { ?>
+                        colorByPoint: true,
+                        <?php } ?>
+                        shadow: false
                     }
                 },
                 series: [{
                     name: ['<?php echo __( 'Revenue', 'wpcable' ); ?>'],
-                    data: [<?php echo implode( ',', $type_revenue ); ?>]
+                    data: [<?php echo implode( ',', $type_revenue ); ?>],
+                    pointPadding: 0.1,
+                    pointPlacement: -0.2,
+                    color: 'rgba(43,144,143,1)'
 
-                }]
+                }<?php if ($is_compare) { ?>,
+                {
+                    name: ['<?php echo __( 'Revenue (Comparison)', 'wpcable' ); ?>'],
+                    data: [<?php echo implode( ',', $compare_type_revenue ); ?>],
+                    pointPadding: 0.3,
+                    pointPlacement: -0.2,
+                    color: 'rgba(145,232,225,1)'
+
+                }
+                
+                <?php } ?>
+                ]
             });
             
 
