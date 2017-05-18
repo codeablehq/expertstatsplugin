@@ -116,16 +116,16 @@ function codeable_transcactions_stats_cb() {
 
             <div class="box user-info">
                 <div class="avatar">
-                    <img class="round" src="<?php echo $account_details['avatar']['large_url']; ?>"/>
-                    <div class="rating" data-score="<?php echo $account_details['stats']['avg_rating']; ?>"></div>
+                    <img class="round" src="<?php echo $account_details['user']['avatar']['large_url']; ?>"/>
+                    <div class="rating" data-score="<?php echo $account_details['user']['stats']['avg_rating']; ?>"></div>
                 </div>
                 <div class="details">
                     <div class="codeable-logo">
 						<?php echo '<img src="' . esc_url( plugins_url( 'assets/images/codeable-full.png', dirname( __FILE__ ) ) ) . '" > '; ?>
                     </div>
-                    <span class="name"><?php echo $account_details['first_name'] . ' ' . $account_details['last_name']; ?></span>
-                    <span class="label role"><?php echo $account_details['role']; ?></span>
-                    <span class="user-id"><?php echo __( 'ID', 'wpcable' ) . ': <a href="https://app.codeable.io/tasks/new?preferredContractor=' . $account_details['id'] . '" target="_blank" title="' . __( 'Direct hire link', 'wpcable' ) . '">' . $account_details['id']; ?></a></span>
+                    <span class="name"><?php echo $account_details['user']['first_name'] . ' ' . $account_details['user']['last_name']; ?></span>
+                    <span class="label role"><?php echo $account_details['user']['role']; ?></span>
+                    <span class="user-id"><?php echo __( 'ID', 'wpcable' ) . ': <a href="https://app.codeable.io/tasks/new?preferredContractor=' . $account_details['user']['id'] . '" target="_blank" title="' . __( 'Direct hire link', 'wpcable' ) . '">' . $account_details['user']['id']; ?></a></span>
                 </div>
             </div>
 
@@ -133,13 +133,13 @@ function codeable_transcactions_stats_cb() {
                 <div class="column_inner">
                     <div class="maindata">
                         <div class="label"><?php echo __( 'Completed Tasks', 'wpcable' ); ?></div>
-                        <div class="value"><?php echo $account_details['completed_tasks_count']; ?></div>
+                        <div class="value"><?php echo $account_details['user']['completed_tasks_count']; ?></div>
                     </div>
                     <div class="footerdata">
                         <span class="label"><?php echo __( 'Tasks', 'wpcable' ); ?></span>: <span
-                                class="value"><?php echo $account_details['tasks_count']; ?></span><br/>
+                                class="value"><?php echo $account_details['user']['tasks_count']; ?></span><br/>
                         <span class="label"><?php echo __( 'Refunded', 'wpcable' ); ?></span>: <span
-                                class="value"><?php echo $clients_data['totals']['refunds']; ?></span>
+                                class="value"><?php echo $clients_data['user']['totals']['refunds']; ?></span>
                     </div>
                 </div>
             </div>
@@ -184,7 +184,7 @@ function codeable_transcactions_stats_cb() {
                                 <span class="label"><?php echo __( 'Month conversion', 'wpcable' ); ?></span>
                             </td>
                             <td>
-                                <span class="value"><?php echo $account_details['stats']['estimated_completed_conversion_1_month'] * 100; ?>
+                                <span class="value"><?php echo $account_details['user']['stats']['estimated_completed_conversion_1_month'] * 100; ?>
                                     %</span>
                             </td>
                         </tr>
@@ -193,7 +193,7 @@ function codeable_transcactions_stats_cb() {
                                 <span class="label"><?php echo __( '6 Month conversion', 'wpcable' ); ?></span>
                             </td>
                             <td>
-                                <span class="value"><?php echo $account_details['stats']['estimated_completed_conversion_6_months'] * 100; ?>
+                                <span class="value"><?php echo $account_details['user']['stats']['estimated_completed_conversion_6_months'] * 100; ?>
                                     %</span>
                             </td>
                         </tr>
