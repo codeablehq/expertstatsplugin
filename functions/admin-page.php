@@ -139,7 +139,7 @@ function codeable_transcactions_stats_cb() {
                         <span class="label"><?php echo __( 'Tasks', 'wpcable' ); ?></span>: <span
                                 class="value"><?php echo $account_details['user']['tasks_count']; ?></span><br/>
                         <span class="label"><?php echo __( 'Refunded', 'wpcable' ); ?></span>: <span
-                                class="value"><?php echo $clients_data['user']['totals']['refunds']; ?></span>
+                                class="value"><?php echo $clients_data['totals']['refunds']; ?></span>
                     </div>
                 </div>
             </div>
