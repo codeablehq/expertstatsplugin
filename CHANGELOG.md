@@ -31,3 +31,6 @@
 *0.0.9 (2017-03-23)*
 * Average in charts - @spyrosvl
 * Condition to change text between best month/day - @spyrosvl
+
+*0.0.10 (2017-05-18)*
+* Fixes for missing user data, thanks @ahanzek
