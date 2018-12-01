@@ -2,378 +2,492 @@
 /*  Typography */
 /***************/
 h1, h2, h3, h4, h5, h6 {
-    color: #3b4151;
+	color: #3b4151;
 }
 
 /******************/
 /* Helper Classes */
 /******************/
 .text-center {
-    text-align: center;
+	text-align: center;
 }
+
 .text-right {
-    text-align: right;
+	text-align: right;
 }
 
 .spacer {
-    padding: 10px;
+	padding: 10px;
 }
 
 img.round {
-    border-radius: 50%;
+	border-radius: 50%;
 }
 
-.increase { color: #46b450; }
-.decrease { color: #dc3232; }
+.increase {
+	color: #46b450;
+}
+
+.decrease {
+	color: #dc3232;
+}
 
 .newline {
-  width: 100%;
-  float: none;
-  display: block;
-  overflow: auto;
+	width: 100%;
+	float: none;
+	display: block;
+	overflow: auto;
 }
 
 .maindata .value.small, .small {
-  font-size: 12px;
+	font-size: 12px;
 }
 
 /**************/
 /* Main boxes */
 /**************/
 .box {
-    position: relative;
-    background-color: #fff;
-    border: 1px solid #dadada;
-    padding: 20px;
-    margin-bottom: 30px;
-    box-sizing: border-box;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, .25), 0 0 50px rgba(0, 0, 0, .1) inset;
+	position: relative;
+	background-color: #fff;
+	border: 1px solid #dadada;
+	padding: 20px;
+	margin-bottom: 30px;
+	box-sizing: border-box;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, .25), 0 0 50px rgba(0, 0, 0, .1) inset;
 }
 
 .box:after {
-    position: absolute;
-    width: 90%;
-    height: 10%;
-    left: 5%;
-    border-radius: 5%;
-    z-index: -1;
-    bottom: 0;
-    content: "";
-    /*box-shadow: 0 8px 30px rgba(0,0,0,.3)*/
+	position: absolute;
+	width: 90%;
+	height: 10%;
+	left: 5%;
+	border-radius: 5%;
+	z-index: -1;
+	bottom: 0;
+	content: "";
+	/*box-shadow: 0 8px 30px rgba(0,0,0,.3)*/
 }
 
 .whitebox {
-    padding: 20px;
-    box-sizing: border-box;
-    background-color: #fff;
-    border: 1px solid #dadada;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, .25), 0 0 50px rgba(0, 0, 0, .1) inset;
+	padding: 20px;
+	box-sizing: border-box;
+	background-color: #fff;
+	border: 1px solid #dadada;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, .25), 0 0 50px rgba(0, 0, 0, .1) inset;
 }
 
 /********/
 /* Flex */
 /********/
 .flex-row {
-    display: flex;
-    justify-content: space-between;
+	display: flex;
+	justify-content: space-between;
 }
 
 /************************/
 /* First Statistics Row */
 /************************/
-.first-stats-row > div {
-    display: flex;
-    width: 23%;
+.first-stats-row {
+	justify-content: flex-start;
+	flex-wrap: wrap;
+}
+
+.first-stats-row .box {
+	flex-basis: 100%;
+	margin-bottom: 1em;
+}
+
+@media only screen and (min-width: 768px) {
+	.first-stats-row {
+		justify-content: space-between;
+		flex-wrap: wrap;
+	}
+
+	.first-stats-row .box {
+		flex-basis: 23%;
+	}
 }
 
 .user-info .avatar {
-    text-align: center;
-    margin-right: 20px;
+	text-align: center;
+	margin-right: 20px;
 }
 
 .user-info .avatar img {
-    width: 100%;
-    max-width: 100px;
+	width: 100%;
+	max-width: 100px;
 }
 
 .user-info .user-id {
-    margin-top: 5px;
-    display: block;
+	margin-top: 5px;
+	display: block;
 }
 
 .user-info .role {
-    color: #3b4151;
-    font-size: 20px;
-    text-transform: capitalize;
+	color: #3b4151;
+	font-size: 20px;
+	text-transform: capitalize;
 }
 
 .user-info .name {
-    margin: 15px 0 10px;
-    color: #333e48;
-    font-size: 1.3rem;
-    line-height: normal;
-    font-weight: 500;
-    display: block;
+	margin: 15px 0 10px;
+	color: #333e48;
+	font-size: 1.3rem;
+	line-height: normal;
+	font-weight: 500;
+	display: block;
 }
 
 .codeable-logo {
-    max-width: 120px;
+	max-width: 120px;
 }
 
 .codeable-logo img {
-    width: 100%;
+	width: 100%;
 }
 
 .rating {
-    font-size: 8px;
-    color: #FFD700;
+	font-size: 8px;
+	color: #FFD700;
 }
 
 .avatar_column div {
-    text-align: center;
+	text-align: center;
 }
 
 .maindata > div, .maindata label.label {
-    margin-bottom: 15px;
-    display: block;
+	margin-bottom: 15px;
+	display: block;
 }
 
 .maindata input {
-    width: 75%;
-    margin-right: 5px;
+	width: 75%;
+	margin-right: 5px;
 }
 
 .maindata .label {
-    color: #3b4151;
-    font-size: 20px;
+	color: #3b4151;
+	font-size: 20px;
 }
 
 .maindata .value {
-    color: #66708c;
-    font-size: 32px;
+	color: #66708c;
+	font-size: 32px;
 }
 
 /********************/
 /* Second Stats Row */
 /********************/
 .second-stats-row {
-    display: flex;
-    justify-content: space-between;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-start;
 }
 
-.second-stats-row > div {
-    width: 48.7%;
+.second-stats-row .box {
+	flex-basis: 100%;
+	margin-bottom: 1em;
+}
+
+@media only screen and (min-width: 768px) {
+	.second-stats-row {
+		flex-wrap: nowrap;
+		justify-content: space-between;
+	}
+
+	.second-stats-row .box {
+		flex-basis: 48.7%;
+	}
 }
 
 /****************/
 /* Date filters */
 /****************/
 .ui-datepicker-calendar {
-    display: none;
+	display: none;
 }
 
 #ui-datepicker-div {
-    width: 168px;
-    height: 85px;
-    position: relative;
-    background-color: #fff;
-    border: 1px solid #dadada;
-    box-sizing: border-box;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, .25), 0 0 50px rgba(0, 0, 0, .1) inset;
+	width: 168px;
+	height: 85px;
+	position: relative;
+	background-color: #fff;
+	border: 1px solid #dadada;
+	box-sizing: border-box;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, .25), 0 0 50px rgba(0, 0, 0, .1) inset;
 }
 
 #ui-datepicker-div .ui-datepicker-header {
-    position: absolute;
-    top: -20px;
-    left: 10px;
+	position: absolute;
+	top: -20px;
+	left: 10px;
 }
 
 #ui-datepicker-div .ui-datepicker-buttonpane {
-    position: absolute;
-    top: 50px;
-    left: 10px;
-    min-width: 120px;
+	position: absolute;
+	top: 50px;
+	left: 10px;
+	min-width: 120px;
 }
 
-.date-filters > form {
-    display: flex;
-    align-items: center;
-    width: 100%;
+.date-filters form {
+	display: flex;
+	flex-basis: 100%;
+	flex-wrap: wrap;
 }
 
 .date-filters .section {
-    display: flex;
-    align-items: center;
-    margin-right: 30px;
-    flex-flow: row wrap;
-    max-width: 29%;
+	display: flex;
+	align-items: center;
+	flex-flow: row wrap;
+	flex-basis: 100%;
 }
 
 .date-filters label,
-.date-filters input,
+.date-filters input[type="text"] {
+	display: inline-flex;
+	width: calc(100% - 25px);
+}
+
+.date-filters label {
+	margin-bottom: 5px;
+}
+.date-filters input[type="text"] {
+	margin: 0 5px 1em 0;
+}
+
 .date-filters button {
-    display: inline-block;
-    margin-right: 5px;
+	display: inline-flex;
+	margin-right: 5px;
 }
 
 .date-filters .datefield label {
-  min-width: 120px;
-  text-align: right;
+	min-width: 120px;
+	text-align: right;
+}
+
+@media only screen and (min-width: 768px) {
+
+	.date-filters form {
+		flex-wrap: nowrap;
+	}
+
+	.date-filters .section {
+		flex-basis: 23%;
+	}
+
+	.date-filters label,
+	.date-filters input[type="text"] {
+
+	}
+
+	.date-filters button {
+
+	}
+
 }
 
 .compareto {
-  display: none;
+	display: none;
 }
 
 .compareto.is_compare {
-  display: block;
+	display: block;
 }
 
 .compareicon {
-  cursor: pointer;
+	cursor: pointer;
+	margin-bottom: 1em;
 }
 
 .date-filters .set-date {
-    margin-left: auto;
-    height: 40px;
-    min-width: 120px;
+	margin-left: auto;
+	height: 40px;
+	min-width: 120px;
 }
 
 .column_inner {
-    color: #7c8d99;
+	color: #7c8d99;
 }
 
 .chart_wrap {
-    max-width: 100%;
-    width: 100%;
-    height: 500px;
+	max-width: 100%;
+	width: 100%;
+	height: 500px;
 }
 
 .footerdata, .stats_table {
-    color: #7c8d99
+	color: #7c8d99
 }
 
 .footerdata .value, .stats_table .value {
-    font-weight: bold;
+	font-weight: bold;
 }
+
+/*******************/
+/* Highscore Stats */
+/*******************/
+.bests__row {
+	margin-bottom: 1em;
+}
+
 
 /***************/
 /* Stats Table */
 /***************/
 .stats_table {
-    width: 100%;
-    border-spacing: 0;
-    border-collapse: collapse;
+	width: 100%;
+	border-spacing: 0;
+	border-collapse: collapse;
 }
 
 .stats_table tr {
-    height: 30px;
+	height: 30px;
 }
 
 .stats_table td {
-    border-bottom: 1px solid #b5bfc6;
+	border-bottom: 1px solid #b5bfc6;
 }
 
 .stats_table td.firstcol {
-  width: 75%;
+	width: 75%;
 }
 
 .stats_table td.text-right {
-  padding-left: 10px;
+	padding-left: 10px;
 }
 
 .stats_table tr td:nth-child(2) {
-    text-align: right;
+	text-align: right;
 }
 
 #clients_table {
-    border-bottom: none;
+	border-bottom: none;
+}
+
+.mobile_label {
+	display: none;
+	font-weight: 600;
+    margin-right: 20px;
+    width: 40%;
+}
+
+@media only screen and (max-width: 767px) {
+	#clients_table th,
+	#clients_table tr	{
+		display: flex;
+		flex-flow: wrap;
+		align-items: center;
+		justify-content: center;
+	}
+	#clients_table td {
+		display: block;
+	}
+	#clients_table td {
+		width: 100%;
+	}
+	#clients_table td.avatar,
+	#clients_table td.client_name {
+		width: 49%;
+		padding: 8px 1% 8px 0;
+	}
+	.mobile_label {
+		display: inline-block;
+	}
 }
 
 /*****************************/
 /***  Clients Data Wrapper ***/
 /*****************************/
 .datatable_inner {
-    width: 100%;
+	width: 100%;
 }
 
 #clients_table_wrapper img {
-    max-width: 100%;
-    height: auto;
+	max-width: 48px;
+	height: auto;
+	margin-left: 10px;
 }
 
 #clients_table_wrapper .dataTables_length {
-    margin-bottom: 20px;
+	margin-bottom: 20px;
 }
 
 table .avatar {
-    width: 64px;
+	width: 64px;
+}
+
+@media only screen and (min-width: 768px) {
+	#clients_table_wrapper img {
+		max-width: 100%;
+		margin-left: 0;
+	}
 }
 
 /**********************/
 /*  Table Pagination  */
 /**********************/
 #wpwrap .dataTables_wrapper .dataTables_paginate {
-    padding-top: 1.25em;
+	padding-top: 1.25em;
 }
 
 #wpwrap .dataTables_wrapper .dataTables_info {
-    padding-top: 2em;
+	padding-top: 2em;
 }
 
 #wpwrap .dataTables_paginate .paginate_button {
-    padding: 0.5em 0px;
+	padding: 0.5em 0px;
 }
 
 #wpwrap .dataTables_paginate span .paginate_button {
-    display: inline-block;
-    height: 30px;
-    width: 30px;
-    border-radius: 50%;
-    margin: 0 0.255em;
+	display: inline-block;
+	height: 30px;
+	width: 30px;
+	border-radius: 50%;
+	margin: 0 0.255em;
 }
 
 #wpwrap .dataTables_paginate span .paginate_button:hover,
 #wpwrap .dataTables_paginate span .paginate_button.current,
 #wpwrap .dataTables_paginate span .paginate_button.current:hover {
-    border: none;
-    color: #fff !important;
-    background: #36a9e1;
-    background-color: #36a9e1;
+	border: none;
+	color: #fff !important;
+	background: #36a9e1;
+	background-color: #36a9e1;
 }
 
 #wpwrap #clients_table_previous {
-    margin-right: 0.5em;
+	margin-right: 0.5em;
 }
 
 #wpwrap #clients_table_next,
 #wpwrap #clients_table_previous {
-    border: none;
-    background: transparent;
-    background-color: transparent;
+	border: none;
+	background: transparent;
+	background-color: transparent;
 }
 
 #wpwrap #clients_table_next:hover,
 #wpwrap #clients_table_previous:hover {
-    color: #36a9e1 !important;
-    cursor: pointer;
+	color: #36a9e1 !important;
+	cursor: pointer;
 }
 
 /******************/
 /*   TB Content   */
 /******************/
 #TB_ajaxContent {
-    width: 100% !important;
-    height: auto !important;
-    position: relative;
+	width: 100% !important;
+	height: auto !important;
+	position: relative;
 }
 
 div#TB_window {
-    width: auto !important;
-    left: 30px !important;
-    right: 30px !important;
-    top: 30px !important;
-    bottom: 30px !important;
-    margin: 0 !important;
-    overflow: auto !important;
+	width: auto !important;
+	left: 30px !important;
+	right: 30px !important;
+	top: 30px !important;
+	bottom: 30px !important;
+	margin: 0 !important;
+	overflow: auto !important;
 }

@@ -413,16 +413,8 @@ function codeable_transcactions_stats_cb() {
         <div class="clearfix spacer"></div>
 
         <div class="row">
-            <div class="col-md-4">
-                <div class="whitebox">
-                    <div id="amounts_range_chart">
-
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-8">
+            
+            <div class="col-md-12">
                 <div class="whitebox">
                     <div id="tasks_per_month_chart">
 
@@ -436,6 +428,16 @@ function codeable_transcactions_stats_cb() {
         <div class="clearfix spacer"></div>
         
         <div class="row">
+		
+			<div class="col-md-4">
+                <div class="whitebox">
+                    <div id="amounts_range_chart">
+
+
+                    </div>
+                </div>
+            </div>
+		
             <div class="col-md-4">
                 <div class="whitebox">
                     <div id="preferred_chart">
@@ -445,7 +447,7 @@ function codeable_transcactions_stats_cb() {
                 </div>
             </div>
 
-            <div class="col-md-8">
+            <div class="col-md-4">
                 <div class="whitebox">
                     <div id="tasks_type">
 
@@ -472,14 +474,14 @@ function codeable_transcactions_stats_cb() {
 
                         <table class="datatable widefat fixed striped posts" id="clients_table">
                             <thead>
-                            <th class="avatar">Avatar</th>
-                            <th>Name</th>
-                            <th>Last Login</th>
-                            <th>Total Tasks</th>
-                            <th>Tasks</th>
-                            <th>Subtasks</th>
-                            <th>Average per task</th>
-                            <th>Revenue</th>
+								<th class="avatar">Avatar</th>
+								<th class="client_name">Name</th>
+								<th>Last Login</th>
+								<th>Total Tasks</th>
+								<th>Tasks</th>
+								<th>Subtasks</th>
+								<th>Average per task</th>
+								<th>Revenue</th>
                             </thead>
                             <tbody>
 							<?php
@@ -496,7 +498,7 @@ function codeable_transcactions_stats_cb() {
                                     <tr id="client_<?php echo $client['client_id']; ?>">
                                         <td class="avatar"><img class="round" src="<?php echo $client['avatar']; ?>"/>
                                         </td>
-                                        <td>
+                                        <td class="client_name">
                                             <a href="#TB_inline?width=1000&height=550&inlineId=client_info_<?php echo $client_id; ?>"
                                                class="thickbox"><?php echo $client['full_name']; ?></a>
                                             <div style="display:none;" id="client_info_<?php echo $client_id; ?>">
@@ -544,20 +546,19 @@ function codeable_transcactions_stats_cb() {
                                                 </table>
                                             </div>
                                         </td>
-                                        <td><?php echo $client['last_sign_in_at']; ?></td>
-                                        <td>
+                                        <td data-order="<?php echo $client['last_sign_in_at']; ?>"><span class="mobile_label">Last login:</span> <?php echo $client['last_sign_in_at']; ?></td>
+                                        <td data-order="<?php echo intval( $client['total_tasks'] ); ?>"><span class="mobile_label">Total Tasks:</span>
                                             <a href="#TB_inline?width=1000&height=550&inlineId=client_info_<?php echo $client_id; ?>"
                                                class="thickbox"><?php echo intval( $client['total_tasks'] ); ?></a></td>
-                                        <td><?php echo intval( $client['tasks'] ); ?></td>
-                                        <td><?php echo intval( $client['subtasks'] ); ?></td>
-                                        <td>
+                                        <td data-order="<?php echo intval( $client['tasks'] ); ?>"><span class="mobile_label">Tasks:</span> <?php echo intval( $client['tasks'] ); ?></td>
+                                        <td data-order="<?php echo intval( $client['subtasks'] ); ?>"><span class="mobile_label">Subtasks:</span> <?php echo intval( $client['subtasks'] ); ?></td>
+                                        <td data-order="<?php echo wpcable_money( $client['revenue'] / intval( $client['total_tasks'] ) ); ?>"><span class="mobile_label">Average per task:</span> 
                                             $<?php echo wpcable_money( $client['revenue'] / intval( $client['total_tasks'] ) ); ?></td>
-                                        <td>$<?php echo wpcable_money( $client['revenue'] ); ?></td>
+                                        <td data-order="<?php echo wpcable_money( $client['revenue'] ); ?>"><span class="mobile_label">Revenue:</span> $<?php echo wpcable_money( $client['revenue'] ); ?></td>
                                     </tr>
 		                            <?php
 	                            }
                             }
-
 							?>
 
                             </tbody>

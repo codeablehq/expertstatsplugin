@@ -70,7 +70,41 @@ class wpcable_clients {
 		$client_variance = array();
 
 		// loop transactions
+		
 		foreach ( $result as $tr ) {
+			
+			// init indexes
+			if ( !isset( $clients['clients'][ $tr['client_id'] ]['total_tasks'] ) ) {
+				$clients['clients'][ $tr['client_id'] ]['total_tasks'] 	= 0;
+			}
+			if ( !isset( $clients['clients'][ $tr['client_id'] ]['revenue'] ) ) {
+				$clients['clients'][ $tr['client_id'] ]['revenue'] 	= 0;
+			}
+			if ( !isset( $clients['clients'][ $tr['client_id'] ]['tasks'] ) ) {
+				$clients['clients'][ $tr['client_id'] ]['tasks'] = 0;
+			}
+			if ( !isset( $clients['clients'][ $tr['client_id'] ]['total_tasks'] ) ) {
+				$clients['clients'][ $tr['client_id'] ]['total_tasks'] = 0;
+			}
+			if ( !isset( $clients['clients'][ $tr['client_id'] ]['tasks'] ) ) {
+				$clients['clients'][ $tr['client_id'] ]['tasks'] = 0;
+			}
+			if ( !isset( $clients['clients'][ $tr['client_id'] ]['subtasks'] ) ) {
+				$clients['clients'][ $tr['client_id'] ]['subtasks'] = 0;
+			}
+			if ( !isset( $clients['totals']['refunds'] ) ) {
+				$clients['totals']['refunds'] = 0;
+			}
+			if ( !isset( $clients['totals']['completed'] ) ) {
+				$clients['totals']['completed'] = 0;
+			}
+			if ( !isset( $clients['totals']['subtasks'] ) ) {
+				$clients['totals']['subtasks'] = 0;
+			}
+			if ( !isset( $clients['totals']['tasks'] ) ) {
+				$clients['totals']['tasks'] = 0;
+			}
+			
 
 			$clients['clients'][ $tr['client_id'] ]['client_id']       = $tr['client_id'];
 			$clients['clients'][ $tr['client_id'] ]['revenue']         = ( strpos( $tr['description'], 'refund' ) !== false ? $clients['clients'][ $tr['client_id'] ]['revenue'] : $clients['clients'][ $tr['client_id'] ]['revenue'] + $tr['credit_revenue_amount'] );
@@ -114,8 +148,6 @@ class wpcable_clients {
 
 			// $clients['clients'][$client['client_id']]['variance'] = $this->standard_deviation($client_variance[$client['client_id']]);
 			// }
-
-
 		}
 
 		return $clients;

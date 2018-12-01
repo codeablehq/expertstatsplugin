@@ -467,8 +467,8 @@ class wpcable_stats {
       $all_month_totals            = array();
       $all_month_totals['revenue'] = $all_month_totals['total_cost'] = '';
       foreach ( $month_totals as $mt ) {
-        $all_month_totals['revenue']    = $all_month_totals['revenue'] + $mt['revenue'];
-        $all_month_totals['total_cost'] = $all_month_totals['total_cost'] + $mt['total_cost'];
+        $all_month_totals['revenue']    = floatval( $all_month_totals['revenue'] ) + floatval( $mt['revenue'] );
+        $all_month_totals['total_cost'] = floatval( $all_month_totals['total_cost'] ) + floatval( $mt['total_cost'] );
       }
 
       $chart_categories       = array();
