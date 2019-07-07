@@ -1,4 +1,8 @@
 <?php
+/**
+ *
+ * @package wpcable
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -6,9 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class wpcable_transcactions {
 
-	public $tables = array();
+	public $tables     = array();
 	private $api_calls = '';
-	private $debug = false;
+	private $debug     = false;
 
 	public function __construct( $email, $password ) {
 
@@ -17,7 +21,7 @@ class wpcable_transcactions {
 		$this->tables = array(
 			'transcactions' => $wpdb->prefix . 'codeable_transcactions',
 			'clients'       => $wpdb->prefix . 'codeable_clients',
-			'amounts'       => $wpdb->prefix . 'codeable_amounts'
+			'amounts'       => $wpdb->prefix . 'codeable_amounts',
 		);
 
 		$this->api_calls = new wpcable_api_calls( $email, $password );
@@ -58,7 +62,7 @@ class wpcable_transcactions {
 				foreach ( $single_page['transactions'] as $tr ) {
 
 					// check if transactions already exists
-					$check = $wpdb->get_results( "SELECT count(*) as totalrows FROM " . $this->tables['transcactions'] . " WHERE id = '" . $tr['id'] . "'" );
+					$check = $wpdb->get_results( 'SELECT count(*) as totalrows FROM ' . $this->tables['transcactions'] . " WHERE id = '" . $tr['id'] . "'" );
 
 					// if the record exists then return total
 					if ( $check[0]->totalrows > 0 ) {
@@ -81,7 +85,7 @@ class wpcable_transcactions {
 						'task_title'     => $tr['task']['title'],
 						'parent_task_id' => ( $tr['task']['parent_task_id'] > 0 ? $tr['task']['parent_task_id'] : 0 ),
 						'preferred'      => $tr['task']['current_user_is_preferred_contractor'],
-						'client_id'      => $tr['task_client']['id']
+						'client_id'      => $tr['task_client']['id'],
 					);
 					// the API is returning some blank rows, ensure we have a valid client_id
 					if ( $this->validate_row( $new_tr['id'] ) ) {
@@ -95,9 +99,8 @@ class wpcable_transcactions {
 						die( 'could not insert transactions ' . $tr['id'] . ':' . $wpdb->print_error() );
 					}
 
-
 					// check if transactions already exists
-					$check_client = $wpdb->get_results( "SELECT count(*) as totalrows FROM " . $this->tables['clients'] . " WHERE client_id = '" . $tr['task_client']['id'] . "'" );
+					$check_client = $wpdb->get_results( 'SELECT count(*) as totalrows FROM ' . $this->tables['clients'] . " WHERE client_id = '" . $tr['task_client']['id'] . "'" );
 
 					// if the client record exists then return total
 					if ( ! ( $check_client[0]->totalrows > 0 ) ) {
@@ -122,7 +125,6 @@ class wpcable_transcactions {
 								$new_client
 							);
 						}
-
 					}
 
 					$new_amount = array(
@@ -150,9 +152,7 @@ class wpcable_transcactions {
 
 					$total ++;
 
-
 				}
-
 			}
 		}
 

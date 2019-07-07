@@ -1,4 +1,8 @@
 <?php
+/**
+ *
+ * @package wpcable
+ */
 
 /**
  * A Wrapper for the WordPress object cache
@@ -51,19 +55,19 @@ class wpcable_cache {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    0.0.6
-	 * @param    string    $cache_key     The unique cache key to use.
+	 * @param    string $cache_key     The unique cache key to use.
 	 */
 	public function __construct( $cache_key = false, $query = false, $cache_expires = 0 ) {
 
-		if( ! $cache_key ) {
-			throw new Exception('No cache key provided.');
+		if ( ! $cache_key ) {
+			throw new Exception( 'No cache key provided.' );
 		}
 
-		if( $query ) {
+		if ( $query ) {
 			$this->query = $query;
 		}
 
-		if( $cache_expires ) {
+		if ( $cache_expires ) {
 			$this->cache_expires = $cache_expires;
 		}
 
@@ -79,10 +83,10 @@ class wpcable_cache {
 	 */
 	private function get_cache_iteration() {
 
-		$iteration = wp_cache_get(self::ITTR_KEY);
+		$iteration = wp_cache_get( self::ITTR_KEY );
 
-		if( $iteration === false ) {
-			wp_cache_set(self::ITTR_KEY, 1);
+		if ( $iteration === false ) {
+			wp_cache_set( self::ITTR_KEY, 1 );
 			$iteration = 1;
 		}
 
@@ -125,13 +129,13 @@ class wpcable_cache {
 	public function check() {
 		global $wpdb;
 
-		if( empty($this->query) ) {
-			throw new Exception('You must provide a query in order to prime the cache');
+		if ( empty( $this->query ) ) {
+			throw new Exception( 'You must provide a query in order to prime the cache' );
 		}
 
 		$data = $this->get();
 
-		if( $data === false ) {
+		if ( $data === false ) {
 			$data = $wpdb->get_results( $this->query, ARRAY_A );
 			$this->set( $data );
 		}

@@ -1,27 +1,31 @@
 <?php
 /**
- * Plugin Name: WP Codeable
- * Plugin URI: https://github.com/codeablehq/blackbook/wiki/Expert-Stats-Plugin
- * Description: Get your Codeable data
- * Version: 0.0.11
- * Author: Spyros Vlachopoulos
- * Contributors: Panagiotis Synetos, John Leskas, Justin Frydman, Jonathan Bossenger, Rob Scott
- * Author URI: https://codeable.io/developers/spyros-vlachopoulos/
- * License: GPL2
- * Text Domain: wpcable
+ * @package wpcable
+ *
+ * Plugin Name:       WP Codeable
+ * Plugin URI:        https://github.com/codeablehq/blackbook/wiki/Expert-Stats-Plugin
+ * Description:       Get your Codeable data
+ * Version:           0.0.20
+ * Author:            Spyros Vlachopoulos
+ * Contributors:      Panagiotis Synetos, John Leskas, Justin Frydman, Jonathan Bossenger, Rob Scott
+ * Author URI:        https://codeable.io/developers/spyros-vlachopoulos/
+ * License:           GPL2
+ * Text Domain:       wpcable
  * GitHub Plugin URI: https://github.com/codeablehq/expertstatsplugin
  */
 
-
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+	exit; // Exit if accessed directly.
 }
 
-
-// Load plugin textdomain
+// Load plugin textdomain.
 add_action( 'plugins_loaded', 'wpcable_load_textdomain' );
 function wpcable_load_textdomain() {
-	load_plugin_textdomain( 'wpcable', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+	load_plugin_textdomain(
+		'wpcable',
+		false,
+		dirname( plugin_basename( __FILE__ ) ) . '/languages/'
+	);
 }
 
 /** Define wpcable constants */
@@ -32,36 +36,30 @@ define( 'WPCABLE_ASSESTS_DIR', dirname( __FILE__ ) . '/assets' );
 define( 'WPCABLE_DIR', dirname( __FILE__ ) );
 define( 'WPCABLE_URI', rtrim( plugin_dir_url( __FILE__ ), '/' ) );
 
-
-final class wpcable {
+final class WpCable {
 
 	public function __construct() {
-
 		$this->includes();
-
 	}
 
 	private function includes() {
-		// require_once( 'classes/cpt.php' );
-		require_once( WPCABLE_CLASSES_DIR . '/object_cache.php' );
-		require_once( WPCABLE_FUNCTIONS_DIR . '/admin-settings.php' );
-		require_once( WPCABLE_FUNCTIONS_DIR . '/admin-page.php' );
-		require_once( WPCABLE_FUNCTIONS_DIR . '/formatting.php' );
-		require_once( WPCABLE_FUNCTIONS_DIR . '/pert-calculator.php' );
-		require_once( WPCABLE_CLASSES_DIR . '/api_calls.php' );
-		require_once( WPCABLE_CLASSES_DIR . '/transactions.php' );
-		require_once( WPCABLE_CLASSES_DIR . '/stats.php' );
-		require_once( WPCABLE_CLASSES_DIR . '/clients.php' );
-
+		require_once WPCABLE_CLASSES_DIR . '/object_cache.php';
+		require_once WPCABLE_FUNCTIONS_DIR . '/admin-settings.php';
+		require_once WPCABLE_FUNCTIONS_DIR . '/admin-page.php';
+		require_once WPCABLE_FUNCTIONS_DIR . '/formatting.php';
+		require_once WPCABLE_FUNCTIONS_DIR . '/pert-calculator.php';
+		require_once WPCABLE_CLASSES_DIR . '/api_calls.php';
+		require_once WPCABLE_CLASSES_DIR . '/transactions.php';
+		require_once WPCABLE_CLASSES_DIR . '/stats.php';
+		require_once WPCABLE_CLASSES_DIR . '/clients.php';
 	}
-
-
 }
 
-new wpcable();
+new WpCable();
 
-
-// create a scheduled event (if it does not exist already)
+/**
+ * Create a scheduled event (if it does not exist already).
+ */
 function wpcable_cronstarter_activation() {
 	if ( ! wp_next_scheduled( 'wpcable_cronjob' ) ) {
 		// wp_schedule_event( time(), 'daily', 'wpcable_cronjob' );
@@ -71,17 +69,15 @@ function wpcable_cronstarter_activation() {
 // and make sure it's called whenever WordPress loads
 add_action( 'wp', 'wpcable_cronstarter_activation' );
 
-
 // on install
 function wpcable_install() {
 	global $wpdb;
 
 	$wpcable_transcactions_version = '0.0.2';
 
-	if ( get_option( 'wpcable_transcactions_version' ) != $wpcable_transcactions_version ) {
+	if ( get_option( 'wpcable_transcactions_version' ) !== $wpcable_transcactions_version ) {
 
-
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		$charset_collate = $wpdb->get_charset_collate();
 
@@ -103,8 +99,7 @@ function wpcable_install() {
 		      KEY client_id (client_id)
 		    ) $charset_collate;";
 
-		$dbDelta = dbDelta( $sql );
-
+		$db_delta = dbDelta( $sql );
 
 		$table_name = $wpdb->prefix . 'codeable_amounts';
 
@@ -125,8 +120,7 @@ function wpcable_install() {
 		      KEY client_id (client_id)
 		    ) $charset_collate;";
 
-		$dbDelta = dbDelta( $sql );
-
+		$db_delta = dbDelta( $sql );
 
 		$table_name = $wpdb->prefix . 'codeable_clients';
 
@@ -144,32 +138,27 @@ function wpcable_install() {
 		      PRIMARY KEY  (client_id)
 		    ) $charset_collate;";
 
-		$dbDelta = dbDelta( $sql );
+		$db_delta = dbDelta( $sql );
 
 		update_option( 'wpcable_transcactions_version', $wpcable_transcactions_version );
 
-		// set default scan method
-		if ( get_option( 'wpcable_what_to_check' ) == false ) {
+		// Set default scan method.
+		if ( get_option( 'wpcable_what_to_check' ) === false ) {
 			update_option( 'wpcable_what_to_check', '0' );
 		}
-
 	}
-
-
 }
 
 register_activation_hook( __FILE__, 'wpcable_install' );
 
 // on deactivation
 function wpcable_deactivate() {
-
 	require_once plugin_dir_path( __FILE__ ) . 'classes/deactivator.php';
-	wpcable_deactivator::deactivate();
+	WpCable_deactivator::deactivate();
 
 }
 
 register_deactivation_hook( __FILE__, 'wpcable_deactivate' );
-
 
 function wpcable_admin_scripts( $hook ) {
 	$plugin_hooks = [
@@ -181,39 +170,68 @@ function wpcable_admin_scripts( $hook ) {
 	if ( ! in_array( $hook, $plugin_hooks, true ) ) {
 		return;
 	}
-	wp_enqueue_style( 'gridcss', plugins_url( 'assets/css/grid12.css', __FILE__ ) );
-	wp_enqueue_style( 'wpcablecss', plugins_url( 'assets/css/wpcable.css', __FILE__ ) );
-	wp_enqueue_style( 'ratycss', plugins_url( 'assets/css/jquery.raty.css', __FILE__ ) );
-	wp_enqueue_style( 'datatablecss', plugins_url( 'assets/css/jquery.dataTables.min.css', __FILE__ ) );
+
+	wp_enqueue_style(
+		'gridcss',
+		plugins_url( 'assets/css/grid12.css', __FILE__ )
+	);
+	wp_enqueue_style(
+		'wpcablecss',
+		plugins_url( 'assets/css/wpcable.css', __FILE__ )
+	);
+	wp_enqueue_style(
+		'ratycss',
+		plugins_url( 'assets/css/jquery.raty.css', __FILE__ )
+	);
+	wp_enqueue_style(
+		'datatablecss',
+		plugins_url( 'assets/css/jquery.dataTables.min.css', __FILE__ )
+	);
 
 	wp_enqueue_script(
 		'highchartsjs',
 		plugins_url( 'assets/js/highcharts.js', __FILE__ ),
 		array( 'jquery', 'jquery-ui-core', 'jquery-ui-datepicker' ),
-		time(),
+		null,
 		true
 	);
 	wp_enqueue_script(
 		'highcharts_export_js',
 		plugins_url( 'assets/js/exporting.js', __FILE__ ),
 		array( 'jquery', 'highchartsjs' ),
-		time(),
+		null,
 		true
 	);
 	wp_enqueue_script(
 		'highcharts_offline_export_js',
 		plugins_url( 'assets/js/offline-exporting.js', __FILE__ ),
 		array( 'jquery', 'highcharts_export_js' ),
-		time(),
+		null,
 		true
 	);
 	wp_enqueue_style( 'jquery-ui-datepicker' );
 
-	wp_enqueue_script( 'highcharts3djs', plugins_url( 'assets/js/highcharts-3d.js', __FILE__ ), array( 'highchartsjs' ) );
-	wp_enqueue_script( 'ratyjs', plugins_url( 'assets/js/jquery.raty.js', __FILE__ ) );
-	wp_enqueue_script( 'datatablesjs', plugins_url( 'assets/js/jquery.dataTables.min.js', __FILE__ ) );
-	wp_enqueue_script( 'matchheightjs', plugins_url( 'assets/js/jquery.matchHeight-min.js', __FILE__ ) );
-	wp_enqueue_script( 'wpcablejs', plugins_url( 'assets/js/wpcable.js', __FILE__ ) );
+	wp_enqueue_script(
+		'highcharts3djs',
+		plugins_url( 'assets/js/highcharts-3d.js', __FILE__ ),
+		array( 'highchartsjs' )
+	);
+	wp_enqueue_script(
+		'ratyjs',
+		plugins_url( 'assets/js/jquery.raty.js', __FILE__ )
+	);
+	wp_enqueue_script(
+		'datatablesjs',
+		plugins_url( 'assets/js/jquery.dataTables.min.js', __FILE__ )
+	);
+	wp_enqueue_script(
+		'matchheightjs',
+		plugins_url( 'assets/js/jquery.matchHeight-min.js', __FILE__ )
+	);
+	wp_enqueue_script(
+		'wpcablejs',
+		plugins_url( 'assets/js/wpcable.js', __FILE__ )
+	);
 }
 
 add_action( 'admin_enqueue_scripts', 'wpcable_admin_scripts' );
@@ -221,7 +239,12 @@ add_action( 'admin_enqueue_scripts', 'wpcable_admin_scripts' );
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wpcable_action_links' );
 
 function wpcable_action_links( $links ) {
-	$links = array( '<a href="' . esc_url( get_admin_url( null, 'admin.php?page=codeable_settings' ) ) . '">Settings</a>' ) + $links;
+	$link = sprintf(
+		'<a href="%s">Settings</a>',
+		esc_url( get_admin_url( null, 'admin.php?page=codeable_settings' ) )
+	);
+
+	array_unshift( $links, $link );
 
 	return $links;
 }

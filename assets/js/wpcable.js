@@ -1,5 +1,5 @@
 jQuery(document).ready(function () {
-  
+
     jQuery('.compareicon').click(function() {
       jQuery('.compareto').toggle();
       jQuery('#compare_date_from, #compare_date_to').val('');
@@ -38,15 +38,13 @@ jQuery(document).ready(function () {
         }
     });
 
-
     jQuery('.datatable_inner').each(function () {
         jQuery(this).DataTable({
             "order": [[1, "desc"]]
         });
     });
-    var dtable = jQuery('#clients_table').DataTable({
+    jQuery('#clients_table').DataTable({
         "order": [[7, "desc"]]
     });
-
 
 });

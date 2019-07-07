@@ -1,4 +1,8 @@
 <?php
+/**
+ *
+ * @package wpcable
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -6,28 +10,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class wpcable_api_calls {
 
-	private $email = '';
-	private $password = '';
+	private $email     = '';
+	private $password  = '';
 	public $auth_token = '';
 
 
 	public function __construct( $email, $password ) {
-
 		$this->email    = $email;
 		$this->password = $password;
 	}
 
 	public function login() {
 
-		$args             = array( 'email' => $this->email, 'password' => $this->password );
+		$args             = array(
+			'email'    => $this->email,
+			'password' => $this->password,
+		);
 		$url              = 'https://api.codeable.io/users/login';
 		$login_call       = $this->get_curl( $url, $args );
 		$this->auth_token = $login_call['auth_token'];
 
 		// credential error checking
-		if( isset($login_call['errors']) ) {
-			if( ! empty($login_call['errors'][0]['message']) && $login_call['errors'][0]['message'] === 'Invalid credentials' ) {
-				wp_safe_redirect( admin_url('admin.php?page=codeable_settings&wpcable_error=credentials') );
+		if ( isset( $login_call['errors'] ) ) {
+			if ( ! empty( $login_call['errors'][0]['message'] ) && $login_call['errors'][0]['message'] === 'Invalid credentials' ) {
+				wp_safe_redirect( admin_url( 'admin.php?page=codeable_settings&wpcable_error=credentials' ) );
 				exit;
 			}
 		}
@@ -42,7 +48,7 @@ class wpcable_api_calls {
 		$url                = 'https://api.codeable.io/users/me/transactions';
 		$args               = array( 'page' => $page );
 		$CURLOPT_HTTPHEADER = array(
-			"Authorization: Bearer " . $this->auth_token
+			'Authorization: Bearer ' . $this->auth_token,
 		);
 
 		$transactions = $this->get_curl( $url, $args, 'get', $CURLOPT_HTTPHEADER );
@@ -86,8 +92,7 @@ class wpcable_api_calls {
 				curl_setopt( $ch, CURLOPT_POSTFIELDS, $args );
 			}
 
-
-			# Setup request to send json via POST.
+			// Setup request to send json via POST.
 			curl_setopt( $ch, CURLOPT_URL, $url );
 			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
 
@@ -95,12 +100,11 @@ class wpcable_api_calls {
 				curl_setopt( $ch, CURLOPT_HTTPHEADER, $CURLOPT_HTTPHEADER );
 			}
 
-			# Send request.
+			// Send request.
 			$content = curl_exec( $ch );
 
 			if ( false === $content ) {
 				// throw new Exception(curl_error($ch), curl_errno($ch));
-
 				echo '<pre>' . print_r( $url, true ) . '</pre>';
 
 				echo '<pre>';
@@ -115,15 +119,17 @@ class wpcable_api_calls {
 			}
 			curl_close( $ch );
 
-
 			return json_decode( $content, true );
 
 		} catch ( Exception $e ) {
 
-			trigger_error( sprintf(
-				'Curl failed with error #%d: %s',
-				$e->getCode(), $e->getMessage() ),
-				E_USER_ERROR );
+			trigger_error(
+				sprintf(
+					'Curl failed with error #%d: %s',
+					$e->getCode(), $e->getMessage()
+				),
+				E_USER_ERROR
+			);
 
 		}
 	}
