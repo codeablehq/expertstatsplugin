@@ -5,13 +5,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function wpcable_register_menu_page() {
+    $icon_code = file_get_contents( WPCABLE_ASSESTS_DIR . '/images/ca-logo.svg' );
+
 	add_menu_page(
 		__( 'Codeable Stats', 'wpcable' ),
 		__( 'Codeable Stats', 'wpcable' ),
 		'manage_options',
 		'codeable_transcactions_stats',
 		'codeable_transcactions_stats_cb',
-		plugins_url( 'assets/images/codeable_16x16.png', dirname( __FILE__ ) ),
+		'data:image/svg+xml;base64,' . base64_encode( $icon_code ),
 		85
 	);
 }
