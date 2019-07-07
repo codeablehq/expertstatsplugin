@@ -222,10 +222,10 @@ function codeable_settings_callback() {
             <p>
                 <small><?php echo __( 'Be sure that you set PHP timeout to 120 or more on your first fetch or if you have deleted the cached data', 'wpcable' ); ?></small>
             </p>
-            <input name="submit" id="" class="button button-large button-action"
+            <input name="submit" class="button button-primary"
                    value="<?php echo __( 'Fetch remote data', 'wpcable' ); ?>" type="submit">
             <a href="admin.php?page=codeable_settings&flushdata=true"
-               class="button button-large button-danger"><?php echo __( 'Delete cached data', 'wpcable' ); ?></a>
+               class="button"><?php echo __( 'Delete cached data', 'wpcable' ); ?></a>
 
         </form>
     </div>
