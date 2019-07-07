@@ -49,11 +49,11 @@ img.round {
 .box {
 	position: relative;
 	background-color: #fff;
-	border: 1px solid #dadada;
+	border: 1px solid #e5e5e5;
 	padding: 20px;
 	margin-bottom: 30px;
 	box-sizing: border-box;
-	box-shadow: 0 1px 5px rgba(0, 0, 0, .25), 0 0 50px rgba(0, 0, 0, .1) inset;
+	box-shadow: 0 1px 1px rgba(0,0,0,.04);
 }
 
 .box:after {
@@ -72,8 +72,8 @@ img.round {
 	padding: 20px;
 	box-sizing: border-box;
 	background-color: #fff;
-	border: 1px solid #dadada;
-	box-shadow: 0 1px 5px rgba(0, 0, 0, .25), 0 0 50px rgba(0, 0, 0, .1) inset;
+	border: 1px solid #e5e5e5;
+	box-shadow: 0 1px 1px rgba(0,0,0,.04);
 }
 
 /********/
@@ -212,9 +212,9 @@ img.round {
 	height: 85px;
 	position: relative;
 	background-color: #fff;
-	border: 1px solid #dadada;
+	border: 1px solid #e5e5e5;
 	box-sizing: border-box;
-	box-shadow: 0 1px 5px rgba(0, 0, 0, .25), 0 0 50px rgba(0, 0, 0, .1) inset;
+	box-shadow: 0 1px 1px rgba(0,0,0,.04);
 }
 
 #ui-datepicker-div .ui-datepicker-header {
