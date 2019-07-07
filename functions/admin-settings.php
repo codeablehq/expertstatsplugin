@@ -38,6 +38,29 @@ function codeable_register_settings() {
 	register_setting( 'wpcable_group', 'wpcable_skip_zero_months' );
 }
 
+function codeable_ssl_warning() {
+    $check = 'auto';
+    if ( defined( 'CODEABLE_SSL_CHECK' ) ) {
+        $check = CODEABLE_SSL_CHECK;
+    }
+
+    if ( 'off' === $check ) {
+        return false;
+    }
+
+    if ( 'auto' === $check ) {
+        if ( '127.0.0.1' === $_SERVER['REMOTE_ADDR'] ) {
+            // "Remote" server is on local machine, i.e. development server.
+            return false;
+        } elseif ( preg_match( '/\.local$/', $_SERVER['HTTP_HOST'] ) ) {
+            // A ".local" domain, i.e. development server.
+            return false;
+        }
+    }
+
+    return ! is_ssl();
+}
+
 function codeable_settings_callback() {
 	global $wpdb;
 
@@ -48,8 +71,8 @@ function codeable_settings_callback() {
         </div>
 
     <?php endif;
-	if( ! is_ssl() ) : ?>
 
+	if( codeable_ssl_warning() ) : ?>
         <div class="update-nag notice">
             <p><?php echo __( 'Please consider installing this plugin on a secure website', 'wpcable' ); ?></p>
         </div>
