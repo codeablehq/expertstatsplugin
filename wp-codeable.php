@@ -172,8 +172,13 @@ register_deactivation_hook( __FILE__, 'wpcable_deactivate' );
 
 
 function wpcable_admin_scripts( $hook ) {
+	$plugin_hooks = [
+		'toplevel_page_codeable_transcactions_stats',
+		'codeable-stats_page_codeable_settings',
+		'codeable-stats_page_codeable_estimate',
+	];
 
-	if ( $hook != 'toplevel_page_codeable_transcactions_stats' ) {
+	if ( ! in_array( $hook, $plugin_hooks, true ) ) {
 		return;
 	}
 	wp_enqueue_style( 'gridcss', plugins_url( 'assets/css/grid12.css', __FILE__ ) );
