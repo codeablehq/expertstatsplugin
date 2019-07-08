@@ -144,9 +144,7 @@ function codeable_settings_callback() {
 
 	}
 
-
 	if ( isset( $_POST['wpcable_email'] ) && isset( $_POST['wpcable_password'] ) ) {
-
 		$nonce = wp_verify_nonce( $_POST['wpcable_fetch_nonce'], 'wpcable_fetch' );
 		$total = 0;
 
@@ -154,10 +152,12 @@ function codeable_settings_callback() {
 			$email    = sanitize_email( $_POST['wpcable_email'] );
 			$password = $_POST['wpcable_password'];
 
-			$wpcable_transcactions = new wpcable_transcactions( $email, $password );
-			$total                 = $wpcable_transcactions->store_transactions();
+			$wpcable_transcactions = new wpcable_transcactions();
+			$wpcable_transcactions->store_profile( $email, $password );
 
-			// flush object cache
+			$total = $wpcable_transcactions->store_transactions();
+
+			// Flush object cache.
 			wpcable_cache::flush();
 		}
 
@@ -180,7 +180,6 @@ function codeable_settings_callback() {
 
 			<table class="form-table">
 				<tbody>
-
 
 				<?php settings_fields( 'wpcable_group' ); ?>
 				<?php do_settings_sections( 'wpcable_group' ); ?>

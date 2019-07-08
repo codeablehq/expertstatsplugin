@@ -73,7 +73,7 @@ add_action( 'wp', 'wpcable_cronstarter_activation' );
 function wpcable_install() {
 	global $wpdb;
 
-	$wpcable_transcactions_version = '0.0.2';
+	$wpcable_transcactions_version = '0.0.3';
 
 	if ( get_option( 'wpcable_transcactions_version' ) !== $wpcable_transcactions_version ) {
 
@@ -136,6 +136,25 @@ function wpcable_install() {
 		    `medium` varchar(255) DEFAULT NULL,
 		    `large` varchar(255) DEFAULT NULL,
 		      PRIMARY KEY  (client_id)
+		    ) $charset_collate;";
+
+		$db_delta = dbDelta( $sql );
+
+		$table_name = $wpdb->prefix . 'codeable_tasks';
+
+		$sql = "CREATE TABLE {$table_name} (
+		    `task_id` int(11) NOT NULL,
+			`client_id` int(11) NOT NULL,
+			`title` varchar(255) NOT NULL,
+		    `estimate` bit DEFAULT 0 NOT NULL,
+		    `hidden` bit DEFAULT 0 NOT NULL,
+		    `promoted` bit DEFAULT 0 NOT NULL,
+		    `subscribed` bit DEFAULT 0 NOT NULL,
+		    `favored` bit DEFAULT 0 NOT NULL,
+		    `client_fee` float DEFAULT 17.5 NOT NULL,
+		    `state` varchar(50) DEFAULT '' NOT NULL,
+		    `kind` varchar(50) DEFAULT '' NOT NULL,
+		      PRIMARY KEY  (task_id)
 		    ) $charset_collate;";
 
 		$db_delta = dbDelta( $sql );
