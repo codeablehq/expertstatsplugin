@@ -575,3 +575,64 @@ div#TB_window {
 /*********************/
 /*   Settings page   */
 /*********************/
+
+/****************/
+/*   Sync bar   */
+/****************/
+
+.codeable-last-refresh {
+	display: block;
+	text-align: center;
+	margin: 30px 0;
+    padding-top: 15px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.tooltip {
+	position: relative;
+	display: inline-block;
+}
+
+.tooltip .dashicons {
+	opacity: 0.75;
+	cursor: help;
+	border-radius: 20px;
+}
+
+.tooltip:hover .tooltip-text,
+.tooltip:focus .tooltip-text {
+	display: block;
+}
+
+.tooltip:focus {
+	outline: none;
+}
+
+.tooltip:focus .dashicons {
+	box-shadow: 0 0 2px 2px #0073aa;
+}
+
+.tooltip .tooltip-text {
+	display: none;
+	position: absolute;
+	left: 50%;
+	bottom: 100%;
+	transform: translate(-50%, -15px);
+	background: #2b2c2d;
+	padding: 7px 10px;
+	color: #fff;
+	font-size: 13px;
+	line-height: 1.25em;
+	border-radius: 3px;
+	min-width: 240px;
+}
+
+.tooltip .tooltip-text:before {
+	content: '';
+	position: absolute;
+	left: 50%;
+	bottom: 0;
+	transform: translate(-50%, 16px);
+	border: 8px solid transparent;
+	border-top-color: #2b2c2d;
+}

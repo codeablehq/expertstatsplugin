@@ -16,6 +16,8 @@
 function codeable_add_message_param( $type, $values, $url = '' ) {
 	if ( ! $url ) {
 		$url = admin_url( 'admin.php?page=codeable_settings' );
+	} else {
+		$url = remove_query_arg( [ '_wpnonce', 'action' ], $url );
 	}
 
 	if ( 'error' !== $type ) {
@@ -111,6 +113,84 @@ function codeable_timeout_warning() {
 }
 
 /**
+ * Outputs default notices on all Codeable Stats pages.
+ *
+ * @return void
+ */
+function codeable_admin_notices() {
+	$errors  = codeable_get_message_param( 'error' );
+	$success = codeable_get_message_param( 'success' );
+
+	if ( $errors ) :
+		?>
+		<div class="notice error">
+			<?php if ( in_array( 'credentials', $errors, true ) ) : ?>
+				<p><?php _e( 'Invalid username or password', 'wpcable' ) ?></p>
+			<?php else : ?>
+				<p><?php echo implode( '<br />', $errors ); ?></p>
+			<?php endif; ?>
+		</div>
+		<?php
+	endif;
+
+	if ( $success ) :
+		?>
+		<div class="notice updated">
+			<?php if ( in_array( 'fetched', $success, true ) ) : ?>
+				<p><?php _e( 'Fetched latest details from API.', 'wpcable' ) ?></p>
+			<?php else : ?>
+				<p><?php echo implode( '<br />', $success ); ?></p>
+			<?php endif; ?>
+		</div>
+		<?php
+	endif;
+
+	if( codeable_ssl_warning() ) :
+		?>
+		<div class="update-nag notice">
+			<p><?php _e( 'Please consider installing this plugin on a secure website', 'wpcable' ); ?></p>
+		</div>
+		<?php
+	endif;
+
+	if ( codeable_timeout_warning() ) :
+		?>
+		<div class="update-nag notice">
+			<p><?php _e( 'Be sure that you set PHP timeout to 120 or more on your first fetch or if you have deleted the cached data', 'wpcable' ); ?></p>
+		</div>
+		<?php
+	endif;
+}
+
+/**
+ * Displays a login-nag when the user is not logged in
+ */
+function codeable_page_requires_login( $page_title ) {
+	if ( codeable_api_logged_in() ) {
+		return;
+	}
+
+	?>
+	<div class="wrap">
+		<h1><?php echo $pag_titlee; ?></h1>
+
+		<div class="notice error">
+			<p>
+				<?php
+				printf(
+					__( 'Please %slog in%s to access your stats.', 'wpcable' ),
+					'<a href="' . admin_url( 'admin.php?page=codeable_settings' ) . '">',
+					'</a>'
+				);
+				?>
+			</p>
+		</div>
+	</div>
+	<?php
+	exit;
+}
+
+/**
  * Flushes all locally stored data and forgets the authentication token.
  *
  * @return void
@@ -151,6 +231,10 @@ function codeable_flush_all_data() {
 
 	delete_option( 'wpcable_auth_token' );
 	delete_option( 'wpcable_email' );
+	delete_option( 'wpcable_average' );
+	delete_option( 'wpcable_balance' );
+	delete_option( 'wpcable_revenue' );
+	delete_option( 'wpcable_last_fetch' );
 	delete_option( 'wpcable_account_details' );
 
 	$redirect_to = codeable_add_message_param(
@@ -167,6 +251,70 @@ function codeable_flush_all_data() {
 
 	wp_safe_redirect( $redirect_to );
 	exit;
+}
+
+/**
+ * Checks, whether we should (auto) refresh the stats/pull data from API.
+ *
+ * @return void
+ */
+function codeable_maybe_refresh_data( $force = false ) {
+	$fetch = $force;
+
+	if ( ! $fetch ) {
+		$last_fetch = (int) get_option( 'wpcable_last_fetch' );
+
+		if ( ! $last_fetch ) {
+			$fetch = true;
+		} else {
+			$fetch = time() - $last_fetch > HOUR_IN_SECONDS;
+		}
+	}
+
+	if ( ! $fetch ) {
+		return;
+	}
+
+	$total = 0;
+
+	$data = new wpcable_api_data();
+	$data->store_profile( $email, $password );
+
+	$total = $data->store_transactions();
+
+	// Flush object cache.
+	wpcable_cache::flush();
+
+	update_option( 'wpcable_last_fetch', time() );
+}
+
+/**
+ * Display a notice fo the last API fetch and a refresh-button.
+ *
+ * @return void
+ */
+function codeable_last_fetch_info() {
+	$last_fetch    = get_option( 'wpcable_last_fetch' );
+	$format_string = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+	$refresh_url   = wp_nonce_url(
+		add_query_arg( 'action', 'codeable-refresh' ),
+		'wpcable-refresh'
+	);
+
+	?>
+	<div class="codeable-last-refresh">
+		<?php _e( 'Last refresh: ', 'wpcable' ); ?>
+		<?php echo date_i18n( $format_string, $last_fetch ); ?>
+		<span class="tooltip" tabindex="0">
+			<span class="tooltip-text"><?php _e( 'API details are fetched once per hour, or when you click the "Refresh" button on the right.', 'wpcable' ); ?></span>
+			<i class="dashicons dashicons-info"></i>
+		</span>
+		|
+		<a href="<?php echo esc_url( $refresh_url ); ?>">
+			<?php _e( 'Refresh', 'wpcable' ); ?>
+		</a>
+	</div>
+	<?php
 }
 
 /**

@@ -101,44 +101,8 @@ add_filter( 'pre_update_option_wpcable_password', 'codeable_handle_login', 10, 2
  */
 function codeable_settings_callback() {
 	global $wpdb;
-	$errors  = codeable_get_message_param( 'error' );
-	$success = codeable_get_message_param( 'success' );
 
-	if ( $errors ) :
-		?>
-		<div class="notice error">
-			<?php if ( in_array( 'credentials', $errors, true ) ) : ?>
-				<p><?php _e( 'Invalid username or password', 'wpcable' ) ?></p>
-			<?php else : ?>
-				<p><?php echo implode( '<br />', $errors ); ?></p>
-			<?php endif; ?>
-		</div>
-		<?php
-	endif;
-
-	if ( $success ) :
-		?>
-		<div class="notice updated">
-			<p><?php echo implode( '<br />', $success ); ?></p>
-		</div>
-		<?php
-	endif;
-
-	if( codeable_ssl_warning() ) :
-		?>
-		<div class="update-nag notice">
-			<p><?php _e( 'Please consider installing this plugin on a secure website', 'wpcable' ); ?></p>
-		</div>
-		<?php
-	endif;
-
-	if ( codeable_timeout_warning() ) :
-		?>
-		<div class="update-nag notice">
-			<p><?php _e( 'Be sure that you set PHP timeout to 120 or more on your first fetch or if you have deleted the cached data', 'wpcable' ); ?></p>
-		</div>
-		<?php
-	endif;
+	codeable_admin_notices();
 
 	set_time_limit( 300 );
 
@@ -202,7 +166,7 @@ function codeable_settings_callback() {
 					<tr>
 						<th scope="row">
 							<label class="wpcable_label" for="wpcable_email">
-								<?php _e( 'Email', 'wpcable' ); ?>
+								<?php _e( 'Account', 'wpcable' ); ?>
 							</label>
 						</th>
 						<td>
@@ -264,6 +228,8 @@ function codeable_settings_callback() {
 			</div>
 
 		</form>
+
+		<?php codeable_last_fetch_info(); ?>
 	</div>
 	<?php
 }

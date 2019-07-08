@@ -133,7 +133,7 @@ class wpcable_api_calls {
 	 */
 	public function self() {
 		$url        = 'users/me';
-		$login_call = $this->get_curl( $url );
+		$login_call = $this->get_curl( $url, [], 'get' );
 
 		unset( $login_call['auth_token'] );
 
@@ -183,7 +183,7 @@ class wpcable_api_calls {
 	 * @param  string $headers Optional Curl headers.
 	 * @return array
 	 */
-	private function get_curl( $url, $args, $method = 'post', $headers = '' ) {
+	private function get_curl( $url, $args = [], $method = 'post', $headers = '' ) {
 		$res = false;
 
 		try {

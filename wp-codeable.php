@@ -50,7 +50,7 @@ final class WpCable {
 		require_once WPCABLE_FUNCTIONS_DIR . '/pert-calculator.php';
 		require_once WPCABLE_FUNCTIONS_DIR . '/helpers.php';
 		require_once WPCABLE_CLASSES_DIR . '/api_calls.php';
-		require_once WPCABLE_CLASSES_DIR . '/transactions.php';
+		require_once WPCABLE_CLASSES_DIR . '/api_data.php';
 		require_once WPCABLE_CLASSES_DIR . '/stats.php';
 		require_once WPCABLE_CLASSES_DIR . '/clients.php';
 	}
@@ -74,9 +74,9 @@ add_action( 'wp', 'wpcable_cronstarter_activation' );
 function wpcable_install() {
 	global $wpdb;
 
-	$wpcable_transcactions_version = '0.0.3';
+	$wpcable_db_version = '0.0.3';
 
-	if ( get_option( 'wpcable_transcactions_version' ) !== $wpcable_transcactions_version ) {
+	if ( get_option( 'wpcable_transcactions_version' ) !== $wpcable_db_version ) {
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
@@ -160,7 +160,7 @@ function wpcable_install() {
 
 		$db_delta = dbDelta( $sql );
 
-		update_option( 'wpcable_transcactions_version', $wpcable_transcactions_version );
+		update_option( 'wpcable_transcactions_version', $wpcable_db_version );
 
 		// Set default scan method.
 		if ( get_option( 'wpcable_what_to_check' ) === false ) {

@@ -8,14 +8,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-class wpcable_transcactions {
+class wpcable_api_data {
 
 	/**
 	 * List of custom table names.
 	 *
 	 * @var array
 	 */
-	public $tables     = [];
+	public $tables = [];
 
 	/**
 	 * An wpcable_api_calls object for communication with the API.

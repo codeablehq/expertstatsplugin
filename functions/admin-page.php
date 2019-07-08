@@ -8,6 +8,37 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
+/**
+ * Refresh data from API.
+ *
+ * @return void
+ */
+function wpcable_handle_refresh() {
+	if ( empty( $_GET['_wpnonce'] ) ) {
+		return;
+	}
+	if ( empty( $_GET['action'] ) ) {
+		return;
+	}
+	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'wpcable-refresh' ) ) {
+		return;
+	}
+	if ( 'codeable-refresh' !== $_GET['action'] ) {
+		return;
+	}
+
+	codeable_maybe_refresh_data( true );
+
+	$redirect_to = codeable_add_message_param(
+		'success',
+		'fetched',
+		remove_query_arg( [ '_wpnonce', 'action' ] )
+	);
+	wp_safe_redirect( $redirect_to );
+	exit;
+}
+add_action( 'admin_init', 'wpcable_handle_refresh' );
+
 function wpcable_register_menu_page() {
 	$icon_code = file_get_contents( WPCABLE_ASSESTS_DIR . '/images/ca-logo.svg' );
 
@@ -21,31 +52,13 @@ function wpcable_register_menu_page() {
 		2
 	);
 }
-
 add_action( 'admin_menu', 'wpcable_register_menu_page' );
 
 function codeable_transcactions_stats_cb() {
 
-	if ( ! codeable_api_logged_in() ) :
-		?>
-		<div class="wrap cable_stats_wrap">
-			<h1><?php echo __( 'Codeable Stats', 'wpcable' ); ?></h1>
-
-			<div class="notice error">
-				<p>
-					<?php
-					printf(
-						__( 'Please %slog in%s to access your stats.', 'wpcable' ),
-						'<a href="' . admin_url( 'admin.php?page=codeable_settings' ) . '">',
-						'</a>'
-					);
-					?>
-				</p>
-			</div>
-		</div>
-		<?php
-		return;
-	endif;
+	codeable_page_requires_login( __( 'Codeable Stats', 'wpcable' ) );
+	codeable_maybe_refresh_data();
+	codeable_admin_notices();
 
 	add_thickbox();
 
@@ -142,16 +155,16 @@ function codeable_transcactions_stats_cb() {
 
 			<div class="box user-info">
 				<div class="avatar">
-					<img class="round" src="<?php echo $account_details['user']['avatar']['large_url']; ?>"/>
-					<div class="rating" data-score="<?php echo $account_details['user']['stats']['avg_rating']; ?>"></div>
+					<img class="round" src="<?php echo $account_details['avatar']['large_url']; ?>"/>
+					<div class="rating" data-score="<?php echo $account_details['stats']['avg_rating']; ?>"></div>
 				</div>
 				<div class="details">
 					<div class="codeable-logo">
 						<?php echo '<img src="' . esc_url( plugins_url( 'assets/images/codeable-full.png', dirname( __FILE__ ) ) ) . '" > '; ?>
 					</div>
-					<span class="name"><?php echo $account_details['user']['first_name'] . ' ' . $account_details['user']['last_name']; ?></span>
-					<span class="label role"><?php echo $account_details['user']['role']; ?></span>
-					<span class="user-id"><?php echo __( 'ID', 'wpcable' ) . ': <a href="https://app.codeable.io/tasks/new?preferredContractor=' . $account_details['user']['id'] . '" target="_blank" title="' . __( 'Direct hire link', 'wpcable' ) . '">' . $account_details['user']['id']; ?></a></span>
+					<span class="name"><?php echo $account_details['first_name'] . ' ' . $account_details['last_name']; ?></span>
+					<span class="label role"><?php echo $account_details['role']; ?></span>
+					<span class="user-id"><?php echo __( 'ID', 'wpcable' ) . ': <a href="https://app.codeable.io/tasks/new?preferredContractor=' . $account_details['id'] . '" target="_blank" title="' . __( 'Direct hire link', 'wpcable' ) . '">' . $account_details['id']; ?></a></span>
 				</div>
 			</div>
 
@@ -159,11 +172,11 @@ function codeable_transcactions_stats_cb() {
 				<div class="column_inner">
 					<div class="maindata">
 						<div class="label"><?php echo __( 'Completed Tasks', 'wpcable' ); ?></div>
-						<div class="value"><?php echo $account_details['user']['completed_tasks_count']; ?></div>
+						<div class="value"><?php echo $account_details['completed_tasks_count']; ?></div>
 					</div>
 					<div class="footerdata">
 						<span class="label"><?php echo __( 'Tasks', 'wpcable' ); ?></span>: <span
-								class="value"><?php echo $account_details['user']['tasks_count']; ?></span><br/>
+								class="value"><?php echo $account_details['tasks_count']; ?></span><br/>
 						<span class="label"><?php echo __( 'Refunded', 'wpcable' ); ?></span>: <span
 								class="value"><?php echo $clients_data['totals']['refunds']; ?></span>
 					</div>
@@ -210,7 +223,7 @@ function codeable_transcactions_stats_cb() {
 								<span class="label"><?php echo __( 'Month conversion', 'wpcable' ); ?></span>
 							</td>
 							<td>
-								<span class="value"><?php echo $account_details['user']['stats']['estimated_completed_conversion_1_month'] * 100; ?>
+								<span class="value"><?php echo $account_details['stats']['estimated_completed_conversion_1_month'] * 100; ?>
 									%</span>
 							</td>
 						</tr>
@@ -219,7 +232,7 @@ function codeable_transcactions_stats_cb() {
 								<span class="label"><?php echo __( '6 Month conversion', 'wpcable' ); ?></span>
 							</td>
 							<td>
-								<span class="value"><?php echo $account_details['user']['stats']['estimated_completed_conversion_6_months'] * 100; ?>
+								<span class="value"><?php echo $account_details['stats']['estimated_completed_conversion_6_months'] * 100; ?>
 									%</span>
 							</td>
 						</tr>
@@ -583,6 +596,8 @@ function codeable_transcactions_stats_cb() {
 		</div>
 
 	</div>
+
+	<?php codeable_last_fetch_info(); ?>
 
 
 	<script>
