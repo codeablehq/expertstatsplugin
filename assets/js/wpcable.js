@@ -47,7 +47,9 @@ jQuery(document).ready(function () {
         "order": [[7, "desc"]]
     });
 
+    // -----
     // Remove the "error" and "success" params from settings URL after page load.
+
     var url = window.location.href;
     url = setUrlParameter(url, 'error', '');
     url = setUrlParameter(url, 'success', '');
@@ -96,5 +98,224 @@ jQuery(document).ready(function () {
 
         return baseUrl + params;
     }
+});
 
+/**
+ * Task list functions.
+ */
+jQuery(document).ready(function () {
+    if (!jQuery('.wrap.wpcable_wrap.tasks').length) {
+        return;
+    }
+    if (!window.wpcable || ! window.wpcable.tasks) {
+        return;
+    }
+
+    var list = jQuery( '.wrap .task-list' );
+    var listTitle = jQuery( '.wrap .list-title' );
+    var itemTpl = wp.template( 'list-item' );
+    var notesForm = jQuery( '.wrap .notes-editor-layer' );
+    var notesMde = false;
+
+    var filterState = 'all';
+
+    function refreshList() {
+        list.empty();
+
+        for ( var i = 0; i < wpcable.tasks.length; i++ ) {
+            var task = wpcable.tasks[i];
+
+            if ( filterState !== 'all' && filterState !== task.state ) {
+                continue;
+            }
+
+            function _refresh() {
+                var task = this;
+                var prev = list.find( '#task-' + task.task_id );
+
+                task.notes_html = SimpleMDE.prototype.markdown( task.notes );
+
+                task.$el = jQuery( itemTpl( task ) );
+                task.$el.data( 'task', task );
+
+                if ( prev.length ) {
+                    prev.off( 'task:refresh', _refresh );
+                    prev.replaceWith( task.$el );
+                } else {
+                    list.append( task.$el );
+                }
+
+                task.$el.on( 'task:refresh', _refresh );
+            }
+            _refresh = _refresh.bind( task )
+
+            _refresh();
+        }
+
+        updateTitle();
+    }
+
+    function updateTitle() {
+        listTitle.empty();
+
+        var count = list.find( '.list-item:visible' ).length;
+        if ( ! count ) {
+            listTitle.text( listTitle.data('none') );
+        } else if ( 1 === count ) {
+            listTitle.text( listTitle.data('one') );
+        } else {
+            listTitle.text( listTitle.data('many').replace( '[NUM]', count ) );
+        }
+    }
+
+    function updateFilters( ev ) {
+        var hash = window.location.hash.substr( 1 ).split( '=' );
+
+        // Update filters based on current #hash value.
+        if ( hash && 2 === hash.length ) {
+            if ( 'state' === hash[0] ) {
+                filterState = hash[1];
+            }
+        }
+
+        // Update the UI to reflect active filters.
+        var currState = jQuery( '.subsubsub li.' + filterState ).filter( ':visible' );
+
+        jQuery( '.subsubsub .current' ).removeClass( 'current' )
+        if ( 1 !== currState.length ) {
+            filterState = 'all';
+            currState = jQuery( '.subsubsub li.all' );
+        }
+
+        currState.find( 'a' ).addClass('current');
+        refreshList();
+
+        if ( ev ) {
+            ev.preventDefault();
+        }
+        return false;
+    }
+
+    function initFilters() {
+        var totals = {};
+
+        totals.all = wpcable.tasks.length;
+        for ( var i = 0; i < wpcable.tasks.length; i++ ) {
+            var entry = wpcable.tasks[i];
+
+            if ( undefined === totals[entry.state] ) {
+                totals[entry.state] = 0;
+            }
+            totals[entry.state]++;
+        }
+
+        jQuery( '.subsubsub li' ).hide();
+
+        for ( var i in totals ) {
+            var item = jQuery( '.subsubsub li.' + i );
+            item.show();
+            item.find( '.count' ).text( totals[i] );
+        }
+
+        filterState = 'all';
+    }
+
+    function startEditor( ev ) {
+        if ( ! list.isClick ) {
+            return;
+        }
+
+        var row = jQuery( this ).closest( 'tr' );
+        var task = row.data( 'task' );
+
+        notesForm.show();
+        notesForm.find( '.task-title' ).text( task.title );
+        notesForm.data( 'task', task );
+
+        notesMde = new SimpleMDE({
+            element: notesForm.find( 'textarea' ).val( task.notes )[0],
+            status: false
+        });
+
+        notesForm.on( 'click', '.btn-save', closeEditorSave );
+        notesForm.on( 'click', '.btn-cancel', closeEditor );
+    }
+
+    function closeEditor() {
+        notesForm.find( '.task-title' ).text('');
+
+        notesForm.off( 'click', '.btn-save', closeEditorSave );
+        notesForm.off( 'click', '.btn-cancel', closeEditor );
+
+        notesMde.toTextArea();
+        notesMde = null;
+
+        notesForm.hide();
+    }
+
+    function closeEditorSave() {
+        var task = notesForm.data( 'task' );
+        task.notes = notesMde.value();
+
+        updateTask( task, closeEditor );
+    }
+
+    function setColorFlag() {
+        var flag = jQuery( this );
+        var color = rgb2hex( flag.css( 'backgroundColor' ) );
+        var row = flag.closest( 'tr' );
+        var task = row.data( 'task' );
+
+        task.color = color;
+        updateTask( task );
+
+        function rgb2hex( color ) {
+            if ( color.match( /^rgba\(0,\s*0,\s*0,\s*0\)$/) ) {
+                return '';
+            } else if ( color.search( 'rgb' ) === -1 ) {
+                return color;
+            } else {
+                color = color.match( /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+))?\)$/ );
+                function hex(x) {
+                    return ('0' + parseInt(x).toString(16)).slice( -2 );
+                }
+                return '#' + hex( color[1] ) + hex( color[2] ) + hex( color[3] );
+            }
+        }
+    }
+
+    function updateTask( task, onDone ) {
+        var ajaxTask = _.clone( task );
+        delete ajaxTask.$el;
+        delete ajaxTask.notes_html;
+        delete ajaxTask.client_name;
+        delete ajaxTask.avatar;
+
+        jQuery.post(
+            window.ajaxurl,
+            {
+                action: 'wpcable_update_task',
+                _wpnonce: window.wpcable.update_task_nonce,
+                task: ajaxTask
+            },
+            function done( res ) {
+                task.$el.trigger( 'task:refresh' );
+                if ( 'function' === typeof onDone ) {
+                    onDone();
+                }
+            }
+        );
+    }
+
+    notesForm.hide();
+
+    initFilters();
+    updateFilters();
+    refreshList();
+
+    jQuery( window ).on( 'hashchange', updateFilters );
+    list.on( 'click', '.color-flag li', setColorFlag );
+    list.on( 'click', '.notes-body', startEditor )
+        .on( 'mousedown', '.notes-body', function() { list.isClick = true })
+        .on( 'mousemove', '.notes-body', function() { list.isClick = false });
 });

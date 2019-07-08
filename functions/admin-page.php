@@ -175,10 +175,23 @@ function codeable_transcactions_stats_cb() {
 						<div class="value"><?php echo $account_details['completed_tasks_count']; ?></div>
 					</div>
 					<div class="footerdata">
-						<span class="label"><?php echo __( 'Tasks', 'wpcable' ); ?></span>: <span
-								class="value"><?php echo $account_details['tasks_count']; ?></span><br/>
-						<span class="label"><?php echo __( 'Refunded', 'wpcable' ); ?></span>: <span
-								class="value"><?php echo $clients_data['totals']['refunds']; ?></span>
+						<span class="label">
+							<?php echo __( 'Tasks', 'wpcable' ); ?>
+						</span>:
+						<span class="value">
+							<?php echo $account_details['tasks_count']; ?>
+						</span><br/>
+						<span class="label">
+							<?php echo __( 'Refunded', 'wpcable' ); ?>
+						</span>:
+						<span class="value">
+							<?php echo $clients_data['totals']['refunds']; ?>
+						</span>
+						<p>
+							<a href="<?php echo esc_url( admin_url( 'admin.php?page=codeable_tasks') ); ?>">
+								<?php _e( 'See all your tasks', 'wpcable' ); ?>
+							</a>
+						</p>
 					</div>
 				</div>
 			</div>
@@ -200,7 +213,7 @@ function codeable_transcactions_stats_cb() {
 					</div>
 					<div class="footerdata">
 						<span class="label"><?php echo __( 'Since', 'wpcable' ); ?></span>: <span
-								class="value"><?php echo $get_first_task['dateadded']; ?></span>
+								class="value"><?php echo wpcable_date( $get_first_task['dateadded'] ); ?></span>
 					</div>
 				</div>
 			</div>

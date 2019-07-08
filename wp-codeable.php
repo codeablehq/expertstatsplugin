@@ -45,13 +45,14 @@ final class WpCable {
 	private function includes() {
 		require_once WPCABLE_CLASSES_DIR . '/object_cache.php';
 		require_once WPCABLE_FUNCTIONS_DIR . '/admin-settings.php';
+		require_once WPCABLE_FUNCTIONS_DIR . '/admin-tasks.php';
 		require_once WPCABLE_FUNCTIONS_DIR . '/admin-page.php';
-		require_once WPCABLE_FUNCTIONS_DIR . '/formatting.php';
-		require_once WPCABLE_FUNCTIONS_DIR . '/pert-calculator.php';
+		require_once WPCABLE_FUNCTIONS_DIR . '/admin-estimate.php';
 		require_once WPCABLE_FUNCTIONS_DIR . '/helpers.php';
 		require_once WPCABLE_CLASSES_DIR . '/api_calls.php';
 		require_once WPCABLE_CLASSES_DIR . '/api_data.php';
 		require_once WPCABLE_CLASSES_DIR . '/stats.php';
+		require_once WPCABLE_CLASSES_DIR . '/tasks.php';
 		require_once WPCABLE_CLASSES_DIR . '/clients.php';
 	}
 }
@@ -152,9 +153,12 @@ function wpcable_install() {
 		    `promoted` bit DEFAULT 0 NOT NULL,
 		    `subscribed` bit DEFAULT 0 NOT NULL,
 		    `favored` bit DEFAULT 0 NOT NULL,
+		    `preferred` bit DEFAULT 0 NOT NULL,
 		    `client_fee` float DEFAULT 17.5 NOT NULL,
 		    `state` varchar(50) DEFAULT '' NOT NULL,
 		    `kind` varchar(50) DEFAULT '' NOT NULL,
+		    `notes` text DEFAULT '' NOT NULL,
+		    `color` varchar(9) DEFAULT '' NOT NULL,
 		      PRIMARY KEY  (task_id)
 		    ) $charset_collate;";
 
@@ -183,8 +187,9 @@ register_deactivation_hook( __FILE__, 'wpcable_deactivate' );
 function wpcable_admin_scripts( $hook ) {
 	$plugin_hooks = [
 		'toplevel_page_codeable_transcactions_stats',
-		'codeable-stats_page_codeable_settings',
+		'codeable-stats_page_codeable_tasks',
 		'codeable-stats_page_codeable_estimate',
+		'codeable-stats_page_codeable_settings',
 	];
 
 	if ( ! in_array( $hook, $plugin_hooks, true ) ) {
@@ -207,25 +212,29 @@ function wpcable_admin_scripts( $hook ) {
 		'datatablecss',
 		plugins_url( 'assets/css/jquery.dataTables.min.css', __FILE__ )
 	);
+	wp_enqueue_style(
+		'simplemde',
+		plugins_url( 'assets/css/simplemde.min.css', __FILE__ )
+	);
 
 	wp_enqueue_script(
 		'highchartsjs',
 		plugins_url( 'assets/js/highcharts.js', __FILE__ ),
-		array( 'jquery', 'jquery-ui-core', 'jquery-ui-datepicker' ),
+		[ 'jquery', 'jquery-ui-core', 'jquery-ui-datepicker' ],
 		null,
 		true
 	);
 	wp_enqueue_script(
 		'highcharts_export_js',
 		plugins_url( 'assets/js/exporting.js', __FILE__ ),
-		array( 'jquery', 'highchartsjs' ),
+		[ 'jquery', 'highchartsjs' ],
 		null,
 		true
 	);
 	wp_enqueue_script(
 		'highcharts_offline_export_js',
 		plugins_url( 'assets/js/offline-exporting.js', __FILE__ ),
-		array( 'jquery', 'highcharts_export_js' ),
+		[ 'jquery', 'highcharts_export_js' ],
 		null,
 		true
 	);
@@ -234,7 +243,7 @@ function wpcable_admin_scripts( $hook ) {
 	wp_enqueue_script(
 		'highcharts3djs',
 		plugins_url( 'assets/js/highcharts-3d.js', __FILE__ ),
-		array( 'highchartsjs' )
+		[ 'highchartsjs' ]
 	);
 	wp_enqueue_script(
 		'ratyjs',
@@ -249,8 +258,13 @@ function wpcable_admin_scripts( $hook ) {
 		plugins_url( 'assets/js/jquery.matchHeight-min.js', __FILE__ )
 	);
 	wp_enqueue_script(
+		'simplemde',
+		plugins_url( 'assets/js/simplemde.min.js', __FILE__ )
+	);
+	wp_enqueue_script(
 		'wpcablejs',
-		plugins_url( 'assets/js/wpcable.js', __FILE__ )
+		plugins_url( 'assets/js/wpcable.js', __FILE__ ),
+		[ 'wp-util' ]
 	);
 }
 

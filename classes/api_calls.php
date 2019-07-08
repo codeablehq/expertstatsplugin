@@ -187,6 +187,8 @@ class wpcable_api_calls {
 		$res = false;
 
 		try {
+			set_time_limit( 300 );
+
 			$ch     = curl_init();
 			$method = strtolower( $method );
 

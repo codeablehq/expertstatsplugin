@@ -572,9 +572,168 @@ div#TB_window {
 	}
 }
 
-/*********************/
-/*   Settings page   */
-/*********************/
+/****************/
+/*   Tasklist   */
+/****************/
+
+.wpcable_wrap.tasks .subsubsub .count:before {
+	content: '(';
+}
+
+.wpcable_wrap.tasks .subsubsub .count:after {
+	content: ')';
+}
+
+.task-list .list-item .actions {
+	opacity: 0;
+	transition: all 0.3s;
+}
+
+.task-list .list-item .col-client img {
+	width: 40px;
+	border-radius: 40px;
+}
+
+.wpcable_wrap.tasks table.widefat .col-client {
+	width: 80px;
+}
+
+.wpcable_wrap.tasks table.widefat .col-workroom {
+	width: 120px;
+}
+
+.wpcable_wrap.tasks table.widefat .col-title {
+	position: relative;
+	padding-right: 40px;
+}
+
+.wpcable_wrap.tasks table.widefat .col-notes {
+	width: 50%;
+}
+
+.wpcable_wrap.tasks table.widefat tbody .col-workroom a {
+	color: var(--color, #0073aa);
+}
+
+.wpcable_wrap.tasks table.widefat tbody .col-client {
+	box-shadow: 4px 0 0 0 var(--color, #0000) inset;
+}
+
+.color-flag {
+	position: relative;
+	margin: 0;
+    float: right;
+	vertical-align: top;
+	transition: all 0.3s;
+	transform: translateY(8px);
+}
+
+.color-flag:hover li {
+	opacity: 0.9;
+}
+
+.color-flag > li {
+	position: relative;
+	height: 14px;
+	width: 14px;
+	display: inline-block;
+	cursor: pointer;
+	opacity: 0.2;
+	box-shadow: 0 0 0 1px #0004 inset;
+	transition: all 0.3s;
+}
+
+.color-flag > li.current {
+	opacity: 1;
+}
+
+.color-flag > li:hover {
+	opacity: 1;
+	transform: scale(1.2)
+}
+
+.wpcable_wrap.tasks .notes-body {
+	min-height: 45px;
+	max-height: 45px;
+	box-sizing: border-box;
+	padding: 1px 8px;
+	transition: all 0.3s;
+	border: 1px solid transparent;
+	background: transparent;
+	width: 100%;
+	display: block;
+	box-shadow: none;
+	overflow: auto;
+}
+
+.wpcable_wrap.tasks tr:hover .notes-body,
+.wpcable_wrap.tasks tr .notes-body:focus {
+	border: 1px solid #e5e5e5;
+	background: #FFF;
+	outline: none;
+}
+
+.wpcable_wrap.tasks .notes-body:hover {
+	transition-delay: 0.8s;
+	border: 1px solid #d1d1d1;
+	background: #FFF;
+	max-height: 100vh;
+}
+
+.wpcable_wrap.tasks tr.expanded .notes-body {
+	border: 1px solid #d1d1d1;
+	background: #FFF;
+	max-height: 100vh;
+}
+
+.wpcable_wrap.tasks .notes-body ul {
+	display: block;
+	list-style-type: inherit;
+	margin-block-start: 1em;
+	margin-block-end: 1em;
+	margin-inline-start: 0px;
+	margin-inline-end: 0px;
+	padding-inline-start: 40px;
+}
+
+.wpcable_wrap.tasks .notes-body ul > li {
+	padding: initial;
+	margin: initial;
+}
+
+.wpcable_wrap.tasks .notes-editor-layer .task-title {
+	margin-top: 0;
+}
+
+.wpcable_wrap.tasks .notes-editor-layer {
+	position: fixed;
+	left: 0;
+	top: 0;
+	z-index: 100000;
+	right: 0;
+	bottom: 0;
+	background: #0004;
+}
+
+.wpcable_wrap.tasks .notes-editor .buttons {
+	margin-top: 10px;
+	text-align: right;
+}
+
+.wpcable_wrap.tasks .notes-editor {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	background: #f4f4f4;
+	padding: 10px;
+	box-shadow: 0 0 50px #0003;
+	border-radius: 5px;
+	width: 60%;
+	max-width: 800px;
+	max-height: 90vh;
+	overflow: auto;
+}
 
 /****************/
 /*   Sync bar   */
@@ -625,6 +784,7 @@ div#TB_window {
 	line-height: 1.25em;
 	border-radius: 3px;
 	min-width: 240px;
+	z-index: 100;
 }
 
 .tooltip .tooltip-text:before {
@@ -635,4 +795,39 @@ div#TB_window {
 	transform: translate(-50%, 16px);
 	border: 8px solid transparent;
 	border-top-color: #2b2c2d;
+}
+
+.tooltip.autosize .tooltip-text {
+	min-width: 0;
+	white-space: nowrap;
+}
+
+.tooltip.bottom .tooltip-text {
+	bottom: auto;
+	top: 100%;
+	transform: translate(-50%, 15px);
+}
+
+.tooltip.bottom .tooltip-text:before {
+	bottom: auto;
+	top: 0;
+	transform: translate(-50%, -16px);
+	border-bottom-color: #2b2c2d;
+	border-top-color: transparent;
+}
+
+.tooltip.right .tooltip-text {
+	top: 50%;
+	bottom: auto;
+	left: 100%;
+	transform: translate(15px, -50%);
+}
+
+.tooltip.right .tooltip-text:before {
+	top: 50%;
+	bottom: auto;
+	left: 0;
+	transform: translate(-16px, -50%);
+	border-right-color: #2b2c2d;
+	border-top-color: transparent;
 }

@@ -9,6 +9,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function codeable_estimate_callback() {
+	$rate = 80;
+	$fee  = 10;
+
+	if ( isset( $_GET['fee'] ) && is_numeric( $_GET['fee'] ) ) {
+		$fee = (float) $_GET['fee'];
+	}
+	if ( isset( $_GET['rate'] ) && is_numeric( $_GET['rate'] ) ) {
+		$rate = (float) $_GET['rate'];
+	}
 	?>
 	<div class="wrap">
 		<h1>PERT Estimator</h1>
@@ -37,10 +46,10 @@ function codeable_estimate_callback() {
 					</h2>
 					<div class="inside">
 						<div class="field">
-							<span class="label">Your hourly rate: </span><input id="hourly_rate" type="number" value="80" min="35" max="1000" /> $
+							<span class="label">Your hourly rate: </span><input id="hourly_rate" type="number" value="<?php echo esc_attr( $rate ); ?>" min="35" max="1000" /> $
 						</div>
 						<div class="field">
-							<span class="label">Contractor fee: </span><input id="contractor_fee" type="number" step="0.01" value="10" max="100" min="0" /> %
+							<span class="label">Contractor fee: </span><input id="contractor_fee" type="number" step="0.01" value="<?php echo esc_attr( $fee ); ?>" max="100" min="0" /> %
 							<p class="description">
 								This fee will be added to the estimate, so that it can be passed on to the client.
 								If your hourly rate already takes the Contractor Fee into account, you can set this to zero.</p>

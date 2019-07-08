@@ -100,11 +100,7 @@ add_filter( 'pre_update_option_wpcable_password', 'codeable_handle_login', 10, 2
  * @return void
  */
 function codeable_settings_callback() {
-	global $wpdb;
-
 	codeable_admin_notices();
-
-	set_time_limit( 300 );
 
 	$wpcable_email         = get_option( 'wpcable_email' );
 	$wpcable_what_to_check = get_option( 'wpcable_what_to_check' );
@@ -146,6 +142,12 @@ function codeable_settings_callback() {
 									<?php checked( 0, $wpcable_what_to_check ); ?>
 								/>
 								<?php _e( 'New items since last import', 'wpcable' ); ?>
+								<span class="tooltip bottom" tabindex="0">
+									<span class="tooltip-text">
+										<?php _e( 'This is the recommended setting. It does a chronological import that stops when an imported item already exists in your DB.', 'wpcable' ); ?>
+									</span>
+									<i class="dashicons dashicons-info"></i>
+								</span>
 							</label>
 						</p>
 						<p>
@@ -156,7 +158,13 @@ function codeable_settings_callback() {
 									value="2"
 									<?php checked( 2, $wpcable_what_to_check ); ?>
 								/>
-								<?php _e( 'Process all items (use this when you get timeouts)', 'wpcable' ); ?>
+								<?php _e( 'Always process all items', 'wpcable' ); ?>
+								<span class="tooltip bottom" tabindex="0">
+									<span class="tooltip-text">
+										<?php _e( 'Use this when you hit timeouts or errors. This setting does not update existing entries, but always checks the entire API results for missing items.', 'wpcable' ); ?>
+									</span>
+									<i class="dashicons dashicons-info"></i>
+								</span>
 							</label>
 						</p>
 					</td>

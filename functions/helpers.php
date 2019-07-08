@@ -5,6 +5,27 @@
  * @package wpcable
  */
 
+function wpcable_money( $money ) {
+	return number_format( $money, 2, '.', ',' );
+}
+
+function wpcable_compare_values( $from = 0, $to = 0 ) {
+	return $from >= $to ? 'increase' : 'decrease';
+}
+
+function wpcable_date( $value ) {
+	if ( is_string( $value ) ) {
+		$time = strtotime( $value );
+	} elseif ( is_numeric( $value ) ) {
+		$time = (int) $value;
+	} else {
+		return false;
+	}
+
+	$format_string = get_option( 'date_format' ) . ' (' . get_option( 'time_format' ) . ')';
+	return date_i18n( $format_string, $time );
+}
+
 /**
  * Prepares an URL for a redirect to show certain messages.
  *
@@ -281,6 +302,7 @@ function codeable_maybe_refresh_data( $force = false ) {
 	$data->store_profile( $email, $password );
 
 	$total = $data->store_transactions();
+	$total = $data->store_tasks();
 
 	// Flush object cache.
 	wpcable_cache::flush();
@@ -295,7 +317,6 @@ function codeable_maybe_refresh_data( $force = false ) {
  */
 function codeable_last_fetch_info() {
 	$last_fetch    = get_option( 'wpcable_last_fetch' );
-	$format_string = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
 	$refresh_url   = wp_nonce_url(
 		add_query_arg( 'action', 'codeable-refresh' ),
 		'wpcable-refresh'
@@ -304,7 +325,7 @@ function codeable_last_fetch_info() {
 	?>
 	<div class="codeable-last-refresh">
 		<?php _e( 'Last refresh: ', 'wpcable' ); ?>
-		<?php echo date_i18n( $format_string, $last_fetch ); ?>
+		<?php echo wpcable_date( $last_fetch ); ?>
 		<span class="tooltip" tabindex="0">
 			<span class="tooltip-text"><?php _e( 'API details are fetched once per hour, or when you click the "Refresh" button on the right.', 'wpcable' ); ?></span>
 			<i class="dashicons dashicons-info"></i>

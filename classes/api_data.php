@@ -60,9 +60,7 @@ class wpcable_api_data {
 	 * @return void
 	 */
 	public function store_profile( $email, $password ) {
-		if ( ! $this->api_calls->auth_token_known() ) {
-			wp_die( 'Please log in first' );
-		}
+		codeable_page_requires_login( __( 'API Refresh', 'wpcable' ) );
 
 		$account_details = $this->api_calls->self();
 
@@ -78,9 +76,7 @@ class wpcable_api_data {
 	public function store_transactions( $maxpage = 999999 ) {
 		global $wpdb;
 
-		if ( ! $this->api_calls->auth_token_known() ) {
-			wp_die( 'Please log in first' );
-		}
+		codeable_page_requires_login( __( 'API Refresh', 'wpcable' ) );
 
 		if ( $this->debug ) {
 			$wpdb->show_errors();
@@ -167,6 +163,96 @@ class wpcable_api_data {
 	}
 
 	/**
+	 * Fetch tasks from the API and store them in our custom tables.
+	 *
+	 * @param  int $maxpage Optionally limit the number of crawled pages.
+	 * @return int The number of tasks stored.
+	 */
+	public function store_tasks( $maxpage = 999999 ) {
+		global $wpdb;
+
+		codeable_page_requires_login( __( 'API Refresh', 'wpcable' ) );
+
+		if ( $this->debug ) {
+			$wpdb->show_errors();
+		}
+
+		$filters = [ 'pending', 'active', 'archived', 'preferred' ];
+		$total   = 0;
+
+		foreach ( $filters as $filter ) {
+			$page = 1;
+
+			while ( $page < $maxpage ) {
+				$single_page = $this->api_calls->tasks_page( $filter, $page ++ );
+
+				if ( empty( $single_page ) ) {
+					break;
+				} else {
+
+					// Get all data to the DB.
+					foreach ( $single_page as $task ) {
+
+						// Check if the task already exists.
+						$check = $wpdb->get_results(
+							"SELECT COUNT(1) AS totalrows
+							FROM `{$this->tables['tasks']}`
+							WHERE task_id = '{$task['id']}';
+							"
+						);
+
+						// If the record exists then continue with next filter.
+						if ( $check[0]->totalrows > 0 ) {
+							if ( 1 === get_option( 'wpcable_what_to_check' ) ) {
+								continue;
+							} else {
+								break;
+							}
+						}
+
+						$new_task = [
+							'task_id'    => $task['id'],
+							'client_id'  => $task['client']['id'],
+							'title'      => $task['title'],
+							'estimate'   => $task['estimatable'],
+							'hidden'     => $task['hidden_by_current_user'],
+							'promoted'   => $task['promoted_task'],
+							'subscribed' => $task['subscribed_by_current_user'],
+							'favored'    => $task['favored_by_current_user'],
+							'preferred'  => $task['current_user_is_preferred_contractor'],
+							'client_fee' => $task['prices']['client_fee_percentage'],
+							'state'      => $task['state'],
+							'kind'       => $task['kind'],
+						];
+
+						// The API is returning some blank rows, ensure we have a valid id.
+						if ( $new_task['task_id'] && is_int( $new_task['task_id'] ) ) {
+							$insert_task = $wpdb->insert(
+								$this->tables['tasks'],
+								$new_task
+							);
+						}
+
+						if ( $insert_task === false ) {
+							wp_die(
+								'Could not insert task ' .
+								$task['id'] . ':' .
+								$wpdb->print_error()
+							);
+						}
+
+						$this->store_client( $task['client'] );
+
+						$total ++;
+					}
+				}
+			}
+		}
+
+		return $total;
+	}
+
+	/**
 	 * Insert new clients to the clients-table.
 	 *
 	 * @param  array $client Client details.
@@ -218,7 +304,7 @@ class wpcable_api_data {
 		global $wpdb;
 
 		// The API is returning some blank rows, ensure we have a valid client_id.
-		if ( ! $task_id || ! is_int( $field ) ) {
+		if ( ! $task_id || ! is_int( $task_id ) ) {
 			return;
 		}
 
