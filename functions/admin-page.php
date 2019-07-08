@@ -18,7 +18,7 @@ function wpcable_register_menu_page() {
 		'codeable_transcactions_stats',
 		'codeable_transcactions_stats_cb',
 		'data:image/svg+xml;base64,' . base64_encode( $icon_code ),
-		85
+		2
 	);
 }
 
