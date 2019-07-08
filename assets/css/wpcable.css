@@ -51,7 +51,7 @@ img.round {
 	background-color: #fff;
 	border: 1px solid #e5e5e5;
 	padding: 20px;
-	margin-bottom: 30px;
+	margin-bottom: 20px;
 	box-sizing: border-box;
 	box-shadow: 0 1px 1px rgba(0,0,0,.04);
 }
@@ -94,7 +94,7 @@ img.round {
 
 .first-stats-row .box {
 	flex-basis: 100%;
-	margin-bottom: 1em;
+	margin-bottom: 20px;
 }
 
 @media only screen and (min-width: 768px) {
@@ -104,7 +104,7 @@ img.round {
 	}
 
 	.first-stats-row .box {
-		flex-basis: 23%;
+		flex-basis: calc(25% - 15px);
 	}
 }
 
@@ -186,7 +186,7 @@ img.round {
 
 .second-stats-row .box {
 	flex-basis: 100%;
-	margin-bottom: 1em;
+	margin-bottom: 20px;
 }
 
 @media only screen and (min-width: 768px) {
@@ -196,13 +196,40 @@ img.round {
 	}
 
 	.second-stats-row .box {
-		flex-basis: 48.7%;
+		flex-basis: calc(50% - 10px);
+	}
+}
+
+/********************/
+/* Third Stats Row */
+/********************/
+
+.third-stats-row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+}
+
+.third-stats-row .box {
+	flex-basis: 100%;
+	margin-bottom: 20px;
+}
+
+@media only screen and (min-width: 768px) {
+	.third-stats-row {
+		flex-wrap: nowrap;
+		justify-content: space-between;
+	}
+
+	.third-stats-row .box {
+		flex-basis: calc(33.3333% - 13.3333px);
 	}
 }
 
 /****************/
 /* Date filters */
 /****************/
+
 .ui-datepicker-calendar {
 	display: none;
 }
@@ -297,7 +324,7 @@ img.round {
 
 .compareicon {
 	cursor: pointer;
-	margin-bottom: 1em;
+	margin-bottom: 20px;
 }
 
 .date-filters .set-date {
@@ -328,7 +355,7 @@ img.round {
 /* Highscore Stats */
 /*******************/
 .bests__row {
-	margin-bottom: 1em;
+	margin-bottom: 20px;
 }
 
 
@@ -490,6 +517,59 @@ div#TB_window {
 	bottom: 30px !important;
 	margin: 0 !important;
 	overflow: auto !important;
+}
+
+/************************/
+/*   Estimations page   */
+/************************/
+
+.estimate-row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+}
+
+.estimate-row .postbox {
+	flex-basis: 100%;
+	margin-bottom: 20px;
+}
+
+.estimate-row input[type="number"] {
+	width: 80px
+}
+
+.estimate-row input[readonly] {
+	border: 0;
+	background: transparent;
+	box-shadow: none;
+	border-bottom: 1px solid #e5e5e5;
+	font-weight: bold;
+	cursor: default;
+	text-align: right;
+}
+
+.estimate-row .field {
+	margin-top: 6px;
+}
+
+.estimate-row .description {
+	margin-top: 10px;
+}
+
+.estimate-row .label {
+	display: inline-block;
+	width: 17em;
+}
+
+@media only screen and (min-width: 768px) {
+	.estimate-row {
+		flex-wrap: nowrap;
+		justify-content: space-between;
+	}
+
+	.estimate-row .postbox {
+		flex-basis: calc(50% - 10px);
+	}
 }
 
 /*********************/

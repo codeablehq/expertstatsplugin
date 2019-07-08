@@ -159,13 +159,15 @@ function codeable_settings_callback() {
 
 			// flush object cache
 			wpcable_cache::flush();
-
 		}
 
 		?>
 		<div class="updated notice">
-			<p><?php echo $total . ' ' . __( 'new entries', 'wpcable' ); ?>! <a
-						href="<?php echo admin_url( 'admin.php?page=codeable_transcactions_stats' ); ?>"><?php echo __( 'See the stats', 'wpcable' ); ?></a>
+			<p>
+				<?php echo $total . ' ' . __( 'new entries', 'wpcable' ); ?>!
+				<a href="<?php echo admin_url( 'admin.php?page=codeable_transcactions_stats' ); ?>">
+					<?php echo __( 'See the stats', 'wpcable' ); ?>
+				</a>
 			</p>
 		</div>
 		<?php
@@ -197,16 +199,11 @@ function codeable_settings_callback() {
 				</td>
 
 			  </tr>';
-
-
 				?>
-
-
 				</tbody>
 			</table>
 
 			<?php
-
 			echo '<div class="action-buttons">';
 			submit_button( __( 'Save Changes', 'wpcable' ) );
 			echo '</div>';
@@ -221,7 +218,6 @@ function codeable_settings_callback() {
 
 			<table class="form-table">
 				<tbody>
-
 				<?php
 
 				wp_nonce_field( 'wpcable_fetch', 'wpcable_fetch_nonce' );

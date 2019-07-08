@@ -435,40 +435,25 @@ function codeable_transcactions_stats_cb() {
 
 		<div class="clearfix spacer"></div>
 
-		<div class="row">
+		<div class="flex-row third-stats-row">
 
-			<div class="col-md-4">
-				<div class="whitebox">
-					<div id="amounts_range_chart">
-
-
-					</div>
+			<div class="box">
+				<div id="amounts_range_chart">
 				</div>
 			</div>
 
-			<div class="col-md-4">
-				<div class="whitebox">
-					<div id="preferred_chart">
-
-
-					</div>
+			<div class="box">
+				<div id="preferred_chart">
 				</div>
 			</div>
 
-			<div class="col-md-4">
-				<div class="whitebox">
-					<div id="tasks_type">
-
-
-					</div>
+			<div class="box">
+				<div id="tasks_type">
 				</div>
 			</div>
-
 
 		</div>
 
-
-		<div class="clearfix spacer"></div>
 
 		<div class="row clients_row">
 			<div class="col-md-12">
