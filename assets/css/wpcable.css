@@ -718,6 +718,8 @@ div#TB_window {
 .wpcable_wrap.tasks .notes-editor .buttons {
 	margin-top: 10px;
 	text-align: right;
+	position: relative;
+	z-index: 10;
 }
 
 .wpcable_wrap.tasks .notes-editor {
@@ -725,7 +727,7 @@ div#TB_window {
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
-	background: #f4f4f4;
+	background: #fff;
 	padding: 10px;
 	box-shadow: 0 0 50px #0003;
 	border-radius: 5px;
@@ -733,6 +735,19 @@ div#TB_window {
 	max-width: 800px;
 	max-height: 90vh;
 	overflow: auto;
+}
+
+.wpcable_wrap.tasks .CodeMirror-sided {
+	width: calc(50% + 1px)!important;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.wpcable_wrap.tasks .CodeMirror-fullscreen {
+	position: relative!important;
+	height: auto;
+	min-height: 300px;
+	top: 5px;
 }
 
 /****************/
