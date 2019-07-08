@@ -26,9 +26,24 @@ class wpcable_api_calls {
 	public $auth_token = '';
 
 	/**
+	 * Returns the singleton instance to the API object.
+	 *
+	 * @return wpcable_api_calls
+	 */
+	public static function inst() {
+		static $_inst = null;
+
+		if ( null === $_inst ) {
+			$_inst = new wpcable_api_calls();
+		}
+
+		return $_inst;
+	}
+
+	/**
 	 * Initializes the API handler by loading the previous auth_token from the DB.
 	 */
-	public function __construct() {
+	private function __construct() {
 		$this->get_auth_token();
 	}
 
@@ -55,9 +70,7 @@ class wpcable_api_calls {
 			! empty( $login_call['errors'][0]['message'] ) &&
 			'Invalid credentials' === $login_call['errors'][0]['message']
 		) {
-			$redirect_to = admin_url(
-				'admin.php?page=codeable_settings&wpcable_error=credentials'
-			);
+			$redirect_to = codeable_add_message_param( 'error', 'credentials' );
 
 			wp_safe_redirect( $redirect_to );
 			exit;

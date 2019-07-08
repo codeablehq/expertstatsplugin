@@ -44,7 +44,7 @@ class wpcable_transcactions {
 			'tasks'         => $wpdb->prefix . 'codeable_tasks',
 		];
 
-		$this->api_calls = new wpcable_api_calls();
+		$this->api_calls = wpcable_api_calls::inst();
 
 		$this->debug = defined( 'WP_DEBUG' ) ? WP_DEBUG : false;
 	}
@@ -60,10 +60,6 @@ class wpcable_transcactions {
 	 * @return void
 	 */
 	public function store_profile( $email, $password ) {
-		if ( $email && $password ) {
-			$this->api_calls->login( $email, $password );
-		}
-
 		if ( ! $this->api_calls->auth_token_known() ) {
 			wp_die( 'Please log in first' );
 		}

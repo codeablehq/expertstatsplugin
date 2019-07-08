@@ -8,18 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-function wpcable_settings_fields() {
-	// Create array for all the fields we want to export.
-	$wpcable_settings_fields = array(
-		'email'    => __( 'email', 'wpcable' ),
-		'password' => __( 'password', 'wpcable' ),
-	);
-
-	return $wpcable_settings_fields;
-}
-
-add_action( 'admin_menu', 'wpcable_options', 100 );
-
+/**
+ * Register submenu pages.
+ *
+ * @return void
+ */
 function wpcable_options() {
 	add_submenu_page(
 		'codeable_transcactions_stats',
@@ -40,138 +33,122 @@ function wpcable_options() {
 
 	add_action( 'admin_init', 'codeable_register_settings' );
 }
+add_action( 'admin_menu', 'wpcable_options', 100 );
 
-// register settings
+/**
+ * Called when the settings page is loaded - process actions such as logout.
+ *
+ * @return void
+ */
+function codeable_load_settings_page() {
+	$nonce = false;
+
+	if ( ! empty( $_REQUEST['_wpnonce'] ) ) {
+		$nonce = wp_unslash( $_REQUEST['_wpnonce'] );
+	}
+
+	if ( $nonce && wp_verify_nonce( $nonce, 'logout' ) ) {
+		codeable_flush_all_data();
+	}
+}
+add_action( 'load-codeable-stats_page_codeable_settings', 'codeable_load_settings_page' );
+
+/**
+ * Register Codeable Stats settings.
+ *
+ * @return void
+ */
 function codeable_register_settings() {
-
-	$wpcable_settings_fields = wpcable_settings_fields();
-
 	register_setting( 'wpcable_group', 'wpcable' );
-	foreach ( $wpcable_settings_fields as $key => $field ) {
-		register_setting( 'wpcable_group', 'wpcable_' . $key );
-	}
-
 	register_setting( 'wpcable_group', 'wpcable_what_to_check' );
-	register_setting( 'wpcable_group', 'wpcable_skip_zero_months' );
+
+	if ( ! codeable_api_logged_in() ) {
+		register_setting( 'wpcable_group', 'wpcable_email' );
+		register_setting( 'wpcable_group', 'wpcable_password' ); // This is a dummy setting!
+	}
 }
 
-function codeable_ssl_warning() {
-	$check = 'auto';
-	if ( defined( 'CODEABLE_SSL_CHECK' ) ) {
-		$check = CODEABLE_SSL_CHECK;
+/**
+ * Filter that is called when the user tries to save a password.
+ * We intercept the workflow and log into the codeable API without saving the
+ * password into the DB.
+ *
+ * @param string $value
+ * @param string $option
+ * @param string $old_value
+ * @return void
+ */
+function codeable_handle_login( $value, $old_value ) {
+	if ( ! empty( $_REQUEST['wpcable_email'] ) ) {
+		$email = wp_unslash( $_REQUEST['wpcable_email'] );
+	} else {
+		$email = get_option( 'wpcable_email' );
 	}
 
-	if ( 'off' === $check ) {
-		return false;
+	if ( $email && $value ) {
+		codeable_api_authenticate( $email, $value );
 	}
 
-	if ( 'auto' === $check ) {
-		if ( '127.0.0.1' === $_SERVER['REMOTE_ADDR'] ) {
-			// "Remote" server is on local machine, i.e. development server.
-			return false;
-		} elseif ( preg_match( '/\.local$/', $_SERVER['HTTP_HOST'] ) ) {
-			// A ".local" domain, i.e. development server.
-			return false;
-		}
-	}
-
-	return ! is_ssl();
+	// Returning the old_value prevents WP from saving the anything.
+	return $old_value;
 }
+add_filter( 'pre_update_option_wpcable_password', 'codeable_handle_login', 10, 2 );
 
-function codeable_timeout_warning() {
-	$timeout = ini_get( 'max_execution_time' );
-
-	if ( $timeout < 120 ) {
-		return true;
-	}
-
-	return false;
-}
-
+/**
+ * Render the settings page.
+ *
+ * @return void
+ */
 function codeable_settings_callback() {
 	global $wpdb;
+	$errors  = codeable_get_message_param( 'error' );
+	$success = codeable_get_message_param( 'success' );
 
-	if( ! empty($_GET['wpcable_error']) && $_GET['wpcable_error'] === 'credentials') : ?>
-
-		<div class="notice notice-error">
-			<p><?php echo __( 'Invalid username or password', 'wpcable' ) ?></p>
+	if ( $errors ) :
+		?>
+		<div class="notice error">
+			<?php if ( in_array( 'credentials', $errors, true ) ) : ?>
+				<p><?php _e( 'Invalid username or password', 'wpcable' ) ?></p>
+			<?php else : ?>
+				<p><?php echo implode( '<br />', $errors ); ?></p>
+			<?php endif; ?>
 		</div>
+		<?php
+	endif;
 
-	<?php endif;
+	if ( $success ) :
+		?>
+		<div class="notice updated">
+			<p><?php echo implode( '<br />', $success ); ?></p>
+		</div>
+		<?php
+	endif;
 
-	if( codeable_ssl_warning() ) : ?>
+	if( codeable_ssl_warning() ) :
+		?>
 		<div class="update-nag notice">
-			<p><?php echo __( 'Please consider installing this plugin on a secure website', 'wpcable' ); ?></p>
+			<p><?php _e( 'Please consider installing this plugin on a secure website', 'wpcable' ); ?></p>
 		</div>
+		<?php
+	endif;
 
-	<?php endif;
+	if ( codeable_timeout_warning() ) :
+		?>
+		<div class="update-nag notice">
+			<p><?php _e( 'Be sure that you set PHP timeout to 120 or more on your first fetch or if you have deleted the cached data', 'wpcable' ); ?></p>
+		</div>
+		<?php
+	endif;
 
 	set_time_limit( 300 );
 
-	$wpcable_settings_fields = wpcable_settings_fields();
+	$wpcable_email         = get_option( 'wpcable_email' );
+	$wpcable_what_to_check = get_option( 'wpcable_what_to_check' );
 
-	$wpcable_what_to_check    = get_option( 'wpcable_what_to_check' );
-	$wpcable_skip_zero_months = get_option( 'wpcable_skip_zero_months' );
-
-	// truncate all data
-	if ( isset( $_GET['flushdata'] ) ) {
-
-		$tables = array(
-			$wpdb->prefix . 'codeable_transcactions' => __( 'Transcactions', 'wpcable' ),
-			$wpdb->prefix . 'codeable_clients'       => __( 'Clients', 'wpcable' ),
-			$wpdb->prefix . 'codeable_amounts'       => __( 'Amounts', 'wpcable' )
-		);
-
-		foreach ( $tables as $db_table => $db_label ) {
-
-			if ( $wpdb->query( 'TRUNCATE ' . $db_table ) === true ) {
-				?>
-				<div class="updated notice">
-					<p><?php echo $db_label . ' (' . $db_table . ') ' . __( 'table truncated!', 'wpcable' ); ?></p>
-				</div>
-				<?php
-			} else {
-				?>
-				<div class="error notice">
-					<p><?php echo $db_label . ' (' . $db_table . ') ' . __( 'table could not be truncated!', 'wpcable' ); ?></p>
-				</div>
-				<?php
-			}
-		}
-
-		// flush object cache
-		wpcable_cache::flush();
-
-	}
-
-	if ( isset( $_POST['wpcable_email'] ) && isset( $_POST['wpcable_password'] ) ) {
-		$nonce = wp_verify_nonce( $_POST['wpcable_fetch_nonce'], 'wpcable_fetch' );
-		$total = 0;
-
-		if ( $nonce ) {
-			$email    = sanitize_email( $_POST['wpcable_email'] );
-			$password = $_POST['wpcable_password'];
-
-			$wpcable_transcactions = new wpcable_transcactions();
-			$wpcable_transcactions->store_profile( $email, $password );
-
-			$total = $wpcable_transcactions->store_transactions();
-
-			// Flush object cache.
-			wpcable_cache::flush();
-		}
-
-		?>
-		<div class="updated notice">
-			<p>
-				<?php echo $total . ' ' . __( 'new entries', 'wpcable' ); ?>!
-				<a href="<?php echo admin_url( 'admin.php?page=codeable_transcactions_stats' ); ?>">
-					<?php echo __( 'See the stats', 'wpcable' ); ?>
-				</a>
-			</p>
-		</div>
-		<?php
-	}
+	$logout_url = wp_nonce_url(
+		add_query_arg( 'action', 'logout' ),
+		'logout'
+	);
 
 	?>
 	<div class="wrap wpcable_wrap">
@@ -181,79 +158,110 @@ function codeable_settings_callback() {
 			<table class="form-table">
 				<tbody>
 
-				<?php settings_fields( 'wpcable_group' ); ?>
+				<?php settings_fields( 'wpcable_group', '_wpnonce', false ); ?>
+				<input
+					type="hidden"
+					name="_wp_http_referer"
+					value="<?php echo remove_query_arg( ['success', 'error' ] ); ?>"
+				/>
 				<?php do_settings_sections( 'wpcable_group' ); ?>
 
-				<?php
-				echo '
-			  <tr>
-				<th scope="row">
-				  <label class="wpcable_label" for="wpcable_what_to_check">' . __( 'Scan method', 'wpcable' ) . '</label>
-				</th>
-				<td>
-				  <select id="wpcable_what_to_check" name="wpcable_what_to_check">
-					<option value="0" ' . ( $wpcable_what_to_check == 0 ? 'selected="selected"' : '' ) . ' >' . __( 'Stop if the transaction id is found (use this if you want to update your data of first time fetch)' ) . '</option>
-					<option value="1" ' . ( $wpcable_what_to_check == 1 ? 'selected="selected"' : '' ) . '>' . __( 'Check everything (use this if you got a time out while fetching)' ) . '</option>
-				  </select>
-				</td>
+				<tr>
+					<th scope="row">
+						<label class="wpcable_label" for="wpcable_what_to_check">
+							<?php _e( 'Import range', 'wpcable' ); ?>
+						</label>
+					</th>
+					<td>
+						<p>
+							<label>
+								<input
+									type="radio"
+									name="wpcable_what_to_check"
+									value="0"
+									<?php checked( 0, $wpcable_what_to_check ); ?>
+								/>
+								<?php _e( 'New items since last import', 'wpcable' ); ?>
+							</label>
+						</p>
+						<p>
+							<label>
+								<input
+									type="radio"
+									name="wpcable_what_to_check"
+									value="2"
+									<?php checked( 2, $wpcable_what_to_check ); ?>
+								/>
+								<?php _e( 'Process all items (use this when you get timeouts)', 'wpcable' ); ?>
+							</label>
+						</p>
+					</td>
+				</tr>
 
-			  </tr>';
-				?>
+				<?php if ( codeable_api_logged_in() ) : ?>
+					<tr>
+						<th scope="row">
+							<label class="wpcable_label" for="wpcable_email">
+								<?php _e( 'Email', 'wpcable' ); ?>
+							</label>
+						</th>
+						<td>
+							<p>
+								<?php
+								printf(
+									__( 'You are currently logged in as %s. %sLog out and clear all data%s', 'wpcable' ),
+									'<b>' . $wpcable_email . '</b>',
+									'<a href="' . $logout_url . '">',
+									'</a>'
+								);
+								?>
+							</p>
+						</td>
+					</tr>
+				<?php else : ?>
+					<tr>
+						<th scope="row">
+							<label class="wpcable_label" for="wpcable_email">
+								<?php _e( 'Email', 'wpcable' ); ?>
+							</label>
+						</th>
+						<td>
+							<input
+								id="wpcable_email"
+								type="email"
+								name="wpcable_email"
+								class="regular-text"
+								value="<?php echo esc_attr( $wpcable_email ); ?>"
+								autocomplete="email"
+							/>
+							<p class="description"><?php _e( 'This is the email address you use to log into app.codeable.com', 'wpcable' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label class="wpcable_label" for="wpcable_password">
+								<?php _e( 'Password', 'wpcable' ); ?>
+							</label>
+						</th>
+						<td>
+							<input
+								id="wpcable_password"
+								type="password"
+								name="wpcable_password"
+								class="regular-text"
+								value=""
+								autocomplete="password"
+							/>
+							<p class="description"><?php _e( 'Your Codeable password is not stored anywhere!<br />With your password we generate an auth_token, that is saved encrypted in your DB.', 'wpcable' ); ?></p>
+						</td>
+					</tr>
+				<?php endif; ?>
 				</tbody>
 			</table>
 
-			<?php
-			echo '<div class="action-buttons">';
-			submit_button( __( 'Save Changes', 'wpcable' ) );
-			echo '</div>';
-			?>
-		</form>
-	</div>
-
-
-	<div class="wrap wpcable_wrap">
-		<form method="post" action="admin.php?page=codeable_settings">
-			<h2><?php _e( 'Fetch data', 'wpcable' ); ?></h2>
-
-			<table class="form-table">
-				<tbody>
-				<?php
-
-				wp_nonce_field( 'wpcable_fetch', 'wpcable_fetch_nonce' );
-				foreach ( $wpcable_settings_fields as $key => $label ) {
-
-					echo '
-			  <tr>
-				<th scope="row">
-				  <label class="wpcable_label" for="wpcable_' . $key . '">' . $label . '</label>
-				</th>
-				<td>
-				<input id="wpcable_' . $key . '" type="' . ( $key == 'password' ? 'password' : 'text' ) . '" name="wpcable_' . $key . '" value="" autocomplete="new-password" />
-				</td>
-			  </tr>';
-				}
-				?>
-				</tbody>
-			</table>
-
-			<?php if ( codeable_timeout_warning() ) :?>
-				<p>
-					<small><?php echo __( 'Be sure that you set PHP timeout to 120 or more on your first fetch or if you have deleted the cached data', 'wpcable' ); ?></small>
-				</p>
-			<?php endif; ?>
-
-			<p class="submit">
-				<input
-					name="submit"
-					class="button button-primary"
-					value="<?php echo __( 'Fetch remote data', 'wpcable' ); ?>"
-					type="submit" />
-				<a
-					href="<?php echo esc_url( add_query_arg( 'flushdata', 'true' ) ); ?>"
-					class="button">
-					<?php echo __( 'Delete cached data', 'wpcable' ); ?>
-				</a>
-			</p>
+			<div class="action-buttons">
+				<?php submit_button( __( 'Save Changes', 'wpcable' ) ); ?>
+			</div>
 
 		</form>
 	</div>

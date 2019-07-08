@@ -26,6 +26,27 @@ add_action( 'admin_menu', 'wpcable_register_menu_page' );
 
 function codeable_transcactions_stats_cb() {
 
+	if ( ! codeable_api_logged_in() ) :
+		?>
+		<div class="wrap cable_stats_wrap">
+			<h1><?php echo __( 'Codeable Stats', 'wpcable' ); ?></h1>
+
+			<div class="notice error">
+				<p>
+					<?php
+					printf(
+						__( 'Please %slog in%s to access your stats.', 'wpcable' ),
+						'<a href="' . admin_url( 'admin.php?page=codeable_settings' ) . '">',
+						'</a>'
+					);
+					?>
+				</p>
+			</div>
+		</div>
+		<?php
+		return;
+	endif;
+
 	add_thickbox();
 
 	$account_details   = get_option( 'wpcable_account_details' );
