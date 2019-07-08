@@ -36,35 +36,34 @@ define( 'WPCABLE_ASSESTS_DIR', dirname( __FILE__ ) . '/assets' );
 define( 'WPCABLE_DIR', dirname( __FILE__ ) );
 define( 'WPCABLE_URI', rtrim( plugin_dir_url( __FILE__ ), '/' ) );
 
-final class WpCable {
+require_once WPCABLE_CLASSES_DIR . '/object_cache.php';
+require_once WPCABLE_FUNCTIONS_DIR . '/admin-settings.php';
+require_once WPCABLE_FUNCTIONS_DIR . '/admin-tasks.php';
+require_once WPCABLE_FUNCTIONS_DIR . '/admin-page.php';
+require_once WPCABLE_FUNCTIONS_DIR . '/admin-estimate.php';
+require_once WPCABLE_FUNCTIONS_DIR . '/helpers.php';
+require_once WPCABLE_CLASSES_DIR . '/api_calls.php';
+require_once WPCABLE_CLASSES_DIR . '/api_data.php';
+require_once WPCABLE_CLASSES_DIR . '/stats.php';
+require_once WPCABLE_CLASSES_DIR . '/tasks.php';
+require_once WPCABLE_CLASSES_DIR . '/clients.php';
 
-	public function __construct() {
-		$this->includes();
-	}
-
-	private function includes() {
-		require_once WPCABLE_CLASSES_DIR . '/object_cache.php';
-		require_once WPCABLE_FUNCTIONS_DIR . '/admin-settings.php';
-		require_once WPCABLE_FUNCTIONS_DIR . '/admin-tasks.php';
-		require_once WPCABLE_FUNCTIONS_DIR . '/admin-page.php';
-		require_once WPCABLE_FUNCTIONS_DIR . '/admin-estimate.php';
-		require_once WPCABLE_FUNCTIONS_DIR . '/helpers.php';
-		require_once WPCABLE_CLASSES_DIR . '/api_calls.php';
-		require_once WPCABLE_CLASSES_DIR . '/api_data.php';
-		require_once WPCABLE_CLASSES_DIR . '/stats.php';
-		require_once WPCABLE_CLASSES_DIR . '/tasks.php';
-		require_once WPCABLE_CLASSES_DIR . '/clients.php';
-	}
+/**
+ * Maybe sync with API server.
+ *
+ * @return void
+ */
+function wpcable_cronjob() {
+	codeable_maybe_refresh_data();
 }
-
-new WpCable();
+add_action( 'wpcable_cronjob', 'wpcable_cronjob' );
 
 /**
  * Create a scheduled event (if it does not exist already).
  */
 function wpcable_cronstarter_activation() {
 	if ( ! wp_next_scheduled( 'wpcable_cronjob' ) ) {
-		// wp_schedule_event( time(), 'daily', 'wpcable_cronjob' );
+		wp_schedule_event( time(), 'hourly', 'wpcable_cronjob' );
 	}
 }
 
