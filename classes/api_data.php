@@ -82,8 +82,9 @@ class wpcable_api_data {
 			$wpdb->show_errors();
 		}
 
-		$total = 0;
-		$page  = 1;
+		$total      = 0;
+		$page       = 1;
+		$check_type = (int) get_option( 'wpcable_what_to_check' );
 
 		while ( $page < $maxpage ) {
 			$single_page = $this->api_calls->transactions_page( $page ++ );
@@ -110,10 +111,11 @@ class wpcable_api_data {
 					);
 
 					// If the record exists then return total.
-					if ( $check[0]->totalrows > 0 ) {
-						if ( 1 === get_option( 'wpcable_what_to_check' ) ) {
+					$exists = $check[0]->totalrows > 0;
+					if ( $exists ) {
+						if ( 1 === $check_type ) {
 							continue;
-						} else {
+						} elseif ( 0 === $check_type ) {
 							return $total;
 						}
 					}
@@ -134,13 +136,21 @@ class wpcable_api_data {
 
 					// the API is returning some blank rows, ensure we have a valid client_id.
 					if ( $new_tr['id'] && is_int( $new_tr['id'] ) ) {
-						$insert_transaction = $wpdb->insert(
-							$this->tables['transcactions'],
-							$new_tr
-						);
+						if ( $exists ) {
+							$db_res = $wpdb->update(
+								$this->tables['transcactions'],
+								$new_tr,
+								[ 'id' => $tr['id'] ]
+							);
+						} else {
+							$db_res = $wpdb->insert(
+								$this->tables['transcactions'],
+								$new_tr
+							);
+						}
 					}
 
-					if ( $insert_transaction === false ) {
+					if ( $db_res === false ) {
 						wp_die(
 							'Could not insert transactions ' .
 							$tr['id'] . ':' .
@@ -177,8 +187,9 @@ class wpcable_api_data {
 			$wpdb->show_errors();
 		}
 
-		$filters = [ 'pending', 'active', 'archived', 'preferred' ];
-		$total   = 0;
+		$filters    = [ 'pending', 'active', 'archived', 'preferred' ];
+		$total      = 0;
+		$check_type = (int) get_option( 'wpcable_what_to_check' );
 
 		foreach ( $filters as $filter ) {
 			$page = 1;
@@ -202,10 +213,11 @@ class wpcable_api_data {
 						);
 
 						// If the record exists then continue with next filter.
-						if ( $check[0]->totalrows > 0 ) {
-							if ( 1 === get_option( 'wpcable_what_to_check' ) ) {
+						$exists = $check[0]->totalrows > 0;
+						if ( $exists ) {
+							if ( 1 === $check_type ) {
 								continue;
-							} else {
+							} elseif ( 0 === $check_type ) {
 								break;
 							}
 						}
@@ -227,13 +239,21 @@ class wpcable_api_data {
 
 						// The API is returning some blank rows, ensure we have a valid id.
 						if ( $new_task['task_id'] && is_int( $new_task['task_id'] ) ) {
-							$insert_task = $wpdb->insert(
-								$this->tables['tasks'],
-								$new_task
-							);
+							if ( $exists ) {
+								$db_res = $wpdb->update(
+									$this->tables['tasks'],
+									$new_task,
+									[ 'task_id' => $task['id'] ]
+								);
+							} else {
+								$db_res = $wpdb->insert(
+									$this->tables['tasks'],
+									$new_task
+								);
+							}
 						}
 
-						if ( $insert_task === false ) {
+						if ( $db_res === false ) {
 							wp_die(
 								'Could not insert task ' .
 								$task['id'] . ':' .
@@ -266,6 +286,8 @@ class wpcable_api_data {
 			return;
 		}
 
+		$check_type = (int) get_option( 'wpcable_what_to_check' );
+
 		// Check, if the client already exists.
 		$check_client = $wpdb->get_results(
 			"SELECT COUNT(1) AS totalrows
@@ -274,7 +296,8 @@ class wpcable_api_data {
 		);
 
 		// When the client already exists, stop here.
-		if ( $check_client[0]->totalrows > 0 ) {
+		$exists = $check_client[0]->totalrows > 0;
+		if ( $exists && 3 !== $check_type ) {
 			return;
 		}
 
@@ -291,7 +314,15 @@ class wpcable_api_data {
 			'large'           => $client['avatar']['large_url'],
 		];
 
-		$wpdb->insert( $this->tables['clients'], $new_client );
+		if ( $exists ) {
+			$wpdb->update(
+				$this->tables['clients'],
+				$new_client,
+				[ 'client_id' => $client['id'] ]
+			);
+		} else {
+			$wpdb->insert( $this->tables['clients'], $new_client );
+		}
 	}
 
 	/**
@@ -323,6 +354,6 @@ class wpcable_api_data {
 			'debit_user_amount'     => $debit[1]['amount'],
 		];
 
-		$wpdb->insert( $this->tables['amounts'], $new_amount );
+		$wpdb->replace( $this->tables['amounts'], $new_amount );
 	}
 }

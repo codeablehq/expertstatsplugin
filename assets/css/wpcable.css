@@ -584,6 +584,11 @@ div#TB_window {
 	content: ')';
 }
 
+.wpcable_wrap.tasks .tablenav .filter {
+	display: inline-block;
+	margin: 0 10px 0 0;
+}
+
 .task-list .list-item .actions {
 	opacity: 0;
 	transition: all 0.3s;
@@ -617,6 +622,12 @@ div#TB_window {
 
 .wpcable_wrap.tasks table.widefat tbody .col-client {
 	box-shadow: 4px 0 0 0 var(--color, #0000) inset;
+}
+
+.task-flags {
+    display: inline-block;
+    margin-left: 10px;
+    white-space: nowrap;
 }
 
 .color-flag {

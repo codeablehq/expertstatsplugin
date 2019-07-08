@@ -158,10 +158,27 @@ function codeable_settings_callback() {
 									value="2"
 									<?php checked( 2, $wpcable_what_to_check ); ?>
 								/>
-								<?php _e( 'Always process all items', 'wpcable' ); ?>
+								<?php _e( 'Review all items, insert missing', 'wpcable' ); ?>
 								<span class="tooltip bottom" tabindex="0">
 									<span class="tooltip-text">
 										<?php _e( 'Use this when you hit timeouts or errors. This setting does not update existing entries, but always checks the entire API results for missing items.', 'wpcable' ); ?>
+									</span>
+									<i class="dashicons dashicons-info"></i>
+								</span>
+							</label>
+						</p>
+						<p>
+							<label>
+								<input
+									type="radio"
+									name="wpcable_what_to_check"
+									value="3"
+									<?php checked( 3, $wpcable_what_to_check ); ?>
+								/>
+								<?php _e( 'Full sync', 'wpcable' ); ?>
+								<span class="tooltip bottom" tabindex="0">
+									<span class="tooltip-text">
+										<?php _e( 'Slowest option, that keeps your local DB in sync with the Codeable website by inserting missing items and updating existing entries (i.e., tasks, clients).', 'wpcable' ); ?>
 									</span>
 									<i class="dashicons dashicons-info"></i>
 								</span>

@@ -115,9 +115,11 @@ jQuery(document).ready(function () {
     var listTitle = jQuery( '.wrap .list-title' );
     var itemTpl = wp.template( 'list-item' );
     var notesForm = jQuery( '.wrap .notes-editor-layer' );
+    var filterCb = jQuery( '.wrap [data-filter]' );
     var notesMde = false;
 
     var filterState = 'all';
+    var filterFlags = {};
 
     function refreshList() {
         list.empty();
@@ -126,6 +128,18 @@ jQuery(document).ready(function () {
             var task = wpcable.tasks[i];
 
             if ( filterState !== 'all' && filterState !== task.state ) {
+                continue;
+            }
+            if ( '1' === task.hidden && filterFlags.no_hidden ) {
+                continue;
+            }
+            if ( '0' === task.favored && filterFlags.favored ) {
+                continue;
+            }
+            if ( '0' === task.promoted && filterFlags.promoted ) {
+                continue;
+            }
+            if ( '0' === task.subscribed && filterFlags.subscribed ) {
                 continue;
             }
 
@@ -177,6 +191,19 @@ jQuery(document).ready(function () {
                 filterState = hash[1];
             }
         }
+
+        filterCb.each(function() {
+            var el = jQuery(this);
+            var key = el.data('filter');
+
+            if ( ! el.prop('checked') ) {
+                filterFlags[key] = false;
+            } else {
+                filterFlags[key] = true;
+            }
+
+            console.log('Filter', key,  filterFlags[key])
+        });
 
         // Update the UI to reflect active filters.
         var currState = jQuery( '.subsubsub li.' + filterState ).filter( ':visible' );
@@ -314,6 +341,7 @@ jQuery(document).ready(function () {
     refreshList();
 
     jQuery( window ).on( 'hashchange', updateFilters );
+    filterCb.on( 'click', function() { updateFilters() } );
     list.on( 'click', '.color-flag li', setColorFlag );
     list.on( 'click', '.notes-body', startEditor )
         .on( 'mousedown', '.notes-body', function() { list.isClick = true })

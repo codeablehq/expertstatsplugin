@@ -115,6 +115,24 @@ function codeable_tasks_callback() {
 				</a>
 			</li>
 		</ul>
+		<div class="tablenav top">
+			<label class="filter">
+				<input type="checkbox" data-filter="no_hidden" />
+				<?php _e( 'No hidden tasks', 'wpcable' ); ?>
+			</label>
+			<label class="filter">
+				<input type="checkbox" data-filter="subscribed" />
+				👁 <?php _e( 'Subscribed', 'wpcable' ); ?>
+			</label>
+			<label class="filter">
+				<input type="checkbox" data-filter="promoted" />
+				📣 <?php _e( 'Promoted', 'wpcable' ); ?>
+			</label>
+			<label class="filter">
+				<input type="checkbox" data-filter="favored" />
+				❤️ <?php _e( 'Favored', 'wpcable' ); ?>
+			</label>
+		</div>
 		<table class="widefat striped">
 			<thead>
 				<tr>
@@ -140,7 +158,7 @@ function codeable_tasks_callback() {
 	</div>
 	<script type="text/html" id="tmpl-list-item">
 	<tr
-		class="list-item"
+		class="list-item<# if ( '1' === data.hidden ) { #> task-hidden<#} #><# if ('1' === data.subscribed ) { #> task-subscribed<#} #><# if ('1' === data.favored ) { #> task-favored<#} #><# if ('1' === data.promoted ) { #> task-promoted<#} #>"
 		id="task-{{{ data.task_id }}}"
 		<# if (data.color ) { #> style="--color: {{{ data.color }}}" <# } #>
 	>
@@ -156,7 +174,29 @@ function codeable_tasks_callback() {
 			</a>
 		</td>
 		<td class="col-title">
-			<div>{{{ data.title }}}</div>
+			<div>
+				{{{ data.title }}}
+				<span class="task-flags">
+				<# if ( '1' === data.promoted ) { #>
+					<span class="tooltip bottom autosize" tabindex="0">
+						<span class="tooltip-text"><?php _e( 'Promoted', 'wpcable' ); ?></span>
+						📣
+					</span>
+				<#} #>
+				<# if ( '1' === data.favored ) { #>
+					<span class="tooltip bottom autosize" tabindex="0">
+						<span class="tooltip-text"><?php _e( 'Favored', 'wpcable' ); ?></span>
+						️❤️
+					</span>
+				<#} #>
+				<# if ( '1' === data.subscribed ) { #>
+					<span class="tooltip bottom autosize" tabindex="0">
+						<span class="tooltip-text"><?php _e( 'Subscribed', 'wpcable' ); ?></span>
+						👁
+					</span>
+				<#} #>
+				</span>
+			</div>
 			<div class="row-actions">
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=codeable_estimate') ); ?>&fee={{{ data.client_fee }}}"><?php _e( 'Estimate', 'wpcable' ); ?></a>
 				<ul class="color-flag">
