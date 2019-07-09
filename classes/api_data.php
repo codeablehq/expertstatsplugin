@@ -52,14 +52,9 @@ class wpcable_api_data {
 	/**
 	 * Fetches the profile details AND THE AUTH_TOKEN from codeable.
 	 *
-	 * Must be called before any other store_* functions to ensure that we have
-	 * a valid auth_token.
-	 *
-	 * @param string $email    E-Mail-Address of the current user.
-	 * @param string $password Password of the current user.
 	 * @return void
 	 */
-	public function store_profile( $email, $password ) {
+	public function store_profile() {
 		codeable_page_requires_login( __( 'API Refresh', 'wpcable' ) );
 
 		$account_details = $this->api_calls->self();
@@ -187,7 +182,15 @@ class wpcable_api_data {
 			$wpdb->show_errors();
 		}
 
-		$filters    = [ 'pending', 'active', 'archived', 'preferred' ];
+		$filters    = [
+			'pending',
+			'active',
+			'archived',
+			'preferred',
+			'in-progress',
+			'favourites',
+			'promoted',
+		];
 		$total      = 0;
 		$check_type = (int) get_option( 'wpcable_what_to_check' );
 
@@ -226,13 +229,13 @@ class wpcable_api_data {
 							'task_id'    => $task['id'],
 							'client_id'  => $task['client']['id'],
 							'title'      => $task['title'],
-							'estimate'   => $task['estimatable'],
-							'hidden'     => $task['hidden_by_current_user'],
-							'promoted'   => $task['promoted_task'],
-							'subscribed' => $task['subscribed_by_current_user'],
-							'favored'    => $task['favored_by_current_user'],
-							'preferred'  => $task['current_user_is_preferred_contractor'],
-							'client_fee' => $task['prices']['client_fee_percentage'],
+							'estimate'   => ! empty( $task['estimatable'] ),
+							'hidden'     => ! empty( $task['hidden_by_current_user'] ),
+							'promoted'   => ! empty( $task['promoted_task'] ),
+							'subscribed' => ! empty( $task['subscribed_by_current_user'] ),
+							'favored'    => ! empty( $task['favored_by_current_user'] ),
+							'preferred'  => ! empty( $task['current_user_is_preferred_contractor'] ),
+							'client_fee' => (float) $task['prices']['client_fee_percentage'],
 							'state'      => $task['state'],
 							'kind'       => $task['kind'],
 						];

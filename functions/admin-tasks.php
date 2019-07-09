@@ -35,7 +35,7 @@ function wpcable_ajax_update_task() {
 		return;
 	}
 
-	$task = $_POST['task'];
+	$task = wp_unslash( $_POST['task'] );
 
 	if ( ! $task ) {
 		return;

@@ -299,7 +299,7 @@ function codeable_maybe_refresh_data( $force = false ) {
 	$total = 0;
 
 	$data = new wpcable_api_data();
-	$data->store_profile( $email, $password );
+	$data->store_profile();
 
 	$total = $data->store_transactions();
 	$total = $data->store_tasks();
