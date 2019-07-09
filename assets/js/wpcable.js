@@ -130,16 +130,7 @@ jQuery(document).ready(function () {
             if ( filterState !== 'all' && filterState !== task.state ) {
                 continue;
             }
-            if ( '1' === task.hidden && filterFlags.no_hidden ) {
-                continue;
-            }
-            if ( '0' === task.favored && filterFlags.favored ) {
-                continue;
-            }
-            if ( '0' === task.promoted && filterFlags.promoted ) {
-                continue;
-            }
-            if ( '0' === task.subscribed && filterFlags.subscribed ) {
+            if ( false === task._visible ) {
                 continue;
             }
 
@@ -201,9 +192,26 @@ jQuery(document).ready(function () {
             } else {
                 filterFlags[key] = true;
             }
-
-            console.log('Filter', key,  filterFlags[key])
         });
+
+        // Mark tasks as visible/hidden.
+        for ( var i = 0; i < wpcable.tasks.length; i++ ) {
+            var task = wpcable.tasks[i];
+            task._visible = true;
+
+            if ( '1' === task.hidden && filterFlags.no_hidden ) {
+                task._visible = false;
+            }
+            if ( '0' === task.favored && filterFlags.favored ) {
+                task._visible = false;
+            }
+            if ( '0' === task.promoted && filterFlags.promoted ) {
+                task._visible = false;
+            }
+            if ( '0' === task.subscribed && filterFlags.subscribed ) {
+                task._visible = false;
+            }
+        }
 
         // Update the UI to reflect active filters.
         var currState = jQuery( '.subsubsub li.' + filterState ).filter( ':visible' );
@@ -226,14 +234,19 @@ jQuery(document).ready(function () {
     function initFilters() {
         var totals = {};
 
-        totals.all = wpcable.tasks.length;
+        totals.all = 0;
         for ( var i = 0; i < wpcable.tasks.length; i++ ) {
-            var entry = wpcable.tasks[i];
+            var task = wpcable.tasks[i];
 
-            if ( undefined === totals[entry.state] ) {
-                totals[entry.state] = 0;
+            if ( false === task._visible ) {
+                continue;
             }
-            totals[entry.state]++;
+
+            if ( undefined === totals[task.state] ) {
+                totals[task.state] = 0;
+            }
+            totals[task.state]++;
+            totals.all++;
         }
 
         jQuery( '.subsubsub li' ).hide();
@@ -341,7 +354,7 @@ jQuery(document).ready(function () {
     refreshList();
 
     jQuery( window ).on( 'hashchange', updateFilters );
-    filterCb.on( 'click', function() { updateFilters() } );
+    filterCb.on( 'click', function() { updateFilters(); initFilters(); } );
     list.on( 'click', '.color-flag li', setColorFlag );
     list.on( 'click', '.notes-body', startEditor )
         .on( 'mousedown', '.notes-body', function() { list.isClick = true })
