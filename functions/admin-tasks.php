@@ -175,22 +175,22 @@ function codeable_tasks_callback() {
 		</td>
 		<td class="col-title">
 			<div>
-				{{{ data.title }}}
+				<span class="task-title">{{{ data.title }}}</span>
 				<span class="task-flags">
 				<# if ( '1' === data.promoted ) { #>
-					<span class="tooltip bottom autosize" tabindex="0">
+					<span class="tooltip bottom small autosize" tabindex="0">
 						<span class="tooltip-text"><?php _e( 'Promoted', 'wpcable' ); ?></span>
 						📣
 					</span>
 				<#} #>
 				<# if ( '1' === data.favored ) { #>
-					<span class="tooltip bottom autosize" tabindex="0">
+					<span class="tooltip bottom small autosize" tabindex="0">
 						<span class="tooltip-text"><?php _e( 'Favored', 'wpcable' ); ?></span>
 						️❤️
 					</span>
 				<#} #>
 				<# if ( '1' === data.subscribed ) { #>
-					<span class="tooltip bottom autosize" tabindex="0">
+					<span class="tooltip bottom small autosize" tabindex="0">
 						<span class="tooltip-text"><?php _e( 'Subscribed', 'wpcable' ); ?></span>
 						👁
 					</span>
@@ -200,16 +200,66 @@ function codeable_tasks_callback() {
 			<div class="row-actions">
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=codeable_estimate') ); ?>&fee={{{ data.client_fee }}}"><?php _e( 'Estimate', 'wpcable' ); ?></a>
 				<ul class="color-flag">
-					<li style="background-color:"></li>
-					<li style="background-color:#CC0000"></li>
-					<li style="background-color:#FF8800"></li>
-					<li style="background-color:#007E33"></li>
-					<li style="background-color:#0099CC"></li>
-					<li style="background-color:#00695C"></li>
-					<li style="background-color:#0D47A1"></li>
-					<li style="background-color:#9933CC"></li>
-					<li style="background-color:#D81B60"></li>
-					<li style="background-color:#CCCCCC"></li>
+					<li style="background-color:">
+						<span class="tooltip autosize small" tabindex="0">
+							<span class="tooltip-text">New</span>
+							<div class="color"></div>
+						</span>
+					</li>
+					<li style="background-color:#CC0000">
+						<span class="tooltip autosize small" tabindex="0">
+							<span class="tooltip-text">Priority!</span>
+							<div class="color"></div>
+						</span>
+					</li>
+					<li style="background-color:#b39ddb">
+						<span class="tooltip autosize small" tabindex="0">
+							<span class="tooltip-text">Won (completed)</span>
+							<div class="color"></div>
+						</span>
+					</li>
+					<li style="background-color:#673ab7">
+						<span class="tooltip autosize small" tabindex="0">
+							<span class="tooltip-text">Won (active)</span>
+							<div class="color"></div>
+						</span>
+					</li>
+					<li style="background-color:#9ccc65">
+						<span class="tooltip autosize small" tabindex="0">
+							<span class="tooltip-text">Estimated</span>
+							<div class="color"></div>
+						</span>
+					</li>
+					<li style="background-color:#00b0ff">
+						<span class="tooltip autosize small" tabindex="0">
+							<span class="tooltip-text">Good chances</span>
+							<div class="color"></div>
+						</span>
+					</li>
+					<li style="background-color:#80d8ff">
+						<span class="tooltip autosize small" tabindex="0">
+							<span class="tooltip-text">Normal</span>
+							<div class="color"></div>
+						</span>
+					</li>
+					<li style="background-color:#607d8b">
+						<span class="tooltip autosize small" tabindex="0">
+							<span class="tooltip-text">Needs effort</span>
+							<div class="color"></div>
+						</span>
+					</li>
+					<li style="background-color:#90a4ae">
+						<span class="tooltip autosize small" tabindex="0">
+							<span class="tooltip-text">Unlikely</span>
+							<div class="color"></div>
+						</span>
+					</li>
+					<li style="background-color:#cfd8dc">
+						<span class="tooltip autosize small" tabindex="0">
+							<span class="tooltip-text">Lost, Cancelled, Unresponsive</span>
+							<div class="color"></div>
+						</span>
+					</li>
 				</ul>
 			</div>
 		</td>

@@ -647,10 +647,12 @@ div#TB_window {
 	position: relative;
 	height: 14px;
 	width: 14px;
-	display: inline-block;
+	float: left;
 	cursor: pointer;
 	opacity: 0.2;
 	box-shadow: 0 0 0 1px #0004 inset;
+	transform: scale(0.8);
+	border-radius: 20px;
 	transition: all 0.3s;
 }
 
@@ -660,7 +662,12 @@ div#TB_window {
 
 .color-flag > li:hover {
 	opacity: 1;
-	transform: scale(1.2)
+	transform: scale(1);
+}
+
+.color-flag .color {
+	width: 14px;
+	height: 14px;
 }
 
 .wpcable_wrap.tasks .notes-body {
@@ -828,6 +835,16 @@ div#TB_window {
 	white-space: nowrap;
 }
 
+.tooltip.small .tooltip-text:before {
+	border-width: 4px;
+	transform: translate(-50%, 8px);
+}
+
+.tooltip.small .tooltip-text {
+	font-size: 11px;
+	padding: 3px 6px;
+}
+
 .tooltip.bottom .tooltip-text {
 	bottom: auto;
 	top: 100%;
@@ -840,6 +857,10 @@ div#TB_window {
 	transform: translate(-50%, -16px);
 	border-bottom-color: #2b2c2d;
 	border-top-color: transparent;
+}
+
+.tooltip.bottom.small .tooltip-text:before {
+	transform: translate(-50%, -8px);
 }
 
 .tooltip.right .tooltip-text {
