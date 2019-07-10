@@ -70,6 +70,62 @@ function wpcable_cronstarter_activation() {
 // and make sure it's called whenever WordPress loads
 add_action( 'wp', 'wpcable_cronstarter_activation' );
 
+function wpcable_sync_start() {
+	$queue = get_option( 'wpcable_api_queue' );
+	$data  = new wpcable_api_data();
+
+	// Initialize the API queue on first call.
+	if ( ! empty( $queue ) && is_array( $queue ) ) {
+		$task = array_shift( $queue );
+		wp_send_json_error( [
+			'state' => 'RUNNING',
+			'step'  => $task,
+		] );
+	}
+
+	$queue = $data->prepare_queue();
+	update_option( 'wpcable_api_queue', $queue );
+	wp_send_json_success( [ 'state' => 'READY' ] );
+}
+add_action( 'wp_ajax_wpcable_sync_start', 'wpcable_sync_start' );
+
+/**
+ * Process the next API call and update the DB. When no API call is enqueued this
+ * Ajax handler will initialize the API queue.
+ */
+function wpcable_sync_process() {
+	$queue = get_option( 'wpcable_api_queue' );
+	$data  = new wpcable_api_data();
+
+	// Initialize the API queue on first call.
+	if ( empty( $queue ) || ! is_array( $queue ) ) {
+		wp_send_json_error( [ 'state' => 'FINISHED' ] );
+	}
+
+	// Process the next pending task.
+	$task = array_shift( $queue );
+	$next = $data->process_queue( $task );
+
+	// Re-Insert partially completed tasks into the queue.
+	if ( $next ) {
+		array_unshift( $queue, $next );
+	}
+
+	// Store the timestamp of last full-sync in the options table.
+	if ( empty( $queue ) ) {
+		update_option( 'wpcable_last_fetch', time() );
+		delete_option( 'wpcable_api_queue', $queue );
+		wp_send_json_error( [ 'state' => 'FINISHED' ] );
+	} else {
+		update_option( 'wpcable_api_queue', $queue );
+		wp_send_json_error( [
+			'state' => 'RUNNING',
+			'step'  => $task,
+		] );
+	}
+}
+add_action( 'wp_ajax_wpcable_sync_process', 'wpcable_sync_process' );
+
 // on install
 function wpcable_install() {
 	global $wpdb;
@@ -85,90 +141,88 @@ function wpcable_install() {
 		$table_name = $wpdb->prefix . 'codeable_transcactions';
 
 		$sql = "CREATE TABLE {$table_name} (
-		      `id` int(11) NOT NULL,
-		      `description` varchar(128) CHARACTER SET utf8 NOT NULL,
-		      `dateadded` datetime NOT NULL,
-		      `fee_percentage` decimal(10,0) DEFAULT NULL,
-		      `fee_amount` decimal(10,0) DEFAULT NULL,
-		      `task_type` varchar(128) CHARACTER SET utf8 DEFAULT NULL,
-		      `task_id` int(11) DEFAULT NULL,
-		      `task_title` text DEFAULT NULL,
-		      `parent_task_id` int(11) DEFAULT NULL,
-		      `preferred` int(4) DEFAULT NULL,
-		      `client_id` int(11) DEFAULT NULL,
-		      PRIMARY KEY  (id),
-		      KEY client_id (client_id)
-		    ) $charset_collate;";
+			`id` int(11) NOT NULL,
+			`description` varchar(128) CHARACTER SET utf8 NOT NULL,
+			`dateadded` datetime NOT NULL,
+			`fee_percentage` decimal(10,0) DEFAULT NULL,
+			`fee_amount` decimal(10,0) DEFAULT NULL,
+			`task_type` varchar(128) CHARACTER SET utf8 DEFAULT NULL,
+			`task_id` int(11) DEFAULT NULL,
+			`task_title` text DEFAULT NULL,
+			`parent_task_id` int(11) DEFAULT NULL,
+			`preferred` int(4) DEFAULT NULL,
+			`client_id` int(11) DEFAULT NULL,
+			`last_sync` int(11) DEFAULT 0 NOT NULL,
+			PRIMARY KEY  (id),
+			KEY client_id (client_id)
+		) $charset_collate;";
 
 		$db_delta = dbDelta( $sql );
 
 		$table_name = $wpdb->prefix . 'codeable_amounts';
 
 		$sql = "CREATE TABLE {$table_name} (
-		      `task_id` int(11) NOT NULL,
-		      `client_id` int(11) NOT NULL,
-		      `credit_revenue_id` int(11) DEFAULT NULL,
-		      `credit_revenue_amount` int(11) DEFAULT NULL,
-		      `credit_fee_id` int(11) DEFAULT NULL,
-		      `credit_fee_amount` int(11) DEFAULT NULL,
-		      `credit_user_id` int(11) DEFAULT NULL,
-		      `credit_user_amount` int(11) DEFAULT NULL,
-		      `debit_cost_id` int(11) DEFAULT NULL,
-		      `debit_cost_amount` int(11) DEFAULT NULL,
-		      `debit_user_id` int(11) DEFAULT NULL,
-		      `debit_user_amount` int(11) DEFAULT NULL,
-		      PRIMARY KEY  (task_id),
-		      KEY client_id (client_id)
-		    ) $charset_collate;";
+			`task_id` int(11) NOT NULL,
+			`client_id` int(11) NOT NULL,
+			`credit_revenue_id` int(11) DEFAULT NULL,
+			`credit_revenue_amount` int(11) DEFAULT NULL,
+			`credit_fee_id` int(11) DEFAULT NULL,
+			`credit_fee_amount` int(11) DEFAULT NULL,
+			`credit_user_id` int(11) DEFAULT NULL,
+			`credit_user_amount` int(11) DEFAULT NULL,
+			`debit_cost_id` int(11) DEFAULT NULL,
+			`debit_cost_amount` int(11) DEFAULT NULL,
+			`debit_user_id` int(11) DEFAULT NULL,
+			`debit_user_amount` int(11) DEFAULT NULL,
+			PRIMARY KEY  (task_id),
+			KEY client_id (client_id)
+		) $charset_collate;";
 
 		$db_delta = dbDelta( $sql );
 
 		$table_name = $wpdb->prefix . 'codeable_clients';
 
 		$sql = "CREATE TABLE {$table_name} (
-		    `client_id` int(11) NOT NULL,
-		    `full_name` varchar(255) NOT NULL,
-		    `role` varchar(255) DEFAULT NULL,
-		    `last_sign_in_at` datetime DEFAULT NULL,
-		    `pro` int(11) DEFAULT NULL,
-		    `timezone_offset` int(11) DEFAULT NULL,
-		    `tiny` varchar(255) DEFAULT NULL,
-		    `small` varchar(255) DEFAULT NULL,
-		    `medium` varchar(255) DEFAULT NULL,
-		    `large` varchar(255) DEFAULT NULL,
-		      PRIMARY KEY  (client_id)
-		    ) $charset_collate;";
+			`client_id` int(11) NOT NULL,
+			`full_name` varchar(255) NOT NULL,
+			`role` varchar(255) DEFAULT NULL,
+			`last_sign_in_at` datetime DEFAULT NULL,
+			`pro` int(11) DEFAULT NULL,
+			`timezone_offset` int(11) DEFAULT NULL,
+			`tiny` varchar(255) DEFAULT NULL,
+			`small` varchar(255) DEFAULT NULL,
+			`medium` varchar(255) DEFAULT NULL,
+			`large` varchar(255) DEFAULT NULL,
+			`last_sync` int(11) DEFAULT 0 NOT NULL,
+			PRIMARY KEY  (client_id)
+		) $charset_collate;";
 
 		$db_delta = dbDelta( $sql );
 
 		$table_name = $wpdb->prefix . 'codeable_tasks';
 
 		$sql = "CREATE TABLE {$table_name} (
-		    `task_id` int(11) NOT NULL,
+			`task_id` int(11) NOT NULL,
 			`client_id` int(11) NOT NULL,
 			`title` varchar(255) NOT NULL,
-		    `estimate` bit DEFAULT 0 NOT NULL,
-		    `hidden` bit DEFAULT 0 NOT NULL,
-		    `promoted` bit DEFAULT 0 NOT NULL,
-		    `subscribed` bit DEFAULT 0 NOT NULL,
-		    `favored` bit DEFAULT 0 NOT NULL,
-		    `preferred` bit DEFAULT 0 NOT NULL,
-		    `client_fee` float DEFAULT 17.5 NOT NULL,
-		    `state` varchar(50) DEFAULT '' NOT NULL,
-		    `kind` varchar(50) DEFAULT '' NOT NULL,
-		    `notes` text DEFAULT '' NOT NULL,
-		    `color` varchar(9) DEFAULT '' NOT NULL,
-		      PRIMARY KEY  (task_id)
-		    ) $charset_collate;";
+			`estimate` bit DEFAULT 0 NOT NULL,
+			`hidden` bit DEFAULT 0 NOT NULL,
+			`promoted` bit DEFAULT 0 NOT NULL,
+			`subscribed` bit DEFAULT 0 NOT NULL,
+			`favored` bit DEFAULT 0 NOT NULL,
+			`preferred` bit DEFAULT 0 NOT NULL,
+			`client_fee` float DEFAULT 17.5 NOT NULL,
+			`state` varchar(50) DEFAULT '' NOT NULL,
+			`kind` varchar(50) DEFAULT '' NOT NULL,
+			`last_sync` int(11) DEFAULT 0 NOT NULL,
+			`notes` text DEFAULT '' NOT NULL,
+			`color` varchar(9) DEFAULT '' NOT NULL,
+			PRIMARY KEY  (task_id)
+		) $charset_collate;";
 
 		$db_delta = dbDelta( $sql );
 
 		update_option( 'wpcable_transcactions_version', $wpcable_db_version );
-
-		// Set default scan method.
-		if ( get_option( 'wpcable_what_to_check' ) === false ) {
-			update_option( 'wpcable_what_to_check', '0' );
-		}
 	}
 }
 

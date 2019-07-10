@@ -8,37 +8,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-/**
- * Refresh data from API.
- *
- * @return void
- */
-function wpcable_handle_refresh() {
-	if ( empty( $_GET['_wpnonce'] ) ) {
-		return;
-	}
-	if ( empty( $_GET['action'] ) ) {
-		return;
-	}
-	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'wpcable-refresh' ) ) {
-		return;
-	}
-	if ( 'codeable-refresh' !== $_GET['action'] ) {
-		return;
-	}
-
-	codeable_maybe_refresh_data( true );
-
-	$redirect_to = codeable_add_message_param(
-		'success',
-		'fetched',
-		remove_query_arg( [ '_wpnonce', 'action' ] )
-	);
-	wp_safe_redirect( $redirect_to );
-	exit;
-}
-add_action( 'admin_init', 'wpcable_handle_refresh' );
-
 function wpcable_register_menu_page() {
 	$icon_code = file_get_contents( WPCABLE_ASSESTS_DIR . '/images/ca-logo.svg' );
 
@@ -175,15 +144,11 @@ function codeable_transcactions_stats_cb() {
 						<div class="value"><?php echo $account_details['completed_tasks_count']; ?></div>
 					</div>
 					<div class="footerdata">
-						<span class="label">
-							<?php echo __( 'Tasks', 'wpcable' ); ?>
-						</span>:
+						<span class="label"><?php echo __( 'Tasks', 'wpcable' ); ?></span>:
 						<span class="value">
 							<?php echo $account_details['tasks_count']; ?>
 						</span><br/>
-						<span class="label">
-							<?php echo __( 'Refunded', 'wpcable' ); ?>
-						</span>:
+						<span class="label"><?php echo __( 'Refunded', 'wpcable' ); ?></span>:
 						<span class="value">
 							<?php echo $clients_data['totals']['refunds']; ?>
 						</span>

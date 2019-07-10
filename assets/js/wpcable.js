@@ -101,6 +101,89 @@ jQuery(document).ready(function () {
 });
 
 /**
+ * Sync handler.
+ */
+jQuery(document).ready(function () {
+    var elProgress = jQuery( '.codeable-sync-progress' );
+
+    if ( ! elProgress.length ) {
+        return;
+    }
+
+    function processNext() {
+        window.setTimeout(function () {
+            jQuery.post(
+                window.ajaxurl,
+                {
+                    action: 'wpcable_sync_process'
+                },
+                checkSyncStatus
+            );
+        }, 1);
+    }
+
+    function showProgressBar( step ) {
+        var label = 'Fetching data';
+
+        if ( step && step.label ) {
+            label = step.label;
+        }
+        if ( step && ! isNaN( step.page ) && step.paged ) {
+            label += ', page ' + step.page;
+        }
+
+        elProgress.show();
+        elProgress.find( '.msg' ).text( label );
+    }
+
+    function hideProgressBar() {
+        if ( elProgress.is(':visible') ) {
+            elProgress.hide();
+
+            // Reload the window, if user consents.
+            if ( confirm('Sync completed. Do you want to reload this page now?') ) {
+                window.location.reload();
+            }
+        }
+    }
+
+    function checkSyncStatus( res ) {
+        var state = false;
+        if ( res && res.data ) {
+            state = res.data.state
+        }
+
+        if ( state === 'RUNNING' || state === 'READY' ) {
+            showProgressBar( res.data.step );
+            processNext();
+        } else {
+            hideProgressBar();
+        }
+    }
+
+    function startSync( ev ) {
+        jQuery.post(
+            window.ajaxurl,
+            {
+                action: 'wpcable_sync_start'
+            },
+            checkSyncStatus
+        );
+
+        ev.preventDefault();
+        return false;
+    }
+
+    jQuery( '.sync-start' ).on( 'click', startSync );
+
+    // Check, if a sync process is active from previous page load.
+    processNext();
+
+    // Check for new sync process every 5 minutes.
+    window.setInterval( processNext, 300000 );
+});
+
+/**
  * Task list functions.
  */
 jQuery(document).ready(function () {

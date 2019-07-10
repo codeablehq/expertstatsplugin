@@ -60,7 +60,6 @@ add_action( 'load-codeable-stats_page_codeable_settings', 'codeable_load_setting
  */
 function codeable_register_settings() {
 	register_setting( 'wpcable_group', 'wpcable' );
-	register_setting( 'wpcable_group', 'wpcable_what_to_check' );
 
 	if ( ! codeable_api_logged_in() ) {
 		register_setting( 'wpcable_group', 'wpcable_email' );
@@ -73,10 +72,9 @@ function codeable_register_settings() {
  * We intercept the workflow and log into the codeable API without saving the
  * password into the DB.
  *
- * @param string $value
- * @param string $option
- * @param string $old_value
- * @return void
+ * @param  string $value     The new value (i.e., new password).
+ * @param  string $old_value Previous value (always empty).
+ * @return string Always returns the $old_value.
  */
 function codeable_handle_login( $value, $old_value ) {
 	if ( ! empty( $_REQUEST['wpcable_email'] ) ) {
@@ -103,7 +101,6 @@ function codeable_settings_callback() {
 	codeable_admin_notices();
 
 	$wpcable_email         = get_option( 'wpcable_email' );
-	$wpcable_what_to_check = get_option( 'wpcable_what_to_check' );
 
 	$logout_url = wp_nonce_url(
 		add_query_arg( 'action', 'logout' ),
@@ -125,67 +122,6 @@ function codeable_settings_callback() {
 					value="<?php echo remove_query_arg( ['success', 'error' ] ); ?>"
 				/>
 				<?php do_settings_sections( 'wpcable_group' ); ?>
-
-				<tr>
-					<th scope="row">
-						<label class="wpcable_label" for="wpcable_what_to_check">
-							<?php _e( 'Import range', 'wpcable' ); ?>
-						</label>
-					</th>
-					<td>
-						<p>
-							<label>
-								<input
-									type="radio"
-									name="wpcable_what_to_check"
-									value="0"
-									<?php checked( 0, $wpcable_what_to_check ); ?>
-								/>
-								<?php _e( 'New items since last import', 'wpcable' ); ?>
-								<span class="tooltip bottom" tabindex="0">
-									<span class="tooltip-text">
-										<?php _e( 'This is the recommended setting. It does a chronological import that stops when an imported item already exists in your DB.', 'wpcable' ); ?>
-									</span>
-									<i class="dashicons dashicons-info"></i>
-								</span>
-							</label>
-						</p>
-						<p>
-							<label>
-								<input
-									type="radio"
-									name="wpcable_what_to_check"
-									value="2"
-									<?php checked( 2, $wpcable_what_to_check ); ?>
-								/>
-								<?php _e( 'Review all items, insert missing', 'wpcable' ); ?>
-								<span class="tooltip bottom" tabindex="0">
-									<span class="tooltip-text">
-										<?php _e( 'Use this when you hit timeouts or errors. This setting does not update existing entries, but always checks the entire API results for missing items.', 'wpcable' ); ?>
-									</span>
-									<i class="dashicons dashicons-info"></i>
-								</span>
-							</label>
-						</p>
-						<p>
-							<label>
-								<input
-									type="radio"
-									name="wpcable_what_to_check"
-									value="3"
-									<?php checked( 3, $wpcable_what_to_check ); ?>
-								/>
-								<?php _e( 'Full sync', 'wpcable' ); ?>
-								<span class="tooltip bottom" tabindex="0">
-									<span class="tooltip-text">
-										<?php _e( 'Slowest option, that keeps your local DB in sync with the Codeable website by inserting missing items and updating existing entries (i.e., tasks, clients).', 'wpcable' ); ?>
-									</span>
-									<i class="dashicons dashicons-info"></i>
-								</span>
-							</label>
-						</p>
-					</td>
-				</tr>
 
 				<?php if ( codeable_api_logged_in() ) : ?>
 					<tr>

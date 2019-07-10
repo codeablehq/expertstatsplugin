@@ -280,34 +280,29 @@ function codeable_flush_all_data() {
  * @return void
  */
 function codeable_maybe_refresh_data( $force = false ) {
-	$fetch = $force;
+	$sync_now = $force;
 
-	if ( ! $fetch ) {
+	if ( ! $sync_now ) {
 		$last_fetch = (int) get_option( 'wpcable_last_fetch' );
 
 		if ( ! $last_fetch ) {
-			$fetch = true;
+			$sync_now = true;
 		} else {
-			$fetch = time() - $last_fetch > HOUR_IN_SECONDS;
+			$sync_now = time() - $last_fetch > HOUR_IN_SECONDS;
 		}
 	}
 
-	if ( ! $fetch ) {
+	if ( ! $sync_now ) {
 		return;
 	}
 
-	$total = 0;
+	$queue = get_option( 'wpcable_api_queue' );
+	$data  = new wpcable_api_data();
 
-	$data = new wpcable_api_data();
-	$data->store_profile();
-
-	$total = $data->store_transactions();
-	$total = $data->store_tasks();
-
-	// Flush object cache.
-	wpcable_cache::flush();
-
-	update_option( 'wpcable_last_fetch', time() );
+	if ( empty( $queue ) || ! is_array( $queue ) ) {
+		$queue = $data->prepare_queue();
+		update_option( 'wpcable_api_queue', $queue );
+	}
 }
 
 /**
@@ -316,11 +311,7 @@ function codeable_maybe_refresh_data( $force = false ) {
  * @return void
  */
 function codeable_last_fetch_info() {
-	$last_fetch    = get_option( 'wpcable_last_fetch' );
-	$refresh_url   = wp_nonce_url(
-		add_query_arg( 'action', 'codeable-refresh' ),
-		'wpcable-refresh'
-	);
+	$last_fetch = get_option( 'wpcable_last_fetch' );
 
 	?>
 	<div class="codeable-last-refresh">
@@ -331,9 +322,13 @@ function codeable_last_fetch_info() {
 			<i class="dashicons dashicons-info"></i>
 		</span>
 		|
-		<a href="<?php echo esc_url( $refresh_url ); ?>">
+		<a href="#refresh" class="sync-start">
 			<?php _e( 'Refresh', 'wpcable' ); ?>
 		</a>
+	</div>
+	<div class="codeable-sync-progress" style="display:none">
+		<span class="spinner is-active"></span>
+		<span class="msg"></span>
 	</div>
 	<?php
 }

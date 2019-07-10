@@ -788,6 +788,27 @@ div#TB_window {
     border-top: 1px solid #e5e5e5;
 }
 
+.codeable-sync-progress {
+	position: fixed;
+	left: 50%;
+	top: 32px;
+	z-index: 10000;
+	transform: translateX(-50%);
+	padding: 15px;
+	background: #FFF;
+	margin: 0;
+	border-radius: 0 0 4px 4px;
+	border: 1px solid #e5e5e5;
+	box-sizing: border-box;
+	box-shadow: 0 1px 1px rgba(0,0,0,.04), 0 0 30px 5px #0002;
+	text-align: center;
+}
+
+.codeable-sync-progress .spinner {
+	float: left;
+	margin: 0 10px 0 0;
+}
+
 .tooltip {
 	position: relative;
 	display: inline-block;

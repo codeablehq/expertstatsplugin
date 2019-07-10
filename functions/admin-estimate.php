@@ -107,6 +107,8 @@ function codeable_estimate_callback() {
 		</form>
 	</div>
 
+	<?php codeable_last_fetch_info(); ?>
+
 	<script type="text/javascript">
 		jQuery(document).ready(function($) {
 			function round(value, step) {
