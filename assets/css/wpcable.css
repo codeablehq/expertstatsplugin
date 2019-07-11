@@ -602,7 +602,7 @@ div#TB_window {
 .wpcable_wrap.tasks .tablenav .filter [data-flag] {
 	background-color: var(--color);
 	border-radius: 100px;
-	box-shadow: 0 0 0 1px #fff inset, 0 0 5px 1px #0003;
+	box-shadow: 0 0 0 1px #fff inset, 0 0 0 1px #0003;
 	border-color: transparent;
 	transition: all 0.3s;
 }
