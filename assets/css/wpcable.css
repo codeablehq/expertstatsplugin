@@ -534,7 +534,8 @@ div#TB_window {
 	margin-bottom: 20px;
 }
 
-.estimate-row input[type="number"] {
+.estimate-row input[type="number"],
+.estimate-row input[readonly] {
 	width: 80px
 }
 
