@@ -109,7 +109,7 @@ function codeable_settings_callback() {
 		add_query_arg( 'action', 'logout' ),
 		'logout'
 	);
-
+	$logout_warning = __( 'When logging out, all your data (including task notes or color flags) is deleted from the DB. This cannot be undone.\n\nDo you want to clear your data and log out?', 'wpcable' );
 	?>
 	<div class="wrap wpcable_wrap">
 		<form method="post" action="options.php">
@@ -183,7 +183,7 @@ function codeable_settings_callback() {
 								printf(
 									__( 'You are currently logged in as %s. %sLog out and clear all data%s', 'wpcable' ),
 									'<b>' . $wpcable_email . '</b>',
-									'<a href="' . $logout_url . '">',
+									'<a href="' . esc_url( $logout_url ) . '" onclick="return confirm(\'' . esc_attr( $logout_warning ) . '\')">',
 									'</a>'
 								);
 								?>
