@@ -589,6 +589,39 @@ div#TB_window {
 	margin: 0 10px 0 0;
 }
 
+.wpcable_wrap.tasks .tablenav .group {
+	float: left;
+}
+
+.wpcable_wrap.tasks .tablenav .group + .group:before {
+	content: '|';
+	float: left;
+	margin: 0 10px 0 0;
+}
+
+.wpcable_wrap.tasks .tablenav .filter [data-flag] {
+	background-color: var(--color);
+	border-radius: 100px;
+	box-shadow: 0 0 0 1px #fff inset, 0 0 5px 1px #0003;
+	border-color: transparent;
+	transition: all 0.3s;
+}
+
+.wpcable_wrap.tasks .tablenav .filter [data-flag]:focus {
+	outline: none;
+	box-shadow: 0 0 0 1px #fff inset, 0 0 2px rgba(30,140,190,.8);
+}
+
+.wpcable_wrap.tasks .tablenav .filter [data-flag]:checked {
+	outline: none;
+	border-color: #fff;
+	box-shadow: 0 0 0 1px #fff inset, 0 0 0 2px rgba(30,140,190);
+}
+
+.wpcable_wrap.tasks .tablenav .filter [data-flag]:checked:before {
+	opacity: 0;
+}
+
 .task-list .list-item .actions {
 	opacity: 0;
 	transition: all 0.3s;
@@ -607,6 +640,11 @@ div#TB_window {
 	width: 120px;
 }
 
+.wpcable_wrap.tasks table.widefat .col-value {
+	width: 70px;
+	white-space: nowrap;
+}
+
 .wpcable_wrap.tasks table.widefat .col-title {
 	position: relative;
 	padding-right: 40px;
@@ -622,6 +660,10 @@ div#TB_window {
 
 .wpcable_wrap.tasks table.widefat tbody .col-client {
 	box-shadow: 4px 0 0 0 var(--color, #0000) inset;
+}
+
+.wpcable_wrap.tasks table.widefat .col-value .client-value .value {
+	opacity: 0.5;
 }
 
 .wpcable_wrap.tasks tr.task-hidden {
@@ -657,25 +699,48 @@ div#TB_window {
 	width: 14px;
 	float: left;
 	cursor: pointer;
-	opacity: 0.2;
-	box-shadow: 0 0 0 1px #0004 inset;
-	transform: scale(0.8);
-	border-radius: 20px;
-	transition: all 0.3s;
 }
 
-.color-flag > li.current {
+.color-flag > li.current .color {
 	opacity: 1;
 }
 
-.color-flag > li:hover {
+.color-flag > li.current:before {
+	content: "\f147";
+	color: #fff;
+	position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+	text-shadow: 0 1px 0 #000, 0 -1px 0 #000, -1px 0 0 #000, 1px 0 0 #000;
+	font-family: dashicons;
+	line-height: 1;
+    font-weight: 400;
+    font-style: normal;
+    speak: none;
+    text-decoration: inherit;
+    text-transform: none;
+	text-rendering: auto;
+	font-size: 20px;
+	-webkit-font-smoothing: antialiased;
+	pointer-events: none;
+}
+
+.color-flag > li:hover .color {
 	opacity: 1;
-	transform: scale(1);
+	transform: scale(1.2);
 }
 
 .color-flag .color {
+	opacity: 0.2;
+	transform: scale(0.8);
 	width: 14px;
 	height: 14px;
+	border-radius: 20px;
+	transition: all 0.3s;
+	box-shadow: 0 0 0 1px #0006 inset;
+	background-color: var(--color);
 }
 
 .wpcable_wrap.tasks .notes-body {

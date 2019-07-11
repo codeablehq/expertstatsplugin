@@ -68,6 +68,48 @@ function codeable_tasks_callback() {
 	codeable_page_requires_login( __( 'Your tasks', 'wpcable' ) );
 	codeable_admin_notices();
 
+	$color_flags = [];
+	$color_flags[''] = [
+		'label' => __( 'New', 'wpcable' ),
+		'color' => '',
+	];
+	$color_flags['prio'] = [
+		'label' => __( 'Priority!', 'wpcable' ),
+		'color' => '#cc0000',
+	];
+	$color_flags['completed'] = [
+		'label' => __( 'Won (completed)', 'wpcable' ),
+		'color' => '#b39ddb',
+	];
+	$color_flags['won'] = [
+		'label' => __( 'Won (active)', 'wpcable' ),
+		'color' => '#673ab7',
+	];
+	$color_flags['estimated'] = [
+		'label' => __( 'Estimated', 'wpcable' ),
+		'color' => '#9ccc65',
+	];
+	$color_flags['optimistic'] = [
+		'label' => __( 'Good chances', 'wpcable' ),
+		'color' => '#00b0ff',
+	];
+	$color_flags['neutral'] = [
+		'label' => __( 'Normal', 'wpcable' ),
+		'color' => '#80d8ff',
+	];
+	$color_flags['tough'] = [
+		'label' => __( 'Needs effort', 'wpcable' ),
+		'color' => '#607d8b',
+	];
+	$color_flags['pessimistic'] = [
+		'label' => __( 'Unlikely', 'wpcable' ),
+		'color' => '#90a4ae',
+	];
+	$color_flags['lost'] = [
+		'label' => __( 'Lost, Cancelled, Unresponsive', 'wpcable' ),
+		'color' => '#cfd8dc',
+	];
+
 	$wpcable_tasks = new wpcable_tasks();
 
 	$task_list = $wpcable_tasks->get_tasks();
@@ -102,6 +144,18 @@ function codeable_tasks_callback() {
 					<span class="count"></span>
 				</a>
 			</li>
+			<li class="hired">
+				| <a href="#state=hired">
+					<?php _e( 'Hired', 'wpcable' ); ?>
+					<span class="count"></span>
+				</a>
+			</li>
+			<li class="paid">
+				| <a href="#state=paid">
+					<?php _e( 'Paid', 'wpcable' ); ?>
+					<span class="count"></span>
+				</a>
+			</li>
 			<li class="completed">
 				| <a href="#state=completed">
 					<?php _e( 'Completed', 'wpcable' ); ?>
@@ -114,30 +168,56 @@ function codeable_tasks_callback() {
 					<span class="count"></span>
 				</a>
 			</li>
+			<li class="canceled">
+				| <a href="#state=canceled">
+					<?php _e( 'Canceled', 'wpcable' ); ?>
+					<span class="count"></span>
+				</a>
+			</li>
+			<li class="lost">
+				| <a href="#state=lost">
+					<?php _e( 'Lost', 'wpcable' ); ?>
+					<span class="count"></span>
+				</a>
+			</li>
 		</ul>
 		<div class="tablenav top">
-			<label class="filter">
-				<input type="checkbox" data-filter="no_hidden" />
-				<?php _e( 'No hidden tasks', 'wpcable' ); ?>
-			</label>
-			<label class="filter">
-				<input type="checkbox" data-filter="subscribed" />
-				👁 <?php _e( 'Subscribed', 'wpcable' ); ?>
-			</label>
-			<label class="filter">
-				<input type="checkbox" data-filter="promoted" />
-				📣 <?php _e( 'Promoted', 'wpcable' ); ?>
-			</label>
-			<label class="filter">
-				<input type="checkbox" data-filter="favored" />
-				❤️ <?php _e( 'Favored', 'wpcable' ); ?>
-			</label>
+			<div class="group">
+				<label class="filter">
+					<input type="checkbox" data-filter="no_hidden" />
+					<?php _e( 'No hidden tasks', 'wpcable' ); ?>
+				</label>
+				<label class="filter">
+					<input type="checkbox" data-filter="subscribed" />
+					👁 <?php _e( 'Subscribed', 'wpcable' ); ?>
+				</label>
+				<label class="filter">
+					<input type="checkbox" data-filter="promoted" />
+					📣 <?php _e( 'Promoted', 'wpcable' ); ?>
+				</label>
+				<label class="filter">
+					<input type="checkbox" data-filter="favored" />
+					❤️ <?php _e( 'Favored', 'wpcable' ); ?>
+				</label>
+			</div>
+			<div class="group">
+			<?php
+			foreach ( $color_flags as $flag => $info ) {
+				printf(
+					'<label class="filter flag-%1$s"><span class="tooltip autosize small" tabindex="0"><span class="tooltip-text">%2$s</span><input type="checkbox" data-flag="%1$s" /><div class="color"></div></span></label>',
+					esc_attr( $flag ),
+					esc_html( $info['label'] )
+				);
+			}
+			?>
+			</div>
 		</div>
 		<table class="widefat striped">
 			<thead>
 				<tr>
 					<th class="col-client"><?php _e( 'Client', 'wpcable' ); ?></th>
 					<th class="col-workroom"><?php _e( 'Workroom', 'wpcable' ); ?></th>
+					<th class="col-value"><?php _e( 'Value', 'wpcable' ); ?></th>
 					<th class="col-title"><?php _e( 'Title', 'wpcable' ); ?></th>
 					<th class="col-notes"><?php _e( 'Notes', 'wpcable' ); ?></th>
 				</tr>
@@ -158,9 +238,8 @@ function codeable_tasks_callback() {
 	</div>
 	<script type="text/html" id="tmpl-list-item">
 	<tr
-		class="list-item<# if ( '1' === data.hidden ) { #> task-hidden<#} #><# if ('1' === data.subscribed ) { #> task-subscribed<#} #><# if ('1' === data.favored ) { #> task-favored<#} #><# if ('1' === data.promoted ) { #> task-promoted<#} #>"
+		class="list-item<# if ( '1' === data.hidden ) { #> task-hidden<#} #><# if ('1' === data.subscribed ) { #> task-subscribed<#} #><# if ('1' === data.favored ) { #> task-favored<#} #><# if ('1' === data.promoted ) { #> task-promoted<#} #><# if ( data.flag ) { #> flag-{{{ data.flag }}}<# } #>"
 		id="task-{{{ data.task_id }}}"
-		<# if (data.color ) { #> style="--color: {{{ data.color }}}" <# } #>
 	>
 		<td class="col-client">
 			<span class="tooltip right autosize" tabindex="0">
@@ -173,6 +252,18 @@ function codeable_tasks_callback() {
 				<strong>#{{{ data.task_id }}}</strong>
 			</a>
 		</td>
+		<td class="col-value">
+			<# if ( data.value > 0 ) { #>
+				<span class="your-value tooltip autosize">
+					<span class="tooltip-text"><?php _e( 'Your earnings', 'wpcable' ); ?></span>
+					<span>$ {{{ parseInt( data.value ) }}}</span>
+				</span><br />
+				<small class="client-value tooltip bottom autosize">
+					<span class="tooltip-text"><?php _e( 'Paid by the client', 'wpcable' ); ?></span>
+					<span class="value">$ {{{ parseInt( data.value_client ) }}}</span>
+				</small>
+			<# } #>
+		</td>
 		<td class="col-title">
 			<div>
 				<span class="task-title">{{{ data.title }}}</span>
@@ -182,84 +273,33 @@ function codeable_tasks_callback() {
 						<span class="tooltip-text"><?php _e( 'Promoted', 'wpcable' ); ?></span>
 						📣
 					</span>
-				<#} #>
+				<# } #>
 				<# if ( '1' === data.favored ) { #>
 					<span class="tooltip bottom small autosize" tabindex="0">
 						<span class="tooltip-text"><?php _e( 'Favored', 'wpcable' ); ?></span>
 						️❤️
 					</span>
-				<#} #>
+				<# } #>
 				<# if ( '1' === data.subscribed ) { #>
 					<span class="tooltip bottom small autosize" tabindex="0">
 						<span class="tooltip-text"><?php _e( 'Subscribed', 'wpcable' ); ?></span>
 						👁
 					</span>
-				<#} #>
+				<# } #>
 				</span>
 			</div>
 			<div class="row-actions">
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=codeable_estimate') ); ?>&fee={{{ data.client_fee }}}"><?php _e( 'Estimate', 'wpcable' ); ?></a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=codeable_estimate') ); ?>&fee_client={{{ data.client_fee }}}"><?php _e( 'Estimate', 'wpcable' ); ?></a>
 				<ul class="color-flag">
-					<li style="background-color:">
-						<span class="tooltip autosize small" tabindex="0">
-							<span class="tooltip-text">New</span>
-							<div class="color"></div>
-						</span>
-					</li>
-					<li style="background-color:#CC0000">
-						<span class="tooltip autosize small" tabindex="0">
-							<span class="tooltip-text">Priority!</span>
-							<div class="color"></div>
-						</span>
-					</li>
-					<li style="background-color:#b39ddb">
-						<span class="tooltip autosize small" tabindex="0">
-							<span class="tooltip-text">Won (completed)</span>
-							<div class="color"></div>
-						</span>
-					</li>
-					<li style="background-color:#673ab7">
-						<span class="tooltip autosize small" tabindex="0">
-							<span class="tooltip-text">Won (active)</span>
-							<div class="color"></div>
-						</span>
-					</li>
-					<li style="background-color:#9ccc65">
-						<span class="tooltip autosize small" tabindex="0">
-							<span class="tooltip-text">Estimated</span>
-							<div class="color"></div>
-						</span>
-					</li>
-					<li style="background-color:#00b0ff">
-						<span class="tooltip autosize small" tabindex="0">
-							<span class="tooltip-text">Good chances</span>
-							<div class="color"></div>
-						</span>
-					</li>
-					<li style="background-color:#80d8ff">
-						<span class="tooltip autosize small" tabindex="0">
-							<span class="tooltip-text">Normal</span>
-							<div class="color"></div>
-						</span>
-					</li>
-					<li style="background-color:#607d8b">
-						<span class="tooltip autosize small" tabindex="0">
-							<span class="tooltip-text">Needs effort</span>
-							<div class="color"></div>
-						</span>
-					</li>
-					<li style="background-color:#90a4ae">
-						<span class="tooltip autosize small" tabindex="0">
-							<span class="tooltip-text">Unlikely</span>
-							<div class="color"></div>
-						</span>
-					</li>
-					<li style="background-color:#cfd8dc">
-						<span class="tooltip autosize small" tabindex="0">
-							<span class="tooltip-text">Lost, Cancelled, Unresponsive</span>
-							<div class="color"></div>
-						</span>
-					</li>
+				<?php
+				foreach ( $color_flags as $flag => $info ) {
+					printf(
+						'<li data-flag="%1$s" <# if ( "%1$s" == data.flag ) { #> class="current"<# } #>><span class="tooltip autosize small" tabindex="0"><span class="tooltip-text">%2$s</span><div class="color"></div></span></li>',
+						esc_attr( $flag ),
+						esc_html( $info['label'] )
+					);
+				}
+				?>
 				</ul>
 			</div>
 		</td>
@@ -268,6 +308,17 @@ function codeable_tasks_callback() {
 		</td>
 	</ul>
 	</script>
+	<style>
+	<?php
+	foreach ( $color_flags as $flag => $info ) {
+		printf(
+			'.flag-%1$s, [data-flag="%1$s"] { --color: %2$s }',
+			esc_attr( $flag ),
+			$info['color']
+		);
+	}
+	?>
+	</style>
 	<script>
 	window.wpcable=window.wpcable||{};
 	wpcable.tasks=<?php echo json_encode( $task_list ); ?>;

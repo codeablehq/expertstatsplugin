@@ -70,6 +70,12 @@ class wpcable_api_data {
 			'paged' => true,
 		];
 		$queue[] = [
+			'task'  => 'task:lost',
+			'label' => 'Tasks (lost)',
+			'page'  => 0,
+			'paged' => false,
+		];
+		$queue[] = [
 			'task'  => 'task:pending',
 			'label' => 'Tasks (pending)',
 			'page'  => 1,
@@ -134,6 +140,10 @@ class wpcable_api_data {
 
 			case 'transactions':
 				$next_page = $this->store_transactions( $curr_page );
+				break;
+
+			case 'task:lost':
+				$this->mark_tasks_lost();
 				break;
 
 			case 'task:pending':
@@ -281,6 +291,45 @@ class wpcable_api_data {
 	}
 
 	/**
+	 * Marks all pending tasks as "lost", since the `store_tasks()` method will only
+	 * receive pending/won tasks. This way we know, that all tasks that were not
+	 * fetched by the `store_tasks()` method are not available for us anymore.
+	 *
+	 * @return void
+	 */
+	private function mark_tasks_lost() {
+		global $wpdb;
+
+		$lost_state = [
+			'state'      => 'lost',
+			'estimate'   => false,
+			'hidden'     => true,
+			'promoted'   => false,
+			'subscribed' => false,
+			'favored'    => false,
+			'preferred'  => false,
+		];
+
+		$wpdb->update(
+			$this->tables['tasks'],
+			$lost_state,
+			[ 'state' => 'published' ]
+		);
+
+		$wpdb->update(
+			$this->tables['tasks'],
+			$lost_state,
+			[ 'state' => 'estimated' ]
+		);
+
+		$wpdb->update(
+			$this->tables['tasks'],
+			$lost_state,
+			[ 'state' => 'hired' ]
+		);
+	}
+
+	/**
 	 * Fetch tasks from the API and store them in our custom tables.
 	 *
 	 * @param  string $filter The task-filter to apply.
@@ -317,20 +366,35 @@ class wpcable_api_data {
 				$exists = $check[0]->totalrows > 0;
 
 				$new_task = [
-					'task_id'    => $task['id'],
-					'client_id'  => $task['client']['id'],
-					'title'      => $task['title'],
-					'estimate'   => ! empty( $task['estimatable'] ),
-					'hidden'     => ! empty( $task['hidden_by_current_user'] ),
-					'promoted'   => ! empty( $task['promoted_task'] ),
-					'subscribed' => ! empty( $task['subscribed_by_current_user'] ),
-					'favored'    => ! empty( $task['favored_by_current_user'] ),
-					'preferred'  => ! empty( $task['current_user_is_preferred_contractor'] ),
-					'client_fee' => (float) $task['prices']['client_fee_percentage'],
-					'state'      => $task['state'],
-					'kind'       => $task['kind'],
-					'last_sync'  => time(),
+					'task_id'      => $task['id'],
+					'client_id'    => $task['client']['id'],
+					'title'        => $task['title'],
+					'estimate'     => ! empty( $task['estimatable'] ),
+					'hidden'       => ! empty( $task['hidden_by_current_user'] ),
+					'promoted'     => ! empty( $task['promoted_task'] ),
+					'subscribed'   => ! empty( $task['subscribed_by_current_user'] ),
+					'favored'      => ! empty( $task['favored_by_current_user'] ),
+					'preferred'    => ! empty( $task['current_user_is_preferred_contractor'] ),
+					'client_fee'   => (float) $task['prices']['client_fee_percentage'],
+					'state'        => $task['state'],
+					'kind'         => $task['kind'],
+					'value'        => (float) $task['prices']['contractor_earnings'],
+					'value_client' => (float) $task['prices']['client_price_after_discounts'],
+					'last_sync'    => time(),
 				];
+
+				if ( 'completed' === $task['state'] ) {
+					$new_task['flag'] = 'completed';
+				}
+				if ( 'paid' === $task['state'] ) {
+					$new_task['flag'] = 'won';
+				}
+				if ( 'hired' === $task['state'] ) {
+					$new_task['flag'] = 'estimated';
+				}
+				if ( 'canceled' === $task['state'] ) {
+					$new_task['flag'] = 'lost';
+				}
 
 				// The API is returning some blank rows, ensure we have a valid id.
 				if ( $new_task['task_id'] && is_int( $new_task['task_id'] ) ) {

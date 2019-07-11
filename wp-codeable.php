@@ -214,9 +214,11 @@ function wpcable_install() {
 			`client_fee` float DEFAULT 17.5 NOT NULL,
 			`state` varchar(50) DEFAULT '' NOT NULL,
 			`kind` varchar(50) DEFAULT '' NOT NULL,
+			`value` float DEFAULT 0 NOT NULL,
+			`value_client` float DEFAULT 0 NOT NULL,
 			`last_sync` int(11) DEFAULT 0 NOT NULL,
+			`flag` varchar(20) DEFAULT '' NOT NULL,
 			`notes` text DEFAULT '' NOT NULL,
-			`color` varchar(9) DEFAULT '' NOT NULL,
 			PRIMARY KEY  (task_id)
 		) $charset_collate;";
 

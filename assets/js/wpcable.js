@@ -199,10 +199,12 @@ jQuery(document).ready(function () {
     var itemTpl = wp.template( 'list-item' );
     var notesForm = jQuery( '.wrap .notes-editor-layer' );
     var filterCb = jQuery( '.wrap [data-filter]' );
+    var flagCb = jQuery( '.wrap [data-flag]' );
     var notesMde = false;
 
     var filterState = 'all';
-    var filterFlags = {};
+    var currFilters = {};
+    var currFlags = {};
 
     function refreshList() {
         list.empty();
@@ -271,9 +273,19 @@ jQuery(document).ready(function () {
             var key = el.data('filter');
 
             if ( ! el.prop('checked') ) {
-                filterFlags[key] = false;
+                currFilters[key] = false;
             } else {
-                filterFlags[key] = true;
+                currFilters[key] = true;
+            }
+        });
+
+        currFlags = [];
+        flagCb.each(function() {
+            var el = jQuery(this);
+            var key = el.data('flag');
+
+            if ( el.prop('checked') ) {
+                currFlags.push( key );
             }
         });
 
@@ -282,17 +294,22 @@ jQuery(document).ready(function () {
             var task = wpcable.tasks[i];
             task._visible = true;
 
-            if ( '1' === task.hidden && filterFlags.no_hidden ) {
+            if ( '1' === task.hidden && currFilters.no_hidden ) {
                 task._visible = false;
             }
-            if ( '0' === task.favored && filterFlags.favored ) {
+            if ( '0' === task.favored && currFilters.favored ) {
                 task._visible = false;
             }
-            if ( '0' === task.promoted && filterFlags.promoted ) {
+            if ( '0' === task.promoted && currFilters.promoted ) {
                 task._visible = false;
             }
-            if ( '0' === task.subscribed && filterFlags.subscribed ) {
+            if ( '0' === task.subscribed && currFilters.subscribed ) {
                 task._visible = false;
+            }
+            if ( currFlags.length ) {
+                if ( -1 === currFlags.indexOf( task.flag ) ) {
+                    task._visible = false;
+                }
             }
         }
 
@@ -385,26 +402,11 @@ jQuery(document).ready(function () {
 
     function setColorFlag() {
         var flag = jQuery( this );
-        var color = rgb2hex( flag.css( 'backgroundColor' ) );
         var row = flag.closest( 'tr' );
         var task = row.data( 'task' );
 
-        task.color = color;
+        task.flag = flag.data( 'flag' );
         updateTask( task );
-
-        function rgb2hex( color ) {
-            if ( color.match( /^rgba\(0,\s*0,\s*0,\s*0\)$/) ) {
-                return '';
-            } else if ( color.search( 'rgb' ) === -1 ) {
-                return color;
-            } else {
-                color = color.match( /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+))?\)$/ );
-                function hex(x) {
-                    return ('0' + parseInt(x).toString(16)).slice( -2 );
-                }
-                return '#' + hex( color[1] ) + hex( color[2] ) + hex( color[3] );
-            }
-        }
     }
 
     function updateTask( task, onDone ) {
@@ -438,7 +440,8 @@ jQuery(document).ready(function () {
 
     jQuery( window ).on( 'hashchange', updateFilters );
     filterCb.on( 'click', function() { updateFilters(); initFilters(); } );
-    list.on( 'click', '.color-flag li', setColorFlag );
+    flagCb.on( 'click', function() { updateFilters(); initFilters(); } );
+    list.on( 'click', '.color-flag [data-flag]', setColorFlag );
     list.on( 'click', '.notes-body', startEditor )
         .on( 'mousedown', '.notes-body', function() { list.isClick = true })
         .on( 'mousemove', '.notes-body', function() { list.isClick = false });

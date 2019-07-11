@@ -1,16 +1,18 @@
 <?php
+
 /**
  * Backend logic to manage tasks.
  *
  * @package wpcable
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
 	exit; // Exit if accessed directly
 }
 
 
-class wpcable_tasks {
+class wpcable_tasks
+{
 
 	/**
 	 * List of used DB tables, with prefix.
@@ -22,7 +24,8 @@ class wpcable_tasks {
 	/**
 	 * Initialize internal properties.
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 		global $wpdb;
 
 		$this->tables = [
@@ -36,7 +39,8 @@ class wpcable_tasks {
 	 *
 	 * @return array
 	 */
-	public function get_tasks() {
+	public function get_tasks()
+	{
 		$query = "
 			SELECT
 				task.*,
@@ -51,7 +55,7 @@ class wpcable_tasks {
 
 		// Check cache.
 		$cache_key = 'tasks_list';
-		$result    = $this->check_cache( $cache_key, $query );
+		$result    = $this->check_cache($cache_key, $query);
 
 		return $result;
 	}
@@ -61,37 +65,28 @@ class wpcable_tasks {
 	 *
 	 * @param array $task
 	 */
-	public function update_task( $task ) {
+	public function update_task($task)
+	{
 		global $wpdb;
 		$wpdb->show_errors();
 
-		if ( ! is_array( $task ) || empty( $task['task_id'] ) ) {
+		if (!is_array($task) || empty($task['task_id'])) {
 			return;
 		}
 
 		$valid_fields = [
-			'task_id'    => '',
-			'client_id'  => '',
-			'title'      => '',
-			'estimate'   => '',
-			'hidden'     => '',
-			'promoted'   => '',
-			'subscribed' => '',
-			'favored'    => '',
-			'preferred'  => '',
-			'client_fee' => '',
-			'state'      => '',
-			'kind'       => '',
-			'notes'      => '',
-			'color'      => '',
+			'task_id' => '',
+			'state'   => '',
+			'notes'   => '',
+			'flag'    => '',
 		];
 
-		$task = array_intersect_key( $task, $valid_fields );
+		$task = array_intersect_key($task, $valid_fields);
 
-		$res = $wpdb->update(
+		$wpdb->update(
 			$this->tables['tasks'],
 			$task,
-			[ 'task_id' => $task['task_id'] ]
+			['task_id' => $task['task_id']]
 		);
 	}
 
@@ -106,8 +101,9 @@ class wpcable_tasks {
 	 *
 	 * @return mixed    The raw or cached data.
 	 */
-	private function check_cache( $key = false, $query = false ) {
-		$cache = new wpcable_cache( $key, $query );
+	private function check_cache($key = false, $query = false)
+	{
+		$cache = new wpcable_cache($key, $query);
 		return $cache->check();
 	}
 }

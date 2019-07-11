@@ -59,7 +59,8 @@ add_action( 'load-codeable-stats_page_codeable_settings', 'codeable_load_setting
  * @return void
  */
 function codeable_register_settings() {
-	register_setting( 'wpcable_group', 'wpcable' );
+	register_setting( 'wpcable_group', 'wpcable_fee_type' );
+	register_setting( 'wpcable_group', 'wpcable_rate' );
 
 	if ( ! codeable_api_logged_in() ) {
 		register_setting( 'wpcable_group', 'wpcable_email' );
@@ -100,7 +101,9 @@ add_filter( 'pre_update_option_wpcable_password', 'codeable_handle_login', 10, 2
 function codeable_settings_callback() {
 	codeable_admin_notices();
 
-	$wpcable_email         = get_option( 'wpcable_email' );
+	$wpcable_email    = get_option( 'wpcable_email' );
+	$wpcable_rate     = get_option( 'wpcable_rate', 80 );
+	$wpcable_fee_type = get_option( 'wpcable_fee_type', 'client' );
 
 	$logout_url = wp_nonce_url(
 		add_query_arg( 'action', 'logout' ),
@@ -123,6 +126,50 @@ function codeable_settings_callback() {
 				/>
 				<?php do_settings_sections( 'wpcable_group' ); ?>
 
+				<tr>
+					<th scope="row">
+						<label class="wpcable_label" for="wpcable_rate">
+							<?php _e( 'Your hourly rate', 'wpcable' ); ?>
+						</label>
+					</th>
+					<td>
+						<input
+							id="wpcable_rate"
+							type="number"
+							min="35"
+							max="1000"
+							style="width:80px"
+							name="wpcable_rate"
+							value="<?php echo (float) $wpcable_rate; ?>"
+						/> $
+						<p class="description">
+							<?php _e( 'Used as default value on the estimate page', 'wpcable' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label class="wpcable_label" for="wpcable_fee_type">
+							<?php _e( 'Fee calculation', 'wpcable' ); ?>
+						</label>
+					</th>
+					<td>
+						<select id="wpcable_fee_type" name="wpcable_fee_type">
+							<option value="full" <?php selected( 'full', $wpcable_fee_type ); ?>>
+								<?php _e( 'My rate is what I want to get paid, without any fees', 'wpcable' ); ?>
+							</option>
+							<option value="client" <?php selected( 'client', $wpcable_fee_type ); ?>>
+								<?php _e( 'My rate includes my fee (10%) but not the client fee', 'wpcable' ); ?>
+							</option>
+							<option value="none" <?php selected( 'none', $wpcable_fee_type ); ?>>
+								<?php _e( 'My rate includes all fees', 'wpcable' ); ?>
+							</option>
+						</select>
+						<p class="description">
+							<?php _e( 'This information is used on the estimate page', 'wpcable' ); ?>
+						</p>
+					</td>
+				</tr>
 				<?php if ( codeable_api_logged_in() ) : ?>
 					<tr>
 						<th scope="row">
