@@ -31,20 +31,20 @@ class wpcable_stats {
 		$last_date  = date( 'Y-m-d H:i:s', strtotime( $to_year . '-' . $to_month . '-' . $to_day . ' 23:59:59' ) );
 
 		$query = '
-	      SELECT
-	        SUM(fee_amount) as fee_amount,
-	        SUM(credit_fee_amount) as contractor_fee,
-	        SUM(credit_revenue_amount) as revenue,
-	        SUM(debit_user_amount) as total_cost,
-	        count(1) as tasks
-	      FROM
-	        ' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
-	      ON
-	        ' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
-	      WHERE
-	            `description` = 'task_completion'
-	        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
-	    ";
+		  SELECT
+			SUM(fee_amount) as fee_amount,
+			SUM(credit_fee_amount) as contractor_fee,
+			SUM(credit_revenue_amount) as revenue,
+			SUM(debit_user_amount) as total_cost,
+			count(1) as tasks
+		  FROM
+			' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
+		  ON
+			' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
+		  WHERE
+				`description` = 'task_completion'
+			AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
+		";
 
 		// check cache
 		$cache_key = 'date_totals_' . $first_date . '_' . $last_date;
@@ -62,20 +62,20 @@ class wpcable_stats {
 		$last_date  = date( 'Y-m-d H:i:s', strtotime( $to_year . '-' . $to_month . '-' . $to_day . ' 23:59:59' ) );
 
 		$query = '
-	      SELECT
-	        fee_amount as fee_amount,
-	        credit_fee_amount as contractor_fee,
-	        credit_revenue_amount as revenue,
-	        debit_user_amount as total_cost,
-	        dateadded
-	      FROM
-	        ' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
-	      ON
-	        ' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
-	      WHERE
-	            `description` = 'task_completion'
-	        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
-	    ";
+		  SELECT
+			fee_amount as fee_amount,
+			credit_fee_amount as contractor_fee,
+			credit_revenue_amount as revenue,
+			debit_user_amount as total_cost,
+			dateadded
+		  FROM
+			' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
+		  ON
+			' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
+		  WHERE
+				`description` = 'task_completion'
+			AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
+		";
 
 		// check cache
 		$cache_key = 'days_' . $first_date . '_' . $last_date;
@@ -112,19 +112,19 @@ class wpcable_stats {
 		$last_date  = date( 'Y-m-d H:i:s', strtotime( $to_year . '-' . $to_month . '-' . $to_day . ' 23:59:59' ) );
 
 		$query = '
-	      SELECT
-	        AVG(fee_amount) as fee_amount,
-	        AVG(credit_fee_amount) as contractor_fee,
-	        AVG(credit_revenue_amount) as revenue,
-	        AVG(debit_user_amount) as total_cost
-	      FROM
-	        ' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
-	      ON
-	        ' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
-	      WHERE
-	            `description` = 'task_completion'
-	        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
-	    ";
+		  SELECT
+			AVG(fee_amount) as fee_amount,
+			AVG(credit_fee_amount) as contractor_fee,
+			AVG(credit_revenue_amount) as revenue,
+			AVG(debit_user_amount) as total_cost
+		  FROM
+			' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
+		  ON
+			' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
+		  WHERE
+				`description` = 'task_completion'
+			AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
+		";
 
 		// check cache
 		$cache_key = 'dates_average' . $first_date . '_' . $last_date;
@@ -213,17 +213,17 @@ class wpcable_stats {
 	public function get_first_task() {
 
 		$query = '
-		      SELECT
-		        *
-		      FROM
-		        ' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
-		      ON
-		        ' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
-		      WHERE
-		            `description` = 'task_completion'
-		      ORDER BY " . $this->tables['transcactions'] . '.id ASC
-		      LIMIT 0,1
-		    ';
+			  SELECT
+				*
+			  FROM
+				' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
+			  ON
+				' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
+			  WHERE
+					`description` = 'task_completion'
+			  ORDER BY " . $this->tables['transcactions'] . '.id ASC
+			  LIMIT 0,1
+			';
 
 		// check cache
 		$cache_key = 'first_task';
@@ -235,17 +235,17 @@ class wpcable_stats {
 	public function get_last_task() {
 
 		$query = '
-	      SELECT
-	        *
-	      FROM
-	        ' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
-	      ON
-	        ' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
-	      WHERE
-	            `description` = 'task_completion'
-	      ORDER BY " . $this->tables['transcactions'] . '.id DESC
-	      LIMIT 0,1
-	    ';
+		  SELECT
+			*
+		  FROM
+			' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
+		  ON
+			' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
+		  WHERE
+				`description` = 'task_completion'
+		  ORDER BY " . $this->tables['transcactions'] . '.id DESC
+		  LIMIT 0,1
+		';
 
 		// check cache
 		$cache_key = 'last_task';
@@ -267,16 +267,16 @@ class wpcable_stats {
 		$last_date  = date( 'Y-m-d H:i:s', strtotime( $to_year . '-' . $to_month . '-' . $to_day . ' 23:59:59' ) );
 
 		$query = '
-	      SELECT
-	        credit_revenue_amount
-	      FROM
-	        ' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
-	      ON
-	        ' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
-	      WHERE
-	            `description` = 'task_completion'
-	        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
-	    ";
+		  SELECT
+			credit_revenue_amount
+		  FROM
+			' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
+		  ON
+			' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
+		  WHERE
+				`description` = 'task_completion'
+			AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
+		";
 
 		// check cache
 		$cache_key = 'amounts_range_' . $first_date . '_' . $last_date;
@@ -315,18 +315,18 @@ class wpcable_stats {
 		$last_date  = date( 'Y-m-d H:i:s', strtotime( $to_year . '-' . $to_month . '-' . $to_day . ' 23:59:59' ) );
 
 		$query = "
-	      SELECT
-	        DATE_FORMAT(dateadded,'%Y-%m') as dateadded, count(1) as tasks_per_month
-	      FROM
-	        " . $this->tables['transcactions'] . "
-	      WHERE
-	            `description` = 'task_completion'
-	        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
-	      GROUP BY
-	        YEAR(dateadded), MONTH(dateadded) DESC
-	      ORDER BY
-	        `dateadded` ASC
-	    ";
+		  SELECT
+			DATE_FORMAT(dateadded,'%Y-%m') as dateadded, count(1) as tasks_per_month
+		  FROM
+			" . $this->tables['transcactions'] . "
+		  WHERE
+				`description` = 'task_completion'
+			AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
+		  GROUP BY
+			YEAR(dateadded), MONTH(dateadded) DESC
+		  ORDER BY
+			`dateadded` ASC
+		";
 
 		// check cache
 		$cache_key = 'tasks_per_month_' . $first_date . '_' . $last_date;
@@ -342,21 +342,21 @@ class wpcable_stats {
 		$last_date  = date( 'Y-m-d H:i:s', strtotime( $to_year . '-' . $to_month . '-' . $to_day . ' 23:59:59' ) );
 
 		$query = '
-	      SELECT
-	        task_type,
-          COUNT(id) as count,
-          SUM(debit_user_amount) as user_amount,
-          SUM(credit_revenue_amount) as revenue,
-          SUM(credit_fee_amount) as fee
-	      FROM
-	        ' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
-	      ON
-	        ' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
-	      WHERE
-	            `description` = 'task_completion'
-	        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
-        GROUP BY task_type
-	    ";
+		  SELECT
+			task_type,
+		  COUNT(id) as count,
+		  SUM(debit_user_amount) as user_amount,
+		  SUM(credit_revenue_amount) as revenue,
+		  SUM(credit_fee_amount) as fee
+		  FROM
+			' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
+		  ON
+			' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
+		  WHERE
+				`description` = 'task_completion'
+			AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
+		GROUP BY task_type
+		";
 
 		// check cache
 		$cache_key = 'tasks_type_' . $first_date . '_' . $last_date;
@@ -384,22 +384,22 @@ class wpcable_stats {
 		$last_date  = date( 'Y-m-d H:i:s', strtotime( $to_year . '-' . $to_month . '-' . $to_day . ' 23:59:59' ) );
 
 		$query = '
-	      SELECT
-	        preferred,
-          COUNT(id) as count,
-          SUM(debit_user_amount) as user_amount,
-          SUM(credit_revenue_amount) as revenue,
-          SUM(credit_fee_amount) as fee
-	      FROM
-	        ' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
-	      ON
-	        ' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
-	      WHERE
-	            `description` = 'task_completion'
-          AND (preferred = 1 OR preferred = 0)
-	        AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
-        GROUP BY preferred
-	    ";
+		  SELECT
+			preferred,
+		  COUNT(id) as count,
+		  SUM(debit_user_amount) as user_amount,
+		  SUM(credit_revenue_amount) as revenue,
+		  SUM(credit_fee_amount) as fee
+		  FROM
+			' . $this->tables['transcactions'] . ' LEFT JOIN ' . $this->tables['amounts'] . '
+		  ON
+			' . $this->tables['transcactions'] . '.task_id = ' . $this->tables['amounts'] . ".task_id
+		  WHERE
+				`description` = 'task_completion'
+		  AND (preferred = 1 OR preferred = 0)
+			AND (dateadded BETWEEN '" . $first_date . "' AND '" . $last_date . "')
+		GROUP BY preferred
+		";
 
 		// check cache
 		$cache_key = 'preferred_count_' . $first_date . '_' . $last_date;

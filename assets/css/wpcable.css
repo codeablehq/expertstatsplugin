@@ -395,8 +395,8 @@ img.round {
 .mobile_label {
 	display: none;
 	font-weight: 600;
-    margin-right: 20px;
-    width: 40%;
+	margin-right: 20px;
+	width: 40%;
 }
 
 @media only screen and (max-width: 767px) {
@@ -675,15 +675,15 @@ div#TB_window {
 }
 
 .task-flags {
-    display: inline-block;
-    margin-left: 10px;
-    white-space: nowrap;
+	display: inline-block;
+	margin-left: 10px;
+	white-space: nowrap;
 }
 
 .color-flag {
 	position: relative;
 	margin: 0;
-    float: right;
+	float: right;
 	vertical-align: top;
 	transition: all 0.3s;
 	transform: translateY(8px);
@@ -709,18 +709,18 @@ div#TB_window {
 	content: "\f147";
 	color: #fff;
 	position: absolute;
-    left: 50%;
-    top: 50%;
-    z-index: 1;
-    transform: translate(-50%, -50%);
+	left: 50%;
+	top: 50%;
+	z-index: 1;
+	transform: translate(-50%, -50%);
 	text-shadow: 0 1px 0 #000, 0 -1px 0 #000, -1px 0 0 #000, 1px 0 0 #000;
 	font-family: dashicons;
 	line-height: 1;
-    font-weight: 400;
-    font-style: normal;
-    speak: none;
-    text-decoration: inherit;
-    text-transform: none;
+	font-weight: 400;
+	font-style: normal;
+	speak: none;
+	text-decoration: inherit;
+	text-transform: none;
 	text-rendering: auto;
 	font-size: 20px;
 	-webkit-font-smoothing: antialiased;
@@ -849,8 +849,8 @@ div#TB_window {
 	display: block;
 	text-align: center;
 	margin: 30px 0;
-    padding-top: 15px;
-    border-top: 1px solid #e5e5e5;
+	padding-top: 15px;
+	border-top: 1px solid #e5e5e5;
 }
 
 .codeable-sync-progress {
