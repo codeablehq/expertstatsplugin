@@ -11,13 +11,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 function codeable_estimate_callback() {
 	$rate           = (float) get_option( 'wpcable_rate', 80 );
 	$fee_type       = get_option( 'wpcable_fee_type', 'client' );
-	$fee_contractor = 'full' === $fee_type ? 10 : 0;
-	$fee_client     = 'none' !== $fee_type ? 17.5 : 0;
+	$fee_contractor = 10;
+	$fee_client     = 17.5;
 
 	if ( isset( $_GET['fee_client'] ) && is_numeric( $_GET['fee_client'] ) ) {
-		if ( 'none' !== $fee_type ) {
-			$fee_client = (float) $_GET['fee_client'];
-		}
+		$fee_client = (float) $_GET['fee_client'];
 	}
 	if ( isset( $_GET['fee_contractor'] ) && is_numeric( $_GET['fee_contractor'] ) ) {
 		if ( 'full' === $fee_type ) {
@@ -38,13 +36,13 @@ function codeable_estimate_callback() {
 					</h2>
 					<div class="inside">
 						<div class="field">
-							<span class="label">Optimistic value:  </span><input id="optimistic_estimate" type="number" step="0.25" min="1" /> hours
+							<span class="label">Optimistic value:  </span><input id="optimistic_estimate" type="number" class="calc-input" step="0.25" min="1" value="1" /> hours
 						</div>
 						<div class="field">
-							<span class="label">Most likely value: </span><input id="likely_estimate" type="number" step="0.25" min="1" /> hours
+							<span class="label">Most likely value: </span><input id="likely_estimate" type="number" class="calc-input" step="0.25" min="1" value="1" /> hours
 						</div>
 						<div class="field">
-							<span class="label">Pessimistic value: </span><input id="pessimistic_estimate" type="number" step="0.25" min="1" /> hours
+							<span class="label">Pessimistic value: </span><input id="pessimistic_estimate" type="number" class="calc-input" step="0.25" min="1" value="1" /> hours
 						</div>
 					</div>
 				</div>
@@ -55,28 +53,29 @@ function codeable_estimate_callback() {
 					</h2>
 					<div class="inside">
 						<div class="field">
-							<span class="label">Your hourly rate: </span><input id="hourly_rate" type="number" value="<?php echo esc_attr( $rate ); ?>" min="35" max="1000" /> $
+							<span class="label">Your hourly rate: </span><input id="hourly_rate" type="number" class="calc-input" value="<?php echo esc_attr( $rate ); ?>" min="35" max="1000" /> $
 						</div>
-						<?php if ( 'full' === $fee_type ) : ?>
-							<div class="field">
-								<span class="label">Contractor fee: </span><input id="contractor_fee" type="number" step="0.01" value="<?php echo esc_attr( $fee_contractor ); ?>" max="100" min="0" /> %
-								<p class="description">
-									This is the fee Codeable charges you. It will be added on top of your hourly rate, so you actually get paid the rate you entered above.</p>
-							</div>
-						<?php else : ?>
-							<input id="contractor_fee" type="hidden" value="0" />
-						<?php endif; ?>
-						<?php if ( 'none' !== $fee_type ) : ?>
-							<div class="field">
-								<span class="label">Client fee: </span><input id="client_fee" type="number" step="0.01" value="<?php echo esc_attr( $fee_client ); ?>" max="100" min="0" /> %
-								<p class="description">
-									This is the fee, that the client has to pay on top of your rate.</p>
-							</div>
-						<?php else : ?>
-							<input id="client_fee" type="hidden" value="0" />
+						<div>
 							<p class="description">
-								Note: Your hourly rate already includes all fees.</p>
-						<?php endif; ?>
+								<strong>Fees</strong>:
+								<?php
+								if ( 'full' === $fee_type ) {
+									_e( 'My rate is what I want to get paid, without any fees', 'wpcable' );
+								} elseif ( 'client' === $fee_type ) {
+									_e( 'My rate includes my fee (10%) but not the client fee', 'wpcable' );
+								} elseif ( 'none' === $fee_type ) {
+									_e( 'My rate includes all fees', 'wpcable' );
+								}
+								?>.<br />
+								Following values are used to calculate the total estimate and your earnings.
+							</p>
+						</div>
+						<div class="field">
+							<span class="label">Contractor fee: </span><input id="contractor_fee" type="number" class="calc-input" step="0.01" value="<?php echo esc_attr( $fee_contractor ); ?>" max="100" min="0" /> % (your fee)
+						</div>
+						<div class="field">
+							<span class="label">Client fee: </span><input id="client_fee" type="number" class="calc-input" step="0.01" value="<?php echo esc_attr( $fee_client ); ?>" max="100" min="0" /> % (depends on the client)
+						</div>
 					</div>
 				</div>
 			</div>
@@ -87,46 +86,45 @@ function codeable_estimate_callback() {
 						<span>Totals</span>
 					</h2>
 					<div class="inside">
+						<p class="description">
+							Take these metrics as consideration if you put more weight on the realistic value. (Proper documentation, clear scope etc.)</p>
 						<div class="field">
 							<span class="label">PERT Standard Estimate: </span><input id="estimate_hours_standard" type="number" value="" readonly="readonly"/> hours
 						</div>
 						<div class="field">
-							<span class="label">Estimate for client <br/>(including fees): </span><input id="estimate" type="number" value="" readonly="readonly"/> $
-							<p class="description">
-								Take these metrics as consideration if you put more weight on the realistic value. (Proper documentation, clear scope etc.)</p>
+							<span class="label">Paid by the client: <br/>(including fees)</span><input id="payment" type="number" value="" readonly="readonly"/> $
+						</div>
+						<div class="field">
+							<span class="label"><strong>Estimate</strong>: <br/>(what you enter in Codeable)</span><input id="estimate" type="number" value="" readonly="readonly"/> $
+						</div>
+						<div class="field">
+							<span class="label">Your earnings</span><input id="earnings" type="number" value="" readonly="readonly"/> $
 						</div>
 					</div>
 				</div>
 
 				<div id="totals_pessimistic" class="postbox">
 					<h2 class="hndle">
-						<span>Totals with extra buffer</span>
+						<span>Totals, with extra buffer</span>
 					</h2>
 					<div class="inside">
+						<p class="description">
+							Take these metrics as consideration if you put more weight on the pessimistic value. (Not proper documentation, not so clear scope etc.)</p>
 						<div class="field">
 							<span class="label">PERT Cautious Estimate: </span><input id="estimate_hours_pessimistic" type="number" value="" readonly="readonly"/> hours
 						</div>
 						<div class="field">
-							<span class="label">Estimate for client <br/>(including fees): </span><input id="estimate_pessimistic" type="number" value="" readonly="readonly"/> $
-							<p class="description">
-								Take these metrics as consideration if you put more weight on the pessimistic value. (Not proper documentation, not so clear scope etc.)</p>
+							<span class="label">Paid by the client: <br/>(including fees)</span><input id="payment_pessimistic" type="number" value="" readonly="readonly"/> $
+						</div>
+						<div class="field">
+							<span class="label"><strong>Estimate</strong>: <br/>(what you enter in Codeable)</span><input id="estimate_pessimistic" type="number" value="" readonly="readonly"/> $
+						</div>
+						<div class="field">
+							<span class="label">Your earnings</span><input id="earnings_pessimistic" type="number" value="" readonly="readonly"/> $
 						</div>
 					</div>
 				</div>
 			</div>
-
-			<button
-				class="button button-primary"
-				id="calculate"
-				type="submit">
-				Calculate
-			</button>
-			<button
-				class="button"
-				id="reset_estimates"
-				type="button">
-				Reset estimates
-			</button>
 		</form>
 	</div>
 
@@ -140,15 +138,52 @@ function codeable_estimate_callback() {
 				return Math.round(value * inv) / inv;
 			}
 
-			function applyFees( value ) {
-				var feeContractor = parseFloat( $('#contractor_fee').val() );
-				var feeClient     = parseFloat( $('#client_fee').val() );
+			function applyAllFees( value ) {
+				var feeContractor = 1 / (1 - parseFloat( $('#contractor_fee').val() ) / 100);
+				var feeClient     = 1 + parseFloat( $('#client_fee').val() ) / 100;
 
-				return value / (1 - (feeContractor / 100)) * (1 + (feeClient / 100));
+				<?php if ( 'full' === $fee_type ) : ?>
+					var factor = feeContractor * feeClient;
+				<?php elseif ( 'client' === $fee_type ) : ?>
+					var factor = feeClient;
+				<?php elseif ( 'none' === $fee_type ) : ?>
+					var factor = 1;
+				<?php endif; ?>
+
+				return round(value * factor, 0.01);
 			}
 
-			$('#estimator').on('submit', function(e) {
-				e.stopPropagation();
+			function applyMyFees( value ) {
+				var feeContractor = 1 / (1 - parseFloat( $('#contractor_fee').val() ) / 100);
+				var feeClient     = 1 + parseFloat( $('#client_fee').val() ) / 100;
+
+				<?php if ( 'full' === $fee_type ) : ?>
+					var factor = feeContractor;
+				<?php elseif ( 'client' === $fee_type ) : ?>
+					var factor = 1;
+				<?php elseif ( 'none' === $fee_type ) : ?>
+					var factor = 1 / feeClient;
+				<?php endif; ?>
+
+				return round(value * factor, 0.01);
+			}
+
+			function withoutFees( value ) {
+				var feeContractor = 1 / (1 - parseFloat( $('#contractor_fee').val() ) / 100);
+				var feeClient     = 1 + parseFloat( $('#client_fee').val() ) / 100;
+
+				<?php if ( 'full' === $fee_type ) : ?>
+					var factor = 1;
+				<?php elseif ( 'client' === $fee_type ) : ?>
+					var factor = feeContractor;
+				<?php elseif ( 'none' === $fee_type ) : ?>
+					var factor = feeContractor * feeClient;
+				<?php endif; ?>
+
+				return round(value / factor, 0.01);
+			}
+
+			function calculate() {
 				var optimistic  = parseFloat($('#optimistic_estimate').val());
 				var likely      = parseFloat($('#likely_estimate').val());
 				var pessimistic = parseFloat($('#pessimistic_estimate').val());
@@ -159,23 +194,22 @@ function codeable_estimate_callback() {
 
 				var estimate_standard    = estimate_hours_standard * rate;
 				var estimate_pessimistic = estimate_hours_pessimistic * rate;
-				var estimate_with_fees_standard    = applyFees( estimate_standard );
-				var estimate_with_fees_pessimistic = applyFees( estimate_pessimistic );
 
 				$('#estimate_hours_standard').val(round(estimate_hours_standard, 0.5));
 				$('#estimate_hours_pessimistic').val(round(estimate_hours_pessimistic, 0.5));
 
-				$('#estimate').val(round(estimate_with_fees_standard,0.01));
-				$('#estimate_pessimistic').val(round(estimate_with_fees_pessimistic,0.01));
-				return false;
-			});
+				$('#payment').val(applyAllFees( estimate_standard ));
+				$('#payment_pessimistic').val(applyAllFees( estimate_pessimistic ));
 
-			$('#reset_estimates').on('click', function(e) {
-				e.stopPropagation();
+				$('#estimate').val(applyMyFees( estimate_standard ));
+				$('#estimate_pessimistic').val(applyMyFees( estimate_pessimistic ));
 
-				$('input:not(#hourly_rate):not(#contractor_fee)').val('');
-			});
+				$('#earnings').val(withoutFees( estimate_standard ));
+				$('#earnings_pessimistic').val(withoutFees( estimate_pessimistic ));
+			}
 
+			$('.calc-input').on('change', calculate);
+			calculate();
 		});
 	</script>
 	<?php
