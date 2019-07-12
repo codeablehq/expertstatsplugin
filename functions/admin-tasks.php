@@ -122,61 +122,61 @@ function codeable_tasks_callback() {
 			data-one="<?php echo esc_attr( __( 'One task', 'wpcable' ) ); ?>"
 			data-many="<?php echo esc_attr( __( '[NUM] tasks', 'wpcable' ) ); ?>"
 		>
-			<?php _e( 'Your tasks', 'wpcable' ); ?>
+			<?php esc_html_e( 'Your tasks', 'wpcable' ); ?>
 		</h1>
 
 		<ul class="subsubsub">
 			<li class="all">
 				<a href="#state=all">
-					<?php _e( 'All', 'wpcable' ); ?>
+					<?php esc_html_e( 'All', 'wpcable' ); ?>
 					<span class="count"></span>
 				</a>
 			</li>
 			<li class="published">
 				| <a href="#state=published">
-					<?php _e( 'Published', 'wpcable' ); ?>
+					<?php esc_html_e( 'Published', 'wpcable' ); ?>
 					<span class="count"></span>
 				</a>
 			</li>
 			<li class="estimated">
 				| <a href="#state=estimated">
-					<?php _e( 'Estimated', 'wpcable' ); ?>
+					<?php esc_html_e( 'Estimated', 'wpcable' ); ?>
 					<span class="count"></span>
 				</a>
 			</li>
 			<li class="hired">
 				| <a href="#state=hired">
-					<?php _e( 'Hired', 'wpcable' ); ?>
+					<?php esc_html_e( 'Hired', 'wpcable' ); ?>
 					<span class="count"></span>
 				</a>
 			</li>
 			<li class="paid">
 				| <a href="#state=paid">
-					<?php _e( 'Paid', 'wpcable' ); ?>
+					<?php esc_html_e( 'Paid', 'wpcable' ); ?>
 					<span class="count"></span>
 				</a>
 			</li>
 			<li class="completed">
 				| <a href="#state=completed">
-					<?php _e( 'Completed', 'wpcable' ); ?>
+					<?php esc_html_e( 'Completed', 'wpcable' ); ?>
 					<span class="count"></span>
 				</a>
 			</li>
 			<li class="refunded">
 				| <a href="#state=refunded">
-					<?php _e( 'Refunded', 'wpcable' ); ?>
+					<?php esc_html_e( 'Refunded', 'wpcable' ); ?>
 					<span class="count"></span>
 				</a>
 			</li>
 			<li class="canceled">
 				| <a href="#state=canceled">
-					<?php _e( 'Canceled', 'wpcable' ); ?>
+					<?php esc_html_e( 'Canceled', 'wpcable' ); ?>
 					<span class="count"></span>
 				</a>
 			</li>
 			<li class="lost">
 				| <a href="#state=lost">
-					<?php _e( 'Lost', 'wpcable' ); ?>
+					<?php esc_html_e( 'Lost', 'wpcable' ); ?>
 					<span class="count"></span>
 				</a>
 			</li>
@@ -185,19 +185,19 @@ function codeable_tasks_callback() {
 			<div class="group">
 				<label class="filter">
 					<input type="checkbox" data-filter="no_hidden" />
-					<?php _e( 'No hidden tasks', 'wpcable' ); ?>
+					<?php esc_html_e( 'No hidden tasks', 'wpcable' ); ?>
 				</label>
 				<label class="filter">
 					<input type="checkbox" data-filter="subscribed" />
-					👁 <?php _e( 'Subscribed', 'wpcable' ); ?>
+					👁 <?php esc_html_e( 'Subscribed', 'wpcable' ); ?>
 				</label>
 				<label class="filter">
 					<input type="checkbox" data-filter="promoted" />
-					📣 <?php _e( 'Promoted', 'wpcable' ); ?>
+					📣 <?php esc_html_e( 'Promoted', 'wpcable' ); ?>
 				</label>
 				<label class="filter">
 					<input type="checkbox" data-filter="favored" />
-					❤️ <?php _e( 'Favored', 'wpcable' ); ?>
+					❤️ <?php esc_html_e( 'Favored', 'wpcable' ); ?>
 				</label>
 			</div>
 			<div class="group">
@@ -215,11 +215,12 @@ function codeable_tasks_callback() {
 		<table class="widefat striped">
 			<thead>
 				<tr>
-					<th class="col-client"><?php _e( 'Client', 'wpcable' ); ?></th>
-					<th class="col-workroom"><?php _e( 'Workroom', 'wpcable' ); ?></th>
-					<th class="col-value"><?php _e( 'Value', 'wpcable' ); ?></th>
-					<th class="col-title"><?php _e( 'Title', 'wpcable' ); ?></th>
-					<th class="col-notes"><?php _e( 'Notes', 'wpcable' ); ?></th>
+					<th class="col-client"><?php esc_html_e( 'Client', 'wpcable' ); ?></th>
+					<th class="col-workroom"><?php esc_html_e( 'Workroom', 'wpcable' ); ?></th>
+					<th class="col-activity"><?php esc_html_e( 'Activity', 'wpcable' ); ?></th>
+					<th class="col-value"><?php esc_html_e( 'Value', 'wpcable' ); ?></th>
+					<th class="col-title"><?php esc_html_e( 'Title', 'wpcable' ); ?></th>
+					<th class="col-notes"><?php esc_html_e( 'Notes', 'wpcable' ); ?></th>
 				</tr>
 			</thead>
 			<tbody class="task-list"></tbody>
@@ -252,14 +253,26 @@ function codeable_tasks_callback() {
 				<strong>#{{{ data.task_id }}}</strong>
 			</a>
 		</td>
+		<td class="col-activity">
+			<# if ( data.last_activity > 0 ) { #>
+				<div class="activity-time">
+					{{{ data.last_activity_time }}}
+				</div>
+				<div class="activity-date">
+					{{{ data.last_activity_date }}}
+				</div>
+			<# } else { #>
+				-
+			<# } #>
+		</td>
 		<td class="col-value">
 			<# if ( data.value > 0 ) { #>
 				<span class="your-value tooltip autosize">
-					<span class="tooltip-text"><?php _e( 'Your earnings', 'wpcable' ); ?></span>
+					<span class="tooltip-text"><?php esc_html_e( 'Your earnings', 'wpcable' ); ?></span>
 					<span>$ {{{ parseInt( data.value ) }}}</span>
 				</span><br />
 				<small class="client-value tooltip bottom autosize">
-					<span class="tooltip-text"><?php _e( 'Paid by the client', 'wpcable' ); ?></span>
+					<span class="tooltip-text"><?php esc_html_e( 'Paid by the client', 'wpcable' ); ?></span>
 					<span class="value">$ {{{ parseInt( data.value_client ) }}}</span>
 				</small>
 			<# } #>
@@ -270,26 +283,26 @@ function codeable_tasks_callback() {
 				<span class="task-flags">
 				<# if ( '1' === data.promoted ) { #>
 					<span class="tooltip bottom small autosize" tabindex="0">
-						<span class="tooltip-text"><?php _e( 'Promoted', 'wpcable' ); ?></span>
+						<span class="tooltip-text"><?php esc_html_e( 'Promoted', 'wpcable' ); ?></span>
 						📣
 					</span>
 				<# } #>
 				<# if ( '1' === data.favored ) { #>
 					<span class="tooltip bottom small autosize" tabindex="0">
-						<span class="tooltip-text"><?php _e( 'Favored', 'wpcable' ); ?></span>
+						<span class="tooltip-text"><?php esc_html_e( 'Favored', 'wpcable' ); ?></span>
 						️❤️
 					</span>
 				<# } #>
 				<# if ( '1' === data.subscribed ) { #>
 					<span class="tooltip bottom small autosize" tabindex="0">
-						<span class="tooltip-text"><?php _e( 'Subscribed', 'wpcable' ); ?></span>
+						<span class="tooltip-text"><?php esc_html_e( 'Subscribed', 'wpcable' ); ?></span>
 						👁
 					</span>
 				<# } #>
 				</span>
 			</div>
 			<div class="row-actions">
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=codeable_estimate') ); ?>&fee_client={{{ data.client_fee }}}"><?php _e( 'Estimate', 'wpcable' ); ?></a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=codeable_estimate') ); ?>&fee_client={{{ data.client_fee }}}"><?php esc_html_e( 'Estimate', 'wpcable' ); ?></a>
 				<ul class="color-flag">
 				<?php
 				foreach ( $color_flags as $flag => $info ) {

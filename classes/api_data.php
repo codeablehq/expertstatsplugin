@@ -383,6 +383,12 @@ class wpcable_api_data {
 					'last_sync'    => time(),
 				];
 
+				if ( ! empty( $task['last_event']['object']['timestamp'] ) ) {
+					$new_task['last_activity'] = $task['last_event']['object']['timestamp'];
+				} elseif ( ! empty( $task['last_event']['object']['published_at'] ) ) {
+					$new_task['last_activity'] = $task['last_event']['object']['published_at'];
+				}
+
 				if ( 'completed' === $task['state'] ) {
 					$new_task['flag'] = 'completed';
 				}

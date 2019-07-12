@@ -6,13 +6,13 @@
  * @package wpcable
  */
 
-if (!defined('ABSPATH')) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
 
-class wpcable_tasks
-{
+class wpcable_tasks {
+
 
 	/**
 	 * List of used DB tables, with prefix.
@@ -24,8 +24,7 @@ class wpcable_tasks
 	/**
 	 * Initialize internal properties.
 	 */
-	public function __construct()
-	{
+	public function __construct() {
 		global $wpdb;
 
 		$this->tables = [
@@ -39,8 +38,7 @@ class wpcable_tasks
 	 *
 	 * @return array
 	 */
-	public function get_tasks()
-	{
+	public function get_tasks() {
 		$query = "
 			SELECT
 				task.*,
@@ -55,9 +53,33 @@ class wpcable_tasks
 
 		// Check cache.
 		$cache_key = 'tasks_list';
-		$result    = $this->check_cache($cache_key, $query);
+		$result    = $this->check_cache( $cache_key, $query );
+
+		$result = array_map( [ $this, 'sanitize_task' ], $result );
 
 		return $result;
+	}
+
+	/**
+	 * Takes a single DB row as input and sanitizes some values.
+	 *
+	 * @param  array $task Raw DB value.
+	 * @return array Sanitized task.
+	 */
+	public function sanitize_task( $task ) {
+		date_default_timezone_set( get_option( 'timezone_string' ) );
+
+		$task['last_activity_date'] = date_i18n(
+			get_option( 'date_format' ),
+			$task['last_activity']
+		);
+		$task['last_activity_time'] = date_i18n(
+			get_option( 'time_format' ),
+			$task['last_activity'],
+			false
+		);
+
+		return $task;
 	}
 
 	/**
@@ -65,12 +87,11 @@ class wpcable_tasks
 	 *
 	 * @param array $task
 	 */
-	public function update_task($task)
-	{
+	public function update_task( $task ) {
 		global $wpdb;
 		$wpdb->show_errors();
 
-		if (!is_array($task) || empty($task['task_id'])) {
+		if ( ! is_array( $task ) || empty( $task['task_id'] ) ) {
 			return;
 		}
 
@@ -81,12 +102,12 @@ class wpcable_tasks
 			'flag'    => '',
 		];
 
-		$task = array_intersect_key($task, $valid_fields);
+		$task = array_intersect_key( $task, $valid_fields );
 
 		$wpdb->update(
 			$this->tables['tasks'],
 			$task,
-			['task_id' => $task['task_id']]
+			[ 'task_id' => $task['task_id'] ]
 		);
 	}
 
@@ -101,9 +122,8 @@ class wpcable_tasks
 	 *
 	 * @return mixed    The raw or cached data.
 	 */
-	private function check_cache($key = false, $query = false)
-	{
-		$cache = new wpcable_cache($key, $query);
+	private function check_cache( $key = false, $query = false ) {
+		$cache = new wpcable_cache( $key, $query );
 		return $cache->check();
 	}
 }

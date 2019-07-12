@@ -641,6 +641,11 @@ div#TB_window {
 	width: 120px;
 }
 
+.wpcable_wrap.tasks table.widefat .col-activity {
+	width: 70px;
+	white-space: nowrap;
+}
+
 .wpcable_wrap.tasks table.widefat .col-value {
 	width: 70px;
 	white-space: nowrap;
@@ -661,6 +666,15 @@ div#TB_window {
 
 .wpcable_wrap.tasks table.widefat tbody .col-client {
 	box-shadow: 4px 0 0 0 var(--color, #0000) inset;
+}
+
+.wpcable_wrap.tasks table.widefat .col-activity .activity-date {
+	font-size: 12px;
+}
+
+.wpcable_wrap.tasks table.widefat .col-activity .activity-time {
+	font-size: 13px;
+	font-weight: bold;
 }
 
 .wpcable_wrap.tasks table.widefat .col-value .client-value .value {

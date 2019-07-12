@@ -216,6 +216,7 @@ function wpcable_install() {
 			`kind` varchar(50) DEFAULT '' NOT NULL,
 			`value` float DEFAULT 0 NOT NULL,
 			`value_client` float DEFAULT 0 NOT NULL,
+			`last_activity` int(11) DEFAULT 0 NOT NULL,
 			`last_sync` int(11) DEFAULT 0 NOT NULL,
 			`flag` varchar(20) DEFAULT '' NOT NULL,
 			`notes` text DEFAULT '' NOT NULL,
