@@ -61,6 +61,7 @@ add_action( 'load-codeable-stats_page_codeable_settings', 'codeable_load_setting
 function codeable_register_settings() {
 	register_setting( 'wpcable_group', 'wpcable_fee_type' );
 	register_setting( 'wpcable_group', 'wpcable_rate' );
+	register_setting( 'wpcable_group', 'wpcable_cancel_after_days' );
 
 	if ( ! codeable_api_logged_in() ) {
 		register_setting( 'wpcable_group', 'wpcable_email' );
@@ -101,9 +102,10 @@ add_filter( 'pre_update_option_wpcable_password', 'codeable_handle_login', 10, 2
 function codeable_settings_callback() {
 	codeable_admin_notices();
 
-	$wpcable_email    = get_option( 'wpcable_email' );
-	$wpcable_rate     = get_option( 'wpcable_rate', 80 );
-	$wpcable_fee_type = get_option( 'wpcable_fee_type', 'client' );
+	$wpcable_email             = get_option( 'wpcable_email' );
+	$wpcable_rate              = get_option( 'wpcable_rate', 80 );
+	$wpcable_fee_type          = get_option( 'wpcable_fee_type', 'client' );
+	$wpcable_cancel_after_days = get_option( 'wpcable_cancel_after_days', 180 );
 
 	$logout_url = wp_nonce_url(
 		add_query_arg( 'action', 'logout' ),
@@ -113,7 +115,7 @@ function codeable_settings_callback() {
 	?>
 	<div class="wrap wpcable_wrap">
 		<form method="post" action="options.php">
-			<h2><?php _e( 'Codeable settings', 'wpcable' ); ?></h2>
+			<h2><?php esc_html_e( 'Codeable settings', 'wpcable' ); ?></h2>
 
 			<table class="form-table">
 				<tbody>
@@ -129,7 +131,7 @@ function codeable_settings_callback() {
 				<tr>
 					<th scope="row">
 						<label class="wpcable_label" for="wpcable_rate">
-							<?php _e( 'Your hourly rate', 'wpcable' ); ?>
+							<?php esc_html_e( 'Your hourly rate', 'wpcable' ); ?>
 						</label>
 					</th>
 					<td>
@@ -143,30 +145,43 @@ function codeable_settings_callback() {
 							value="<?php echo (float) $wpcable_rate; ?>"
 						/> $
 						<p class="description">
-							<?php _e( 'Used as default value on the estimate page', 'wpcable' ); ?>
+							<?php esc_html_e( 'Used as default value on the estimate page', 'wpcable' ); ?>
 						</p>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row">
 						<label class="wpcable_label" for="wpcable_fee_type">
-							<?php _e( 'Fee calculation', 'wpcable' ); ?>
+							<?php esc_html_e( 'Fee calculation', 'wpcable' ); ?>
 						</label>
 					</th>
 					<td>
 						<select id="wpcable_fee_type" name="wpcable_fee_type">
 							<option value="full" <?php selected( 'full', $wpcable_fee_type ); ?>>
-								<?php _e( 'My rate is what I want to get paid, without any fees', 'wpcable' ); ?>
+								<?php esc_html_e( 'My rate is what I want to get paid, without any fees', 'wpcable' ); ?>
 							</option>
 							<option value="client" <?php selected( 'client', $wpcable_fee_type ); ?>>
-								<?php _e( 'My rate includes my fee (10%) but not the client fee', 'wpcable' ); ?>
+								<?php esc_html_e( 'My rate includes my fee (10%) but not the client fee', 'wpcable' ); ?>
 							</option>
 							<option value="none" <?php selected( 'none', $wpcable_fee_type ); ?>>
-								<?php _e( 'My rate includes all fees', 'wpcable' ); ?>
+								<?php esc_html_e( 'My rate includes all fees', 'wpcable' ); ?>
 							</option>
 						</select>
 						<p class="description">
-							<?php _e( 'This information is used on the estimate page', 'wpcable' ); ?>
+							<?php esc_html_e( 'This information is used on the estimate page', 'wpcable' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label class="wpcable_label" for="wpcable_cancel_after_days">
+							<?php esc_html_e( 'Flag task as canceled', 'wpcable' ); ?>
+						</label>
+					</th>
+					<td>
+						<input type="number" name="wpcable_cancel_after_days" id="wpcable_cancel_after_days" min="14" max="720" value="<?php echo (int) $wpcable_cancel_after_days; ?>" /> hours
+						<p class="description">
+							<?php esc_html_e( 'Adds the "canceled" flag to a task that had no activity for the given number of days. Default is 180 days.', 'wpcable' ); ?>
 						</p>
 					</td>
 				</tr>
@@ -174,7 +189,7 @@ function codeable_settings_callback() {
 					<tr>
 						<th scope="row">
 							<label class="wpcable_label" for="wpcable_email">
-								<?php _e( 'Account', 'wpcable' ); ?>
+								<?php esc_html_e( 'Account', 'wpcable' ); ?>
 							</label>
 						</th>
 						<td>
@@ -194,7 +209,7 @@ function codeable_settings_callback() {
 					<tr>
 						<th scope="row">
 							<label class="wpcable_label" for="wpcable_email">
-								<?php _e( 'Email', 'wpcable' ); ?>
+								<?php esc_html_e( 'Email', 'wpcable' ); ?>
 							</label>
 						</th>
 						<td>
@@ -206,13 +221,13 @@ function codeable_settings_callback() {
 								value="<?php echo esc_attr( $wpcable_email ); ?>"
 								autocomplete="email"
 							/>
-							<p class="description"><?php _e( 'This is the email address you use to log into app.codeable.com', 'wpcable' ); ?></p>
+							<p class="description"><?php esc_html_e( 'This is the email address you use to log into app.codeable.com', 'wpcable' ); ?></p>
 						</td>
 					</tr>
 					<tr>
 						<th scope="row">
 							<label class="wpcable_label" for="wpcable_password">
-								<?php _e( 'Password', 'wpcable' ); ?>
+								<?php esc_html_e( 'Password', 'wpcable' ); ?>
 							</label>
 						</th>
 						<td>
@@ -224,7 +239,7 @@ function codeable_settings_callback() {
 								value=""
 								autocomplete="password"
 							/>
-							<p class="description"><?php _e( 'Your Codeable password is not stored anywhere!<br />With your password we generate an auth_token, that is saved encrypted in your DB.', 'wpcable' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Your Codeable password is not stored anywhere!<br />With your password we generate an auth_token, that is saved encrypted in your DB.', 'wpcable' ); ?></p>
 						</td>
 					</tr>
 				<?php endif; ?>

@@ -181,6 +181,9 @@ function codeable_tasks_callback() {
 				</a>
 			</li>
 		</ul>
+		<p class="search-box">
+			<input type="search" id="post-search-input" name="s" />
+		</p>
 		<div class="tablenav top">
 			<div class="group">
 				<label class="filter">
@@ -238,9 +241,11 @@ function codeable_tasks_callback() {
 		<?php codeable_last_fetch_info(); ?>
 	</div>
 	<script type="text/html" id="tmpl-list-item">
+	<# var staleHours = parseInt(((new Date() / 1000) - data.last_activity) / 3600); #>
 	<tr
-		class="list-item<# if ( '1' === data.hidden ) { #> task-hidden<#} #><# if ('1' === data.subscribed ) { #> task-subscribed<#} #><# if ('1' === data.favored ) { #> task-favored<#} #><# if ('1' === data.promoted ) { #> task-promoted<#} #><# if ( data.flag ) { #> flag-{{{ data.flag }}}<# } #>"
+		class="list-item<# if ( data.hidden ) { #> task-hidden<# } #><# if (data.subscribed ) { #> task-subscribed<# } #><# if (data.favored ) { #> task-favored<# } #><# if (data.promoted ) { #> task-promoted<# } #><# if ( data.flag ) { #> flag-{{{ data.flag }}}<# } #><# if ( data.last_activity > 0 ) { #> age-<# if ( staleHours < 24 ) { #>today<# } else if ( staleHours < 48 ) { #>yesterday<# } else if ( staleHours < 168 ) { #>week<# } else if ( staleHours < 336 ) { #>2weeks<# } else { #>older<# } } #>"
 		id="task-{{{ data.task_id }}}"
+		data-age="{{{ staleHours }}}"
 	>
 		<td class="col-client">
 			<span class="tooltip right autosize" tabindex="0">

@@ -345,7 +345,8 @@ class wpcable_api_data {
 			$wpdb->show_errors();
 		}
 
-		$single_page = $this->api_calls->tasks_page( $filter, $page );
+		$single_page        = $this->api_calls->tasks_page( $filter, $page );
+		$cancel_after_hours = 24 * (int) get_option( 'wpcable_cancel_after_days', 180 );
 
 		if ( empty( $single_page ) ) {
 			return false;
@@ -384,9 +385,9 @@ class wpcable_api_data {
 				];
 
 				if ( ! empty( $task['last_event']['object']['timestamp'] ) ) {
-					$new_task['last_activity'] = $task['last_event']['object']['timestamp'];
+					$new_task['last_activity'] = (int) $task['last_event']['object']['timestamp'];
 				} elseif ( ! empty( $task['last_event']['object']['published_at'] ) ) {
-					$new_task['last_activity'] = $task['last_event']['object']['published_at'];
+					$new_task['last_activity'] = (int) $task['last_event']['object']['published_at'];
 				}
 
 				if ( 'completed' === $task['state'] ) {
@@ -400,6 +401,17 @@ class wpcable_api_data {
 				}
 				if ( 'canceled' === $task['state'] ) {
 					$new_task['flag'] = 'lost';
+				}
+
+				// Flag open tasks as "canceled" after a given number of stale days.
+				if ( in_array( $task['state'], [ 'published', 'estimated', 'hired' ], true ) ) {
+					if ( $new_task['last_activity'] ) {
+						$stale_hours = ( time() - $new_task['last_activity'] ) / HOUR_IN_SECONDS;
+
+						if ( $stale_hours > $cancel_after_hours ) {
+							$new_task['flag'] = 'lost';
+						}
+					}
 				}
 
 				// The API is returning some blank rows, ensure we have a valid id.

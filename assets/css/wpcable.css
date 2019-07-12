@@ -585,6 +585,13 @@ div#TB_window {
 	content: ')';
 }
 
+.wpcable_wrap.tasks .tablenav:before {
+	content: '';
+	display: block;
+	clear: both;
+	padding-top: 6px;
+}
+
 .wpcable_wrap.tasks .tablenav .filter {
 	display: inline-block;
 	margin: 0 10px 0 0;
@@ -675,6 +682,30 @@ div#TB_window {
 .wpcable_wrap.tasks table.widefat .col-activity .activity-time {
 	font-size: 13px;
 	font-weight: bold;
+}
+
+.wpcable_wrap.tasks table.widefat .age-today .activity-date {
+	display: none;
+}
+
+.wpcable_wrap.tasks table.widefat .age-today .activity-time {
+	color: #080;
+}
+
+.wpcable_wrap.tasks table.widefat .age-yesterday .col-activity {
+	color: #620;
+}
+
+.wpcable_wrap.tasks table.widefat .age-week .col-activity {
+	color: #842;
+}
+
+.wpcable_wrap.tasks table.widefat .age-2weeks .col-activity {
+	color: #a77;
+}
+
+.wpcable_wrap.tasks table.widefat .age-older .col-activity {
+	color: #aaa;
 }
 
 .wpcable_wrap.tasks table.widefat .col-value .client-value .value {

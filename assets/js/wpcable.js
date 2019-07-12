@@ -200,7 +200,9 @@ jQuery(document).ready(function () {
     var notesForm = jQuery( '.wrap .notes-editor-layer' );
     var filterCb = jQuery( '.wrap [data-filter]' );
     var flagCb = jQuery( '.wrap [data-flag]' );
+    var filterTxt = jQuery( '.wrap #post-search-input' );
     var notesMde = false;
+    var filterTxtVal = '';
 
     var filterState = 'all';
     var currFilters = {};
@@ -260,6 +262,7 @@ jQuery(document).ready(function () {
 
     function updateFilters( ev ) {
         var hash = window.location.hash.substr( 1 ).split( '=' );
+        var filterRe = false;
 
         // Update filters based on current #hash value.
         if ( hash && 2 === hash.length ) {
@@ -289,25 +292,41 @@ jQuery(document).ready(function () {
             }
         });
 
+        filterTxtVal = filterTxt.val();
+
+        if ( filterTxtVal.length ) {
+            filterRe = new RegExp( filterTxtVal, 'i' );
+        }
+
         // Mark tasks as visible/hidden.
         for ( var i = 0; i < wpcable.tasks.length; i++ ) {
             var task = wpcable.tasks[i];
             task._visible = true;
 
-            if ( '1' === task.hidden && currFilters.no_hidden ) {
+            if ( task.hidden && currFilters.no_hidden ) {
                 task._visible = false;
             }
-            if ( '0' === task.favored && currFilters.favored ) {
+            if ( !task.favored && currFilters.favored ) {
                 task._visible = false;
             }
-            if ( '0' === task.promoted && currFilters.promoted ) {
+            if ( !task.promoted && currFilters.promoted ) {
                 task._visible = false;
             }
-            if ( '0' === task.subscribed && currFilters.subscribed ) {
+            if ( !task.subscribed && currFilters.subscribed ) {
                 task._visible = false;
             }
             if ( currFlags.length ) {
                 if ( -1 === currFlags.indexOf( task.flag ) ) {
+                    task._visible = false;
+                }
+            }
+            if (filterRe) {
+                if (
+                    -1 === task.title.search( filterRe ) &&
+                    -1 === task.task_id.search( filterRe ) &&
+                    -1 === task.client_name.search( filterRe ) &&
+                    -1 === task.notes.search( filterRe )
+                ) {
                     task._visible = false;
                 }
             }
@@ -441,6 +460,14 @@ jQuery(document).ready(function () {
     jQuery( window ).on( 'hashchange', updateFilters );
     filterCb.on( 'click', function() { updateFilters(); initFilters(); } );
     flagCb.on( 'click', function() { updateFilters(); initFilters(); } );
+
+    filterTxt.on( 'change keyup', function() {
+        if ( filterTxtVal !== filterTxt.val() ) {
+            updateFilters();
+            initFilters();
+        }
+    } );
+
     list.on( 'click', '.color-flag [data-flag]', setColorFlag );
     list.on( 'click', '.notes-body', startEditor )
         .on( 'mousedown', '.notes-body', function() { list.isClick = true })
