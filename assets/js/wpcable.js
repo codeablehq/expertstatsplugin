@@ -437,7 +437,8 @@ jQuery(document).ready(function () {
 
         notesMde = new SimpleMDE({
             element: notesForm.find( 'textarea' ).val( task.notes )[0],
-            status: false
+            status: false,
+            spellChecker: false
         });
         notesMde.codemirror.focus();
         notesMde.codemirror.setCursor(notesMde.codemirror.lineCount(), 0);
@@ -532,7 +533,8 @@ jQuery(document).ready(function () {
 
     notesMde = new SimpleMDE({
         element: notesForm.find( 'textarea' )[0],
-        status: false
+        status: false,
+        spellChecker: false
     });
 
     jQuery( window ).on( 'hashchange', updateFilters );
