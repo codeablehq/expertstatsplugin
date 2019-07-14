@@ -26,6 +26,9 @@ function wpcable_tasks_menu() {
 }
 add_action( 'admin_menu', 'wpcable_tasks_menu', 50 );
 
+/**
+ * Ajax hndler that updates a single task in the DB.
+ */
 function wpcable_ajax_update_task() {
 	if ( empty( $_POST['_wpnonce'] ) ) {
 		return;
@@ -50,14 +53,16 @@ function wpcable_ajax_update_task() {
 add_action( 'wp_ajax_wpcable_update_task', 'wpcable_ajax_update_task' );
 
 /**
- * Called when the settings page is loaded - process actions such as logout.
- *
- * @return void
+ * Ajax handler that returns a full task list in JSON format.
  */
-function codeable_load_tasks_page() {
-	$nonce = false;
+function wpcable_ajax_reload_tasks() {
+	$wpcable_tasks = new wpcable_tasks();
+
+	$task_list = $wpcable_tasks->get_tasks();
+	echo wp_json_encode( $task_list );
+	exit;
 }
-add_action( 'load-codeable-stats_page_codeable_tasks', 'codeable_load_tasks_page' );
+add_action( 'wp_ajax_wpcable_reload_tasks', 'wpcable_ajax_reload_tasks' );
 
 /**
  * Render the settings page.

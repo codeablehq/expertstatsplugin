@@ -140,10 +140,15 @@ jQuery(document).ready(function () {
         if ( elProgress.is(':visible') ) {
             elProgress.hide();
 
-            // Reload the window, if user consents.
-            if ( confirm('Sync completed. Do you want to reload this page now?') ) {
+            if ( jQuery( '.wrap.wpcable_wrap.tasks' ).length ) {
+                // On the tasks-page silently refresh the task list without reload.
+                jQuery( document ).trigger( 'codeable-reload-tasks' );
+            } else if ( jQuery( '.wrap.cable_stats_wrap' ).length ) {
+                // On stats-page we can reload the whole window without a problem.
                 window.location.reload();
             }
+
+            // On any other page, the refresh has no effect and no action is needed.
         }
     }
 
@@ -207,6 +212,26 @@ jQuery(document).ready(function () {
     var filterState = 'all';
     var currFilters = {};
     var currFlags = {};
+
+    function reloadData() {
+        jQuery.post(
+            window.ajaxurl,
+            {
+                action: 'wpcable_reload_tasks'
+            },
+            function ( res ) {
+                if (! res || ! Array.isArray( res ) ) {
+                    return;
+                }
+                window.wpcable.tasks = res;
+
+                initFilters();
+                updateFilters();
+                refreshList();
+            },
+            'json'
+        );
+    }
 
     function refreshList() {
         list.empty();
@@ -511,6 +536,8 @@ jQuery(document).ready(function () {
     });
 
     jQuery( window ).on( 'hashchange', updateFilters );
+    jQuery( document ).on( 'codeable-reload-tasks', reloadData );
+
     filterCb.on( 'click', function() { updateFilters(); initFilters(); } );
     flagCb.on( 'click', function() { updateFilters(); initFilters(); } );
 

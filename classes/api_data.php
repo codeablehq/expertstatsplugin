@@ -406,9 +406,15 @@ class wpcable_api_data {
 					$new_task['last_activity_by'] = $task['last_event']['user']['full_name'];
 				}
 
-				if ( ! empty( $new_task['last_activity'] ) ) {
-					// Auto-change flags only for tasks that I have access to, i.e.
-					// when another expert was paid, the task should be "lost" for us.
+				// Some simple rules to automatically detect the correct flag for tasks.
+				if ( 'canceled' === $task['state'] ) {
+					// Tasks that were canceled by the client obviously are lost.
+					$new_task['flag'] = 'lost';
+				} elseif ( $new_task['hidden'] ) {
+					// Tasks that I hide from my Codeable list are "lost for us".
+					$new_task['flag'] = 'lost';
+				} elseif ( ! empty( $new_task['last_activity'] ) ) {
+					// This means that the workroom is public or private for me.
 					if ( 'completed' === $task['state'] ) {
 						$new_task['flag'] = 'completed';
 					}
@@ -418,16 +424,19 @@ class wpcable_api_data {
 					if ( 'hired' === $task['state'] ) {
 						$new_task['flag'] = 'estimated';
 					}
-				} elseif ( 'canceled' === $task['state'] ) {
-					$new_task['flag'] = 'lost';
-				} else {
-					$new_task['flag'] = 'lost';
+				} elseif ( empty( $new_task['last_activity'] ) ) {
+					// This workroom is private for another expert = possibly lost.
+					if ( in_array( $task['state'], [ 'hired', 'completed', 'refunded' ], true ) ) {
+						$new_task['flag'] = 'lost';
+					}
 				}
 
 				// Flag open tasks as "canceled" after a given number of stale days.
 				if ( in_array( $task['state'], [ 'published', 'estimated', 'hired' ], true ) ) {
 					if ( ! empty( $new_task['last_activity'] ) ) {
-						$stale_hours = ( time() - $new_task['last_activity'] ) / HOUR_IN_SECONDS;
+						$stale_hours = floor(
+							( time() - $new_task['last_activity'] ) / HOUR_IN_SECONDS
+						);
 
 						if ( $stale_hours > $cancel_after_hours ) {
 							$new_task['flag'] = 'lost';

@@ -318,7 +318,7 @@ function codeable_last_fetch_info() {
 		<?php _e( 'Last refresh: ', 'wpcable' ); ?>
 		<?php echo wpcable_date( $last_fetch ); ?>
 		<span class="tooltip" tabindex="0">
-			<span class="tooltip-text"><?php _e( 'API details are fetched once per hour, or when you click the "Refresh" button on the right.', 'wpcable' ); ?></span>
+			<span class="tooltip-text"><?php _e( 'The plugin loads data from Codeable once per hour, or when you click the "Refresh" button on the right.', 'wpcable' ); ?></span>
 			<i class="dashicons dashicons-info"></i>
 		</span>
 		|
