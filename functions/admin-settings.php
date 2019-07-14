@@ -115,19 +115,57 @@ function codeable_settings_callback() {
 	?>
 	<div class="wrap wpcable_wrap">
 		<form method="post" action="options.php">
-			<h2><?php esc_html_e( 'Codeable settings', 'wpcable' ); ?></h2>
+			<?php settings_fields( 'wpcable_group', '_wpnonce', false ); ?>
+			<input
+				type="hidden"
+				name="_wp_http_referer"
+				value="<?php echo remove_query_arg( ['success', 'error' ] ); ?>"
+			/>
+			<?php do_settings_sections( 'wpcable_group' ); ?>
+
+			<h2><?php esc_html_e( 'Task list', 'wpcable' ); ?></h2>
+			<p>
+				<?php
+				printf(
+					esc_html__( 'Adjust behavior of %syour task list%s.', 'wpcable' ),
+					'<a href="' . admin_url( 'admin.php?page=codeable_tasks') . '">',
+					'</a>'
+				);
+				?>
+			</p>
 
 			<table class="form-table">
 				<tbody>
+				<tr>
+					<th scope="row">
+						<label class="wpcable_label" for="wpcable_cancel_after_days">
+							<?php esc_html_e( 'Flag task as canceled', 'wpcable' ); ?>
+						</label>
+					</th>
+					<td>
+						<input type="number" name="wpcable_cancel_after_days" id="wpcable_cancel_after_days" min="14" max="720" value="<?php echo (int) $wpcable_cancel_after_days; ?>" /> hours
+						<p class="description">
+							<?php esc_html_e( 'Adds the "canceled" flag to a task that had no activity for the given number of days. Default is 180 days.', 'wpcable' ); ?>
+						</p>
+					</td>
+				</tr>
+				</tbody>
+			</table>
 
-				<?php settings_fields( 'wpcable_group', '_wpnonce', false ); ?>
-				<input
-					type="hidden"
-					name="_wp_http_referer"
-					value="<?php echo remove_query_arg( ['success', 'error' ] ); ?>"
-				/>
-				<?php do_settings_sections( 'wpcable_group' ); ?>
+			<hr />
+			<h2><?php esc_html_e( 'Estimates', 'wpcable' ); ?></h2>
+			<p>
+				<?php
+				printf(
+					esc_html__( 'Customize the defaults for %syour estimates%s.', 'wpcable' ),
+					'<a href="' . admin_url( 'admin.php?page=codeable_estimate') . '">',
+					'</a>'
+				);
+				?>
+			</p>
 
+			<table class="form-table">
+				<tbody>
 				<tr>
 					<th scope="row">
 						<label class="wpcable_label" for="wpcable_rate">
@@ -172,19 +210,18 @@ function codeable_settings_callback() {
 						</p>
 					</td>
 				</tr>
-				<tr>
-					<th scope="row">
-						<label class="wpcable_label" for="wpcable_cancel_after_days">
-							<?php esc_html_e( 'Flag task as canceled', 'wpcable' ); ?>
-						</label>
-					</th>
-					<td>
-						<input type="number" name="wpcable_cancel_after_days" id="wpcable_cancel_after_days" min="14" max="720" value="<?php echo (int) $wpcable_cancel_after_days; ?>" /> hours
-						<p class="description">
-							<?php esc_html_e( 'Adds the "canceled" flag to a task that had no activity for the given number of days. Default is 180 days.', 'wpcable' ); ?>
-						</p>
-					</td>
-				</tr>
+				</tbody>
+			</table>
+
+			<hr />
+			<h2><?php esc_html_e( 'Codeable API', 'wpcable' ); ?></h2>
+			<p>
+				<?php esc_html_e( 'Log into your Codeable account.', 'wpcable' ); ?><br />
+				<?php esc_html_e( 'During login this plugin obtains a user-specific auth-token which is used to fetch data from the API later. Your password is not saved anywhere!', 'wpcable' ); ?>
+			</p>
+
+			<table class="form-table">
+				<tbody>
 				<?php if ( codeable_api_logged_in() ) : ?>
 					<tr>
 						<th scope="row">
@@ -196,12 +233,13 @@ function codeable_settings_callback() {
 							<p>
 								<?php
 								printf(
-									__( 'You are currently logged in as %s. %sLog out and clear all data%s', 'wpcable' ),
-									'<b>' . $wpcable_email . '</b>',
-									'<a href="' . esc_url( $logout_url ) . '" onclick="return confirm(\'' . esc_attr( $logout_warning ) . '\')">',
-									'</a>'
+									__( 'You are currently logged in as %s', 'wpcable' ),
+									'<b>' . $wpcable_email . '</b>'
 								);
 								?>
+							</p>
+							<p>
+								<a href="<?php echo esc_url( $logout_url ); ?>" class="button" onclick="return confirm('<?php echo esc_attr( $logout_warning ); ?>')"><?php esc_html_e( 'Log out and clear all data', 'wpcable' ); ?></a>
 							</p>
 						</td>
 					</tr>

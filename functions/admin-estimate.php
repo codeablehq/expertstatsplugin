@@ -52,7 +52,10 @@ function codeable_estimate_callback() {
 
 				<div id="fees" class="postbox">
 					<h2 class="hndle">
-						<span>Rate and Fees</span>
+						<span>
+							Rate and Fees
+							<a href="<?php echo esc_url( admin_url( 'admin.php?page=codeable_settings' ) ); ?>"><?php esc_html_e( 'Change', 'wpcable' ); ?></a>
+						</span>
 					</h2>
 					<div class="inside">
 						<div class="field">

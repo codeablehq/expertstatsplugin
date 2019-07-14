@@ -514,7 +514,7 @@ jQuery(document).ready(function () {
     filterCb.on( 'click', function() { updateFilters(); initFilters(); } );
     flagCb.on( 'click', function() { updateFilters(); initFilters(); } );
 
-    filterTxt.on( 'change keyup', function() {
+    filterTxt.on( 'change keyup search', function() {
         if ( filterTxtVal !== filterTxt.val() ) {
             updateFilters();
             initFilters();

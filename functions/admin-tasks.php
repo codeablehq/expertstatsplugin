@@ -332,7 +332,7 @@ function codeable_tasks_callback() {
 				</span>
 			</div>
 			<div class="row-actions">
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=codeable_estimate') ); ?>&fee_client={{{ data.client_fee }}}"><?php esc_html_e( 'Estimate', 'wpcable' ); ?></a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=codeable_estimate' ) ); ?>&fee_client={{{ data.client_fee }}}"><?php esc_html_e( 'Estimate', 'wpcable' ); ?></a>
 				<ul class="color-flag">
 				<?php
 				foreach ( $color_flags as $flag => $info ) {
