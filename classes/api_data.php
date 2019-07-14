@@ -112,6 +112,12 @@ class wpcable_api_data {
 			'paged' => false,
 		];
 		$queue[] = [
+			'task'  => 'task:hidden',
+			'label' => 'Tasks (hidden)',
+			'page'  => 1,
+			'paged' => true,
+		];
+		$queue[] = [
 			'task'  => 'task:archived',
 			'label' => 'Tasks (archived)',
 			'page'  => 1,
@@ -168,6 +174,10 @@ class wpcable_api_data {
 
 			case 'task:promoted':
 				$next_page = $this->store_tasks( 'promoted', $curr_page );
+				break;
+
+			case 'task:hidden':
+				$next_page = $this->store_tasks( 'hidden_tasks', $curr_page );
 				break;
 
 			case 'task:archived':
@@ -386,26 +396,37 @@ class wpcable_api_data {
 
 				if ( ! empty( $task['last_event']['object']['timestamp'] ) ) {
 					$new_task['last_activity'] = (int) $task['last_event']['object']['timestamp'];
+					$new_task['last_activity_by'] = '';
 				} elseif ( ! empty( $task['last_event']['object']['published_at'] ) ) {
 					$new_task['last_activity'] = (int) $task['last_event']['object']['published_at'];
+					$new_task['last_activity_by'] = '';
 				}
 
-				if ( 'completed' === $task['state'] ) {
-					$new_task['flag'] = 'completed';
+				if ( ! empty( $task['last_event']['user']['full_name'] ) ) {
+					$new_task['last_activity_by'] = $task['last_event']['user']['full_name'];
 				}
-				if ( 'paid' === $task['state'] ) {
-					$new_task['flag'] = 'won';
-				}
-				if ( 'hired' === $task['state'] ) {
-					$new_task['flag'] = 'estimated';
-				}
-				if ( 'canceled' === $task['state'] ) {
+
+				if ( ! empty( $new_task['last_activity'] ) ) {
+					// Auto-change flags only for tasks that I have access to, i.e.
+					// when another expert was paid, the task should be "lost" for us.
+					if ( 'completed' === $task['state'] ) {
+						$new_task['flag'] = 'completed';
+					}
+					if ( 'paid' === $task['state'] ) {
+						$new_task['flag'] = 'won';
+					}
+					if ( 'hired' === $task['state'] ) {
+						$new_task['flag'] = 'estimated';
+					}
+				} elseif ( 'canceled' === $task['state'] ) {
+					$new_task['flag'] = 'lost';
+				} else {
 					$new_task['flag'] = 'lost';
 				}
 
 				// Flag open tasks as "canceled" after a given number of stale days.
 				if ( in_array( $task['state'], [ 'published', 'estimated', 'hired' ], true ) ) {
-					if ( $new_task['last_activity'] ) {
+					if ( ! empty( $new_task['last_activity'] ) ) {
 						$stale_hours = ( time() - $new_task['last_activity'] ) / HOUR_IN_SECONDS;
 
 						if ( $stale_hours > $cancel_after_hours ) {

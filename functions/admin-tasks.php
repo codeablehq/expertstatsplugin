@@ -90,7 +90,7 @@ function codeable_tasks_callback() {
 		'color' => '#9ccc65',
 	];
 	$color_flags['optimistic'] = [
-		'label' => __( 'Good chances', 'wpcable' ),
+		'label' => __( 'Active Rapport', 'wpcable' ),
 		'color' => '#00b0ff',
 	];
 	$color_flags['neutral'] = [
@@ -98,15 +98,15 @@ function codeable_tasks_callback() {
 		'color' => '#80d8ff',
 	];
 	$color_flags['tough'] = [
-		'label' => __( 'Needs effort', 'wpcable' ),
+		'label' => __( 'Difficult', 'wpcable' ),
 		'color' => '#607d8b',
 	];
 	$color_flags['pessimistic'] = [
-		'label' => __( 'Unlikely', 'wpcable' ),
+		'label' => __( 'Unresponsive', 'wpcable' ),
 		'color' => '#90a4ae',
 	];
 	$color_flags['lost'] = [
-		'label' => __( 'Lost, Cancelled, Unresponsive', 'wpcable' ),
+		'label' => __( 'Mark as lost', 'wpcable' ),
 		'color' => '#cfd8dc',
 	];
 
@@ -191,8 +191,8 @@ function codeable_tasks_callback() {
 					<?php esc_html_e( 'No hidden tasks', 'wpcable' ); ?>
 				</label>
 				<label class="filter">
-					<input type="checkbox" data-filter="subscribed" />
-					👁 <?php esc_html_e( 'Subscribed', 'wpcable' ); ?>
+					<input type="checkbox" data-filter="preferred" />
+					⭐️ <?php esc_html_e( 'Preferred', 'wpcable' ); ?>
 				</label>
 				<label class="filter">
 					<input type="checkbox" data-filter="promoted" />
@@ -202,25 +202,35 @@ function codeable_tasks_callback() {
 					<input type="checkbox" data-filter="favored" />
 					❤️ <?php esc_html_e( 'Favored', 'wpcable' ); ?>
 				</label>
+				<label class="filter">
+					<input type="checkbox" data-filter="subscribed" />
+					👁 <?php esc_html_e( 'Subscribed', 'wpcable' ); ?>
+				</label>
 			</div>
-			<div class="group">
-			<?php
-			foreach ( $color_flags as $flag => $info ) {
-				printf(
-					'<label class="filter flag-%1$s"><span class="tooltip autosize small" tabindex="0"><span class="tooltip-text">%2$s</span><input type="checkbox" data-flag="%1$s" /><div class="color"></div></span></label>',
-					esc_attr( $flag ),
-					esc_html( $info['label'] )
-				);
-			}
-			?>
+			<div class="group-right">
+				<span class="group-label">Hide</span>
+				<?php
+				foreach ( $color_flags as $flag => $info ) {
+					printf(
+						'<label class="filter flag-%1$s"><span class="tooltip autosize small" tabindex="0"><span class="tooltip-text">%2$s</span><input type="checkbox" data-flag="%1$s" /><div class="color"></div></span></label>',
+						esc_attr( $flag ),
+						esc_html( $info['label'] )
+					);
+				}
+				?>
 			</div>
 		</div>
 		<table class="widefat striped">
 			<thead>
 				<tr>
 					<th class="col-client"><?php esc_html_e( 'Client', 'wpcable' ); ?></th>
+					<th class="col-activity sorted desc">
+						<a href="#sort=activity">
+							<span><?php esc_html_e( 'Activity', 'wpcable' ); ?></span>
+							<span class="sorting-indicator"></span>
+						</a>
+					</th>
 					<th class="col-workroom"><?php esc_html_e( 'Workroom', 'wpcable' ); ?></th>
-					<th class="col-activity"><?php esc_html_e( 'Activity', 'wpcable' ); ?></th>
 					<th class="col-value"><?php esc_html_e( 'Value', 'wpcable' ); ?></th>
 					<th class="col-title"><?php esc_html_e( 'Title', 'wpcable' ); ?></th>
 					<th class="col-notes"><?php esc_html_e( 'Notes', 'wpcable' ); ?></th>
@@ -243,7 +253,7 @@ function codeable_tasks_callback() {
 	<script type="text/html" id="tmpl-list-item">
 	<# var staleHours = parseInt(((new Date() / 1000) - data.last_activity) / 3600); #>
 	<tr
-		class="list-item<# if ( data.hidden ) { #> task-hidden<# } #><# if (data.subscribed ) { #> task-subscribed<# } #><# if (data.favored ) { #> task-favored<# } #><# if (data.promoted ) { #> task-promoted<# } #><# if ( data.flag ) { #> flag-{{{ data.flag }}}<# } #><# if ( data.last_activity > 0 ) { #> age-<# if ( staleHours < 24 ) { #>today<# } else if ( staleHours < 48 ) { #>yesterday<# } else if ( staleHours < 168 ) { #>week<# } else if ( staleHours < 336 ) { #>2weeks<# } else { #>older<# } } #>"
+		class="list-item state-{{{ data.state }}}<# if (data.preferred ) { #> task-preferred<# } #><# if ( data.hidden ) { #> task-hidden<# } #><# if (data.subscribed ) { #> task-subscribed<# } #><# if (data.favored ) { #> task-favored<# } #><# if (data.promoted ) { #> task-promoted<# } #><# if ( data.flag ) { #> flag-{{{ data.flag }}}<# } #><# if ( data.last_activity > 0 ) { #> age-<# if ( staleHours < 4 ) { #>current<# } else if ( staleHours < 24 ) { #>today<# } else if ( staleHours < 48 ) { #>yesterday<# } else if ( staleHours < 168 ) { #>week<# } else if ( staleHours < 336 ) { #>2weeks<# } else { #>older<# } } #>"
 		id="task-{{{ data.task_id }}}"
 		data-age="{{{ staleHours }}}"
 	>
@@ -253,32 +263,41 @@ function codeable_tasks_callback() {
 				<img src="{{{ data.avatar }}}" />
 			</span>
 		</td>
+		<td class="col-activity">
+			<# if ( data.last_activity > 0 ) { #>
+				<span class="tooltip autosize right">
+					<span class="tooltip-text">
+						Last comment by <strong>{{{ data.last_activity_by }}}</strong>
+					</span>
+					<# if ( staleHours < 48 ) { #>
+						<span class="activity-time">
+							{{{ data.last_activity_time }}}
+						</span><br />
+					<# } #>
+					<# if ( staleHours > 4 ) { #>
+						<span class="activity-date">
+							{{{ data.last_activity_date }}}
+						</span>
+					<# } #>
+				</span>
+			<# } else { #>
+				-
+			<# } #>
+		</td>
 		<td class="col-workroom">
 			<a href="https://app.codeable.io/tasks/{{{ data.task_id }}}" target="_blank">
 				<strong>#{{{ data.task_id }}}</strong>
 			</a>
 		</td>
-		<td class="col-activity">
-			<# if ( data.last_activity > 0 ) { #>
-				<div class="activity-time">
-					{{{ data.last_activity_time }}}
-				</div>
-				<div class="activity-date">
-					{{{ data.last_activity_date }}}
-				</div>
-			<# } else { #>
-				-
-			<# } #>
-		</td>
 		<td class="col-value">
 			<# if ( data.value > 0 ) { #>
 				<span class="your-value tooltip autosize">
-					<span class="tooltip-text"><?php esc_html_e( 'Your earnings', 'wpcable' ); ?></span>
-					<span>$ {{{ parseInt( data.value ) }}}</span>
+					<span class="tooltip-text"><?php esc_html_e( 'Your earnings:', 'wpcable' ); ?> $<strong>{{{ parseInt( data.value ) }}}</strong></span>
+					<span class="value"><small>$</small>{{{ parseInt( data.value ) }}}</span>
 				</span><br />
 				<small class="client-value tooltip bottom autosize">
-					<span class="tooltip-text"><?php esc_html_e( 'Paid by the client', 'wpcable' ); ?></span>
-					<span class="value">$ {{{ parseInt( data.value_client ) }}}</span>
+					<span class="tooltip-text">{{{ "<?php esc_html_e( 'CLIENT pays:', 'wpcable' ); ?>".replace( 'CLIENT', data.client_name) }}} $<strong>{{{ parseInt( data.value_client ) }}}</strong></span>
+					<span class="value"><small>$</small>{{{ parseInt( data.value_client ) }}}</span>
 				</small>
 			<# } #>
 		</td>
@@ -286,19 +305,25 @@ function codeable_tasks_callback() {
 			<div>
 				<span class="task-title">{{{ data.title }}}</span>
 				<span class="task-flags">
-				<# if ( '1' === data.promoted ) { #>
+				<# if ( data.preferred ) { #>
+					<span class="tooltip bottom small autosize" tabindex="0">
+						<span class="tooltip-text"><?php esc_html_e( 'Preferred', 'wpcable' ); ?></span>
+						⭐️
+					</span>
+				<# } #>
+				<# if ( data.promoted ) { #>
 					<span class="tooltip bottom small autosize" tabindex="0">
 						<span class="tooltip-text"><?php esc_html_e( 'Promoted', 'wpcable' ); ?></span>
 						📣
 					</span>
 				<# } #>
-				<# if ( '1' === data.favored ) { #>
+				<# if ( data.favored ) { #>
 					<span class="tooltip bottom small autosize" tabindex="0">
 						<span class="tooltip-text"><?php esc_html_e( 'Favored', 'wpcable' ); ?></span>
 						️❤️
 					</span>
 				<# } #>
-				<# if ( '1' === data.subscribed ) { #>
+				<# if ( data.subscribed ) { #>
 					<span class="tooltip bottom small autosize" tabindex="0">
 						<span class="tooltip-text"><?php esc_html_e( 'Subscribed', 'wpcable' ); ?></span>
 						👁
@@ -330,7 +355,7 @@ function codeable_tasks_callback() {
 	<?php
 	foreach ( $color_flags as $flag => $info ) {
 		printf(
-			'.flag-%1$s, [data-flag="%1$s"] { --color: %2$s }',
+			'.flag-%1$s,[data-flag="%1$s"]{--color:%2$s;--bgcolor:%2$s10;}',
 			esc_attr( $flag ),
 			$info['color']
 		);

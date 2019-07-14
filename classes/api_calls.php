@@ -163,10 +163,17 @@ class wpcable_api_calls {
 	 * @return array
 	 */
 	public function tasks_page( $filter = 'preferred', $page = 1 ) {
-		$url  = 'users/me/tasks/' . $filter;
+		if ( 'hidden_tasks' === $filter ) {
+			$url = 'users/me/hidden_tasks/';
+			$num = 50;
+		} else {
+			$url = 'users/me/tasks/' . $filter;
+			$num = 20;
+		}
+
 		$args = [
 			'page'     => $page,
-			'per_page' => 20,
+			'per_page' => $num,
 		];
 
 		$tasks = $this->get_curl( $url, $args, 'get' );

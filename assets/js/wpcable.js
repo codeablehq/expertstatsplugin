@@ -214,7 +214,13 @@ jQuery(document).ready(function () {
         for ( var i = 0; i < wpcable.tasks.length; i++ ) {
             var task = wpcable.tasks[i];
 
-            if ( filterState !== 'all' && filterState !== task.state ) {
+            if ( filterState === 'all' ) {
+                // Display all tasks.
+            } else if ( filterState === 'lost' && (task.state === 'lost' || task.flag === 'lost')) {
+                // Display lost tasks list.
+            } else if ( filterState === task.state && task.flag !== 'lost' ) {
+                // Display single task state list.
+            } else {
                 continue;
             }
             if ( false === task._visible ) {
@@ -315,11 +321,16 @@ jQuery(document).ready(function () {
             if ( !task.subscribed && currFilters.subscribed ) {
                 task._visible = false;
             }
+            if ( !task.preferred && currFilters.preferred ) {
+                task._visible = false;
+            }
+
             if ( currFlags.length ) {
-                if ( -1 === currFlags.indexOf( task.flag ) ) {
+                if ( -1 !== currFlags.indexOf( task.flag ) ) {
                     task._visible = false;
                 }
             }
+
             if (filterRe) {
                 if (
                     -1 === task.title.search( filterRe ) &&
@@ -356,15 +367,20 @@ jQuery(document).ready(function () {
         totals.all = 0;
         for ( var i = 0; i < wpcable.tasks.length; i++ ) {
             var task = wpcable.tasks[i];
+            var state = task.state;
+
+            if ('lost' === task.flag) {
+                state = 'lost';
+            }
 
             if ( false === task._visible ) {
                 continue;
             }
 
-            if ( undefined === totals[task.state] ) {
-                totals[task.state] = 0;
+            if ( undefined === totals[state] ) {
+                totals[state] = 0;
             }
-            totals[task.state]++;
+            totals[state]++;
             totals.all++;
         }
 
@@ -383,6 +399,9 @@ jQuery(document).ready(function () {
         if ( ! list.isClick ) {
             return;
         }
+        if ( notesMde ) {
+            closeEditor();
+        }
 
         var row = jQuery( this ).closest( 'tr' );
         var task = row.data( 'task' );
@@ -395,9 +414,13 @@ jQuery(document).ready(function () {
             element: notesForm.find( 'textarea' ).val( task.notes )[0],
             status: false
         });
+        notesMde.codemirror.focus();
+        notesMde.codemirror.setCursor(notesMde.codemirror.lineCount(), 0);
 
         notesForm.on( 'click', '.btn-save', closeEditorSave );
         notesForm.on( 'click', '.btn-cancel', closeEditor );
+
+        list.isClick = false;
     }
 
     function closeEditor() {
@@ -410,6 +433,27 @@ jQuery(document).ready(function () {
         notesMde = null;
 
         notesForm.hide();
+    }
+
+    function editorMouseDown( ev ) {
+        list.isClick = true
+        list.downPos = {
+            sum: ev.offsetX + ev.offsetY,
+            x: ev.offsetX,
+            y: ev.offsetY
+        };
+    }
+
+    function editorMouseMove( ev ) {
+        if ( ! list.isClick ) {
+            return;
+        }
+
+        var moved = Math.abs(ev.offsetX + ev.offsetY - list.downPos.sum)
+
+        if (moved > 5) {
+            list.isClick = false;
+        }
     }
 
     function closeEditorSave() {
@@ -444,6 +488,10 @@ jQuery(document).ready(function () {
             },
             function done( res ) {
                 task.$el.trigger( 'task:refresh' );
+
+                updateFilters();
+                initFilters();
+
                 if ( 'function' === typeof onDone ) {
                     onDone();
                 }
@@ -456,6 +504,11 @@ jQuery(document).ready(function () {
     initFilters();
     updateFilters();
     refreshList();
+
+    notesMde = new SimpleMDE({
+        element: notesForm.find( 'textarea' )[0],
+        status: false
+    });
 
     jQuery( window ).on( 'hashchange', updateFilters );
     filterCb.on( 'click', function() { updateFilters(); initFilters(); } );
@@ -470,6 +523,6 @@ jQuery(document).ready(function () {
 
     list.on( 'click', '.color-flag [data-flag]', setColorFlag );
     list.on( 'click', '.notes-body', startEditor )
-        .on( 'mousedown', '.notes-body', function() { list.isClick = true })
-        .on( 'mousemove', '.notes-body', function() { list.isClick = false });
+        .on( 'mousedown', '.notes-body', editorMouseDown)
+        .on( 'mousemove', '.notes-body', editorMouseMove);
 });

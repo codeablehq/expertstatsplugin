@@ -601,10 +601,20 @@ div#TB_window {
 	float: left;
 }
 
+.wpcable_wrap.tasks .tablenav .group-right {
+	float: right;
+}
+
 .wpcable_wrap.tasks .tablenav .group + .group:before {
 	content: '|';
 	float: left;
 	margin: 0 10px 0 0;
+}
+
+.wpcable_wrap.tasks .tablenav .group .group-label,
+.wpcable_wrap.tasks .tablenav .group-right .group-label {
+	float: left;
+	padding: 0 10px 0 0;
 }
 
 .wpcable_wrap.tasks .tablenav .filter [data-flag] {
@@ -623,11 +633,22 @@ div#TB_window {
 .wpcable_wrap.tasks .tablenav .filter [data-flag]:checked {
 	outline: none;
 	border-color: #fff;
-	box-shadow: 0 0 0 1px #fff inset, 0 0 0 2px rgba(30,140,190);
+	/* box-shadow: 0 0 0 1px #fff inset, 0 0 0 2px rgba(30,140,190); */
+	box-shadow: none;
 }
 
 .wpcable_wrap.tasks .tablenav .filter [data-flag]:checked:before {
-	opacity: 0;
+	content: '\f335';
+	opacity: 1;
+	margin: -1px 0 0 -2px;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: auto;
+	padding: 0;
+	color: #fff;
+	text-shadow: 0 1px 0 #000, 0 -1px 0 #000, 1px 0 0 #000, -1px 0 0 #000;
 }
 
 .task-list .list-item .actions {
@@ -635,13 +656,26 @@ div#TB_window {
 	transition: all 0.3s;
 }
 
+.wpcable_wrap.tasks table.widefat thead tr {
+	cursor: default;
+}
+
+.wpcable_wrap.tasks table.widefat thead .col-activity,
+.wpcable_wrap.tasks table.widefat thead .col-activity a {
+	pointer-events: none;
+}
+
 .task-list .list-item .col-client img {
 	width: 40px;
 	border-radius: 40px;
 }
 
+.wpcable_wrap.tasks table.widefat tbody tr > td {
+	background-color: var(--bgcolor);
+}
+
 .wpcable_wrap.tasks table.widefat .col-client {
-	width: 80px;
+	width: 60px;
 }
 
 .wpcable_wrap.tasks table.widefat .col-workroom {
@@ -649,13 +683,18 @@ div#TB_window {
 }
 
 .wpcable_wrap.tasks table.widefat .col-activity {
-	width: 70px;
+	width: 110px;
 	white-space: nowrap;
+	text-align: center;
+	vertical-align: middle;
+	box-shadow: 150px 0 0 #00000005 inset;
 }
 
 .wpcable_wrap.tasks table.widefat .col-value {
 	width: 70px;
 	white-space: nowrap;
+	box-shadow: 150px 0 0 #00000005 inset;
+	text-align: center;
 }
 
 .wpcable_wrap.tasks table.widefat .col-title {
@@ -669,55 +708,140 @@ div#TB_window {
 
 .wpcable_wrap.tasks table.widefat tbody .col-workroom a {
 	color: var(--color, #0073aa);
+	transition: all 0.3s;
+}
+
+.wpcable_wrap.tasks table.widefat tbody .col-workroom a:hover,
+.wpcable_wrap.tasks table.widefat tbody .col-workroom a:focus {
+	color: #0073aa;
 }
 
 .wpcable_wrap.tasks table.widefat tbody .col-client {
 	box-shadow: 4px 0 0 0 var(--color, #0000) inset;
 }
 
+.wpcable_wrap.tasks table.widefat .col-activity .activity-date,
+.wpcable_wrap.tasks table.widefat .col-activity .activity-time {
+	color: #FFF;
+	margin: 0 auto;
+	display: inline-block;
+	padding: 1px 6px;
+	border-radius: 10px;
+	cursor: default;
+}
+
 .wpcable_wrap.tasks table.widefat .col-activity .activity-date {
-	font-size: 12px;
+	font-size: 14px;
 }
 
 .wpcable_wrap.tasks table.widefat .col-activity .activity-time {
-	font-size: 13px;
+	font-size: 14px;
 	font-weight: bold;
-}
-
-.wpcable_wrap.tasks table.widefat .age-today .activity-date {
 	display: none;
 }
 
+.wpcable_wrap.tasks table.widefat .state-canceled .task-title,
+.wpcable_wrap.tasks table.widefat .state-lost .task-title {
+	font-weight: normal !important;
+	opacity: 0.3;
+}
+
+.wpcable_wrap.tasks table.widefat .state-canceled .row-actions,
+.wpcable_wrap.tasks table.widefat .state-canceled .col-value > *,
+.wpcable_wrap.tasks table.widefat .state-lost .row-actions,
+.wpcable_wrap.tasks table.widefat .state-lost .col-value > * {
+	display: none !important;
+}
+
+.wpcable_wrap.tasks table.widefat .age-current .activity-date {
+	opacity: 0;
+}
+
+.wpcable_wrap.tasks table.widefat .age-today .activity-date {
+	opacity: 0.3;
+}
+
+.wpcable_wrap.tasks table.widefat .age-yesterday .activity-date {
+	opacity: 0.5;
+}
+
+.wpcable_wrap.tasks table.widefat .age-current .activity-date,
+.wpcable_wrap.tasks table.widefat .age-today .activity-date,
+.wpcable_wrap.tasks table.widefat .age-yesterday .activity-date {
+	font-size: 12px;
+	color: #333;
+}
+
+.wpcable_wrap.tasks table.widefat .age-current .activity-time,
+.wpcable_wrap.tasks table.widefat .age-today .activity-time,
+.wpcable_wrap.tasks table.widefat .age-yesterday .activity-time {
+	display: inline-block;
+}
+
+.wpcable_wrap.tasks table.widefat .age-current .activity-time {
+	background-color: #0B08;
+}
+
 .wpcable_wrap.tasks table.widefat .age-today .activity-time {
-	color: #080;
+	background-color: #0868;
 }
 
-.wpcable_wrap.tasks table.widefat .age-yesterday .col-activity {
-	color: #620;
+.wpcable_wrap.tasks table.widefat .age-yesterday .activity-time {
+	background-color: #2468;
 }
 
-.wpcable_wrap.tasks table.widefat .age-week .col-activity {
-	color: #842;
+.wpcable_wrap.tasks table.widefat .age-week .activity-date {
+	background-color: #9308;
 }
 
-.wpcable_wrap.tasks table.widefat .age-2weeks .col-activity {
-	color: #a77;
+.wpcable_wrap.tasks table.widefat .age-2weeks .activity-date {
+	background-color: #b668;
 }
 
-.wpcable_wrap.tasks table.widefat .age-older .col-activity {
-	color: #aaa;
+.wpcable_wrap.tasks table.widefat .age-older .activity-date {
+	background-color: #aaa8;
 }
 
 .wpcable_wrap.tasks table.widefat .col-value .client-value .value {
 	opacity: 0.5;
 }
 
-.wpcable_wrap.tasks tr.task-hidden {
-	opacity: 0.7;
+.wpcable_wrap.tasks table.widefat .col-value .your-value,
+.wpcable_wrap.tasks table.widefat .col-value .client-value {
+	cursor: default;
+	padding: 0 6px;
+	border-radius: 20px;
+	transition: all 0.3s;
 }
 
+.wpcable_wrap.tasks table.widefat .col-value .your-value:hover,
+.wpcable_wrap.tasks table.widefat .col-value .client-value:hover {
+	background-color: #0006;
+	color: #fff;
+	text-shadow: 0 1px 0 #0008;
+}
+
+.wpcable_wrap.tasks table.widefat .col-value .your-value:hover .value,
+.wpcable_wrap.tasks table.widefat .col-value .client-value:hover .value {
+	opacity: 1;
+}
+
+.wpcable_wrap.tasks table.widefat .col-value .value small {
+	opacity: 0.5;
+}
+
+.wpcable_wrap.tasks tr.task-preferred .task-title {
+	font-weight: bold;
+}
+
+.wpcable_wrap.tasks tr.task-hidden .col-workroom,
 .wpcable_wrap.tasks tr.task-hidden .task-title {
 	text-decoration: line-through;
+}
+
+.wpcable_wrap.tasks tr.task-hidden .row-actions {
+	visibility: hidden;
+	display: none;
 }
 
 .task-flags {

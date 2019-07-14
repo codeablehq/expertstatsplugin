@@ -48,7 +48,7 @@ class wpcable_tasks {
 				`{$this->tables['tasks']}` AS task
 			INNER JOIN `{$this->tables['clients']}` AS client
 				ON client.client_id = task.client_id
-			ORDER BY task.task_id DESC
+			ORDER BY task.last_activity DESC, task.task_id DESC
 		";
 
 		// Check cache.

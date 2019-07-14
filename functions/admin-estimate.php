@@ -36,15 +36,15 @@ function codeable_estimate_callback() {
 					</h2>
 					<div class="inside">
 						<div class="field">
-							<span class="label">Optimistic estimate: </span><input id="optimistic_estimate" type="number" step="0.25" min="1" value="1" /> hours
+							<span class="label">Optimistic estimate: </span><input id="optimistic_estimate" type="number" step="0.25" min="0.25" value="1" /> hours
 							<small><em>(the lucky case, no scope changes, ...)</em></small>
 						</div>
 						<div class="field">
-							<span class="label">Most likely estimate: </span><input id="likely_estimate" type="number" step="0.25" min="1" value="1" /> hours
+							<span class="label">Most likely estimate: </span><input id="likely_estimate" type="number" step="0.25" min="0.25" value="1" /> hours
 							<small><em>(your experience)</em></small>
 						</div>
 						<div class="field">
-							<span class="label">Pessimistic estimate: </span><input id="pessimistic_estimate" type="number" step="0.25" min="1" value="1" /> hours
+							<span class="label">Pessimistic estimate: </span><input id="pessimistic_estimate" type="number" step="0.25" min="0.25" value="1" /> hours
 							<small><em>(scope changes, bad communication, technical issues, ...)</em></small>
 						</div>
 					</div>
