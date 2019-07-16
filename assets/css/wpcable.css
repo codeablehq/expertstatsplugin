@@ -43,6 +43,14 @@ img.round {
 	font-size: 12px;
 }
 
+.button.danger:before {
+	font-family: dashicons;
+	content: '\f534 ';
+	font-size: 20px;
+	float: left;
+	margin-right: 6px;
+}
+
 /**************/
 /* Main boxes */
 /**************/
@@ -65,7 +73,6 @@ img.round {
 	z-index: -1;
 	bottom: 0;
 	content: "";
-	/*box-shadow: 0 8px 30px rgba(0,0,0,.3)*/
 }
 
 .whitebox {
@@ -302,16 +309,6 @@ img.round {
 	.date-filters .section {
 		flex-basis: 23%;
 	}
-
-	.date-filters label,
-	.date-filters input[type="text"] {
-
-	}
-
-	.date-filters button {
-
-	}
-
 }
 
 .compareto {

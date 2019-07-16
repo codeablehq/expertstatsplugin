@@ -212,6 +212,20 @@ function codeable_page_requires_login( $page_title ) {
 }
 
 /**
+ * Simply expires the current auth_token, so the API sync does not work anymore.
+ * The user will see the login form again when he visits the settings page the next
+ * time.
+ *
+ * @return void
+ */
+function codeable_api_logout() {
+	delete_option( 'wpcable_auth_token' );
+
+	// Flush object cache.
+	wpcable_cache::flush();
+}
+
+/**
  * Flushes all locally stored data and forgets the authentication token.
  *
  * @return void
@@ -250,13 +264,17 @@ function codeable_flush_all_data() {
 		}
 	}
 
-	delete_option( 'wpcable_auth_token' );
+	// Flush object cache.
+	wpcable_cache::flush();
+
 	delete_option( 'wpcable_email' );
 	delete_option( 'wpcable_average' );
 	delete_option( 'wpcable_balance' );
 	delete_option( 'wpcable_revenue' );
 	delete_option( 'wpcable_last_fetch' );
 	delete_option( 'wpcable_account_details' );
+
+	codeable_api_logout();
 
 	$redirect_to = codeable_add_message_param(
 		'success',
@@ -266,9 +284,6 @@ function codeable_flush_all_data() {
 		),
 		$redirect_to
 	);
-
-	// Flush object cache.
-	wpcable_cache::flush();
 
 	wp_safe_redirect( $redirect_to );
 	exit;
@@ -339,6 +354,12 @@ function codeable_last_fetch_info() {
  * @return bool
  */
 function codeable_api_logged_in() {
+	$token = get_option( 'wpcable_auth_token', false );
+
+	if ( ! $token ) {
+		return false;
+	}
+
 	$api = wpcable_api_calls::inst();
 
 	return $api->auth_token_known();

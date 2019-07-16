@@ -41,13 +41,22 @@ add_action( 'admin_menu', 'wpcable_options', 100 );
  * @return void
  */
 function codeable_load_settings_page() {
-	$nonce = false;
+	$nonce  = false;
+	$action = false;
 
-	if ( ! empty( $_REQUEST['_wpnonce'] ) ) {
-		$nonce = wp_unslash( $_REQUEST['_wpnonce'] );
+	if ( empty( $_REQUEST['_wpnonce'] ) ) {
+		return;
+	}
+	if ( empty( $_REQUEST['action'] ) ) {
+		return;
 	}
 
-	if ( $nonce && wp_verify_nonce( $nonce, 'logout' ) ) {
+	$nonce  = wp_unslash( $_REQUEST['_wpnonce'] );
+	$action = wp_unslash( $_REQUEST['action'] );
+
+	if ( 'logout' === $action && wp_verify_nonce( $nonce, $action ) ) {
+		codeable_api_logout();
+	} elseif ( 'flush_data' === $action && wp_verify_nonce( $nonce, $action ) ) {
 		codeable_flush_all_data();
 	}
 }
@@ -111,16 +120,21 @@ function codeable_settings_callback() {
 		add_query_arg( 'action', 'logout' ),
 		'logout'
 	);
-	$logout_warning = __( 'When logging out, all your data (including task notes or color flags) is deleted from the DB. This cannot be undone.\n\nDo you want to clear your data and log out?', 'wpcable' );
+
+	$flush_data_url = wp_nonce_url(
+		add_query_arg( 'action', 'flush_data' ),
+		'flush_data'
+	);
+
+	$flush_data_warning = __( 'All your data is deleted from the DB, including your private task notes or color flags. This cannot be undone.\n\nDo you want to clear your data and log out?', 'wpcable' );
+
+	// Hacky way to save settings without a second redirect...
+	$_SERVER['REQUEST_URI'] = remove_query_arg( [ 'action', '_wpnonce', 'success', 'error' ] );
+
 	?>
 	<div class="wrap wpcable_wrap">
 		<form method="post" action="options.php">
-			<?php settings_fields( 'wpcable_group', '_wpnonce', false ); ?>
-			<input
-				type="hidden"
-				name="_wp_http_referer"
-				value="<?php echo remove_query_arg( ['success', 'error' ] ); ?>"
-			/>
+			<?php settings_fields( 'wpcable_group' ); ?>
 			<?php do_settings_sections( 'wpcable_group' ); ?>
 
 			<h2><?php esc_html_e( 'Task list', 'wpcable' ); ?></h2>
@@ -237,9 +251,11 @@ function codeable_settings_callback() {
 									'<b>' . $wpcable_email . '</b>'
 								);
 								?>
+								<input type="hidden" name="wpcable_email" value="<?php echo esc_attr( $wpcable_email ); ?>" />
 							</p>
 							<p>
-								<a href="<?php echo esc_url( $logout_url ); ?>" class="button" onclick="return confirm('<?php echo esc_attr( $logout_warning ); ?>')"><?php esc_html_e( 'Log out and clear all data', 'wpcable' ); ?></a>
+								<a href="<?php echo esc_url( $logout_url ); ?>" class="button" ><?php esc_html_e( 'Log out', 'wpcable' ); ?></a>
+								<a href="<?php echo esc_url( $flush_data_url ); ?>" class="button danger" onclick="return confirm('<?php echo esc_attr( $flush_data_warning ); ?>')"><?php esc_html_e( 'Clear all data', 'wpcable' ); ?></a>
 							</p>
 						</td>
 					</tr>

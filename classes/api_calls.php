@@ -255,6 +255,15 @@ class wpcable_api_calls {
 			);
 		}
 
+		if ( is_array( $res ) && ! empty( $res['errors'] ) ) {
+			if ( false !== array_search( 'Invalid login credentials', $res['errors'], true ) ) {
+				// The auth_token expired or login failed: Clear the token!
+				// Next time the user visits the settings page, they need to login again.
+				codeable_api_logout();
+				return false;
+			}
+		}
+
 		return $res;
 	}
 
