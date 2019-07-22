@@ -662,6 +662,10 @@ div#TB_window {
 	pointer-events: none;
 }
 
+.task-list .list-item .col-client {
+	text-align: center;
+}
+
 .task-list .list-item .col-client img {
 	width: 40px;
 	border-radius: 40px;

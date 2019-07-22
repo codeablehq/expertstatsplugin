@@ -263,10 +263,7 @@ function codeable_tasks_callback() {
 		data-age="{{{ staleHours }}}"
 	>
 		<td class="col-client">
-			<span class="tooltip right autosize" tabindex="0">
-				<div class="tooltip-text">{{{ data.client_name }}}</div>
-				<img src="{{{ data.avatar }}}" />
-			</span>
+			<div><img src="{{{ data.avatar }}}" /></div><div>{{{ data.client_name }}}</div>
 		</td>
 		<td class="col-activity">
 			<# if ( data.last_activity > 0 ) { #>
@@ -324,7 +321,7 @@ function codeable_tasks_callback() {
 				<# } #>
 				<# if ( data.favored ) { #>
 					<span class="tooltip bottom small autosize" tabindex="0">
-						<span class="tooltip-text"><?php esc_html_e( 'Favored', 'wpcable' ); ?></span>
+						<span class="tooltip-text"><?php esc_html_e( 'Favorited', 'wpcable' ); ?></span>
 						️❤️
 					</span>
 				<# } #>
