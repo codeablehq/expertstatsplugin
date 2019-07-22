@@ -20,7 +20,7 @@
 * Text changes on charts [#28](https://github.com/codeablehq/expertstatsplugin/issues/28) @defunctl
 
 *0.0.6 (2017-03-01)*
-* Added invalid credentials logic and admin notice [#29](https://github.com/codeablehq/expertstatsplugin/issues/29) @defunctl 
+* Added invalid credentials logic and admin notice [#29](https://github.com/codeablehq/expertstatsplugin/issues/29) @defunctl
 * Added WordPress Object Caching to stats and client DB calls [#19](https://github.com/codeablehq/expertstatsplugin/issues/19) @defunctl
 
 *0.0.7 (2017-03-15)*
@@ -34,3 +34,7 @@
 
 *0.0.10 (2017-05-18)*
 * Fixes for missing user data, thanks @ahanzek
+
+*0.0.20 (2019-07-07)*
+* Update UI layout to match current WordPress standards
+* Apply WordPress coding standards to code

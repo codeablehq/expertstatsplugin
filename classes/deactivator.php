@@ -1,4 +1,8 @@
 <?php
+/**
+ *
+ * @package wpcable
+ */
 
 /**
  * Fired during plugin deactivation.
@@ -9,7 +13,7 @@
  * @package    wpcable
  * @author     Justin Frydman <justin.frydman@gmail.com>
  */
-class wpcable_deactivator {
+class WpCable_deactivator {
 
 	/**
 	 * Fired on plugin deactivation.
@@ -31,11 +35,12 @@ class wpcable_deactivator {
 
 		// find out when the last event was scheduled
 		$timestamp = wp_next_scheduled( 'wpcable_cronjob' );
+
 		// unschedule previous event if any
 		wp_unschedule_event( $timestamp, 'wpcable_cronjob' );
+
 		// clear cron upon plugin deactivation
 		wp_clear_scheduled_hook( 'wpcable_cronjob' );
-
 	}
 
 }
