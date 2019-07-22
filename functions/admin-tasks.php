@@ -305,7 +305,7 @@ function codeable_tasks_callback() {
 		</td>
 		<td class="col-title">
 			<div>
-				<span class="task-title">{{{ data.title }}}</span>
+				<span class="task-title"><a href="https://app.codeable.io/tasks/{{{ data.task_id }}}" target="_blank">{{{ data.title }}}</a></span>
 				<span class="task-flags">
 				<# if ( data.preferred ) { #>
 					<span class="tooltip bottom small autosize" tabindex="0">
