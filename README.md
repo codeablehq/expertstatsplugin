@@ -60,6 +60,18 @@ If you don't have it installed, you can:
 
 This will give you the normal WP update notification when a new version ships, and its a 1 click update.
 
+### Migrating from Old Version
+
+You may want to truncate these tables, replace wp_ with your database prefix
+
+```
+TRUNCATE TABLE wp_codeable_amounts;
+TRUNCATE TABLE wp_codeable_clients;
+TRUNCATE TABLE wp_codeable_tasks;
+TRUNCATE TABLE wp_codeable_transactions;
+TRUNCATE TABLE wp_codeable_transcactions;
+```
+
 ### Frequently Asked Questions
 
 *There was a problem fetching remote data from Codeable*
