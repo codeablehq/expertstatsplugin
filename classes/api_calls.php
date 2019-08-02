@@ -26,6 +26,13 @@ class wpcable_api_calls {
 	public $auth_token = '';
 
 	/**
+	 * Get the option to know when to stop pulling tasks
+	 *
+	 * @var int
+	 */
+	private $tasks_stop_at_page = 0;
+
+	/**
 	 * Returns the singleton instance to the API object.
 	 *
 	 * @return wpcable_api_calls
@@ -45,6 +52,7 @@ class wpcable_api_calls {
 	 */
 	private function __construct() {
 		$this->get_auth_token();
+		$this->tasks_stop_at_page = (int) get_option( 'wpcable_tasks_stop_at_page', 0 );
 	}
 
 	/**
@@ -175,6 +183,12 @@ class wpcable_api_calls {
 			'page'     => $page,
 			'per_page' => $num,
 		];
+
+		// Stop at the next page before it does the call
+		if ( $this->tasks_stop_at_page
+		     && ( $this->tasks_stop_at_page + 1 ) === $page ) {
+			return [];
+		}
 
 		$tasks = $this->get_curl( $url, $args, 'get' );
 

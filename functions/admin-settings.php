@@ -71,6 +71,7 @@ function codeable_register_settings() {
 	register_setting( 'wpcable_group', 'wpcable_fee_type' );
 	register_setting( 'wpcable_group', 'wpcable_rate' );
 	register_setting( 'wpcable_group', 'wpcable_cancel_after_days' );
+	register_setting( 'wpcable_group', 'wpcable_tasks_stop_at_page' );
 
 	if ( ! codeable_api_logged_in() ) {
 		register_setting( 'wpcable_group', 'wpcable_email' );
@@ -111,10 +112,11 @@ add_filter( 'pre_update_option_wpcable_password', 'codeable_handle_login', 10, 2
 function codeable_settings_callback() {
 	codeable_admin_notices();
 
-	$wpcable_email             = get_option( 'wpcable_email' );
-	$wpcable_rate              = get_option( 'wpcable_rate', 80 );
-	$wpcable_fee_type          = get_option( 'wpcable_fee_type', 'client' );
-	$wpcable_cancel_after_days = get_option( 'wpcable_cancel_after_days', 180 );
+	$wpcable_email              = get_option( 'wpcable_email' );
+	$wpcable_rate               = get_option( 'wpcable_rate', 80 );
+	$wpcable_fee_type           = get_option( 'wpcable_fee_type', 'client' );
+	$wpcable_cancel_after_days  = get_option( 'wpcable_cancel_after_days', 180 );
+	$wpcable_tasks_stop_at_page = get_option( 'wpcable_tasks_stop_at_page', 0 );
 
 	$logout_url = wp_nonce_url(
 		add_query_arg( 'action', 'logout' ),
@@ -160,6 +162,19 @@ function codeable_settings_callback() {
 						<input type="number" name="wpcable_cancel_after_days" id="wpcable_cancel_after_days" min="14" max="720" value="<?php echo (int) $wpcable_cancel_after_days; ?>" /> hours
 						<p class="description">
 							<?php esc_html_e( 'Adds the "canceled" flag to a task that had no activity for the given number of days. Default is 180 days.', 'wpcable' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label class="wpcable_label" for="wpcable_tasks_stop_at_page">
+							<?php esc_html_e( 'Stop pulling tasks after page', 'wpcable' ); ?>
+						</label>
+					</th>
+					<td>
+						<input type="number" name="wpcable_tasks_stop_at_page" id="wpcable_tasks_stop_at_page" min="0" max="720" value="<?php echo (int) $wpcable_tasks_stop_at_page; ?>" /> pages
+						<p class="description">
+							<?php esc_html_e( 'Pull a specific number of pages for the tasks section. Default is 0 (pull all). We suggest setting it to 0 to retrieve ALL tasks the first time, and then set it to 1 or 2 to retrieve/update only the latest 1/2 pages.', 'wpcable' ); ?>
 						</p>
 					</td>
 				</tr>
