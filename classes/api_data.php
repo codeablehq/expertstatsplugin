@@ -431,7 +431,8 @@ class wpcable_api_data {
 				// Some simple rules to automatically detect the correct flag for tasks.
 				if ( 'canceled' === $task['state'] ) {
 					// Tasks that were canceled by the client obviously are lost.
-					$new_task['flag'] = 'lost';
+					$new_task['flag']          = 'lost';
+					$new_task['last_activity'] = (int) strtotime( $task['published_at'] );
 				} elseif ( $new_task['hidden'] ) {
 					// Tasks that I hide from my Codeable list are "lost for us".
 					$new_task['flag'] = 'lost';
@@ -448,8 +449,9 @@ class wpcable_api_data {
 					}
 				} elseif ( empty( $new_task['last_activity'] ) ) {
 					// This workroom is private for another expert = possibly lost.
-					if ( in_array( $task['state'], [ 'hired', 'completed', 'refunded' ], true ) ) {
-						$new_task['flag'] = 'lost';
+					if ( in_array( $task['state'], [ 'hired', 'completed', 'refunded', 'paid' ], true ) ) {
+						$new_task['flag']          = 'lost';
+						$new_task['last_activity'] = (int) strtotime( $task['published_at'] );
 					}
 				}
 
