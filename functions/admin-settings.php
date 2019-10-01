@@ -159,7 +159,7 @@ function codeable_settings_callback() {
 						</label>
 					</th>
 					<td>
-						<input type="number" name="wpcable_cancel_after_days" id="wpcable_cancel_after_days" min="14" max="720" value="<?php echo (int) $wpcable_cancel_after_days; ?>" /> hours
+						<input type="number" name="wpcable_cancel_after_days" id="wpcable_cancel_after_days" min="14" max="720" value="<?php echo (int) $wpcable_cancel_after_days; ?>" /> days
 						<p class="description">
 							<?php esc_html_e( 'Adds the "canceled" flag to a task that had no activity for the given number of days. Default is 180 days.', 'wpcable' ); ?>
 						</p>
