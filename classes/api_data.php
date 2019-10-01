@@ -451,7 +451,8 @@ class wpcable_api_data {
 					// This workroom is private for another expert = possibly lost.
 					if ( in_array( $task['state'], [ 'hired', 'completed', 'refunded', 'paid' ], true ) ) {
 						$new_task['flag']          = 'lost';
-						$new_task['last_activity'] = (int) strtotime( $task['published_at'] );
+						// Disabled last activity for these ones, as it was causing more problems than solving
+						// $new_task['last_activity'] = (int) strtotime( $task['published_at'] );
 					}
 				}
 
