@@ -1,6 +1,6 @@
 [![Codeable](https://img.shields.io/badge/Codeable-Experts-blue.svg?style=flat-square)]()
 # Codeable Expert Stats Plugin Readme
-*Contributors:* Spyros Vlachopoulos, Panagiotis Synetos, John Leskas, Justin Frydman, Jonathan Bossenger, Rob Scott, Philipp Stracker
+*Contributors:* Spyros Vlachopoulos, Panagiotis Synetos, John Leskas, Justin Frydman, Jonathan Bossenger, Rob Scott, Philipp Stracker, Milan Dinić
 
 *Tested up to:* WordPress 5.2.2
 
