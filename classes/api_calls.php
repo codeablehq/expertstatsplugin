@@ -70,7 +70,7 @@ class wpcable_api_calls {
 
 		$this->auth_token = '';
 		$url              = 'users/login';
-		$login_call       = $this->get_curl( $url, $args );
+		$login_call       = $this->request( $url, $args );
 
 		// Credential error checking.
 		if (
@@ -141,7 +141,7 @@ class wpcable_api_calls {
 	 */
 	public function self() {
 		$url        = 'users/me';
-		$login_call = $this->get_curl( $url, [], 'get' );
+		$login_call = $this->request( $url, [], 'get' );
 
 		unset( $login_call['auth_token'] );
 
@@ -158,7 +158,7 @@ class wpcable_api_calls {
 		$url  = 'users/me/transactions';
 		$args = [ 'page' => $page ];
 
-		$transactions = $this->get_curl( $url, $args, 'get' );
+		$transactions = $this->request( $url, $args, 'get' );
 
 		return $transactions;
 	}
@@ -190,7 +190,7 @@ class wpcable_api_calls {
 			return [];
 		}
 
-		$tasks = $this->get_curl( $url, $args, 'get' );
+		$tasks = $this->request( $url, $args, 'get' );
 
 		return $tasks;
 	}
@@ -201,76 +201,49 @@ class wpcable_api_calls {
 	 * @param  string $url     API endpoint.
 	 * @param  array  $args    Additional URL params or post data.
 	 * @param  string $method  Request method [GET|POST].
-	 * @param  string $headers Optional Curl headers.
+	 * @param  array  $headers Optional HTTP headers.
 	 * @return array
 	 */
-	private function get_curl( $url, $args = [], $method = 'post', $headers = '' ) {
-		$res = false;
+	private function request( $url, $args = [], $method = 'POST', $headers = [] ) {
+		$response_body = false;
 
-		try {
-			set_time_limit( 300 );
+		set_time_limit( 300 );
 
-			$ch     = curl_init();
-			$method = strtolower( $method );
+		$method       = strtoupper( $method );
+		$request_args = [ 'method' => $method ];
+		$url          = 'https://api.codeable.io/' . ltrim( $url, '/' );
 
-			if ( false === $ch ) {
-				throw new Exception( 'Failed to initialize cURL' );
-			}
-
-			$url = 'https://api.codeable.io/' . ltrim( $url, '/' );
-
-			if ( 'get' === $method ) {
-				if ( ! empty( $args ) ) {
-					$url = $url . '?' . http_build_query( $args );
-				}
+		if ( ! empty( $args ) ) {
+			if ( 'GET' === $method ) {
+				$url = add_query_arg( $args, $url );
 			} else {
-				curl_setopt( $ch, CURLOPT_POSTFIELDS, $args );
+				$request_args['body'] = $args;
 			}
+		}
 
-			// Setup request to send json via POST.
-			curl_setopt( $ch, CURLOPT_URL, $url );
-			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+		$request_args['headers'] = $headers;
 
-			if ( ! $headers || ! is_array( $headers ) ) {
-				$headers = [];
-			}
-			if ( $this->auth_token_known() ) {
-				$headers[] = 'Authorization: Bearer ' . $this->auth_token;
-			}
+		if ( $this->auth_token_known() ) {
+			$request_args['headers']['Authorization'] = 'Bearer ' . $this->auth_token;
+		}
 
-			curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );
+		$response = wp_remote_request( $url, $request_args );
 
-			// Send request.
-			$content = curl_exec( $ch );
-
-			if ( false === $content ) {
-				echo '<pre>' . print_r( $url, true ) . '</pre>';
-
-				echo '<pre>';
-				print_r( curl_error( $ch ) );
-				echo '</pre>';
-
-				echo '<pre>';
-				print_r( curl_errno( $ch ) );
-				echo '</pre>';
-
-				die;
-			}
-			curl_close( $ch );
-
-			$res = json_decode( $content, true );
-		} catch ( Exception $e ) {
+		if ( is_wp_error( $response ) ) {
 			trigger_error(
 				sprintf(
-					'cURL failed with error #%d: %s',
-					$e->getCode(), $e->getMessage()
+					'Request failed with error %1$s: %2$s',
+					$response->get_error_code(), $response->get_error_message()
 				),
 				E_USER_ERROR
 			);
+			return false;
 		}
 
-		if ( is_array( $res ) && ! empty( $res['errors'] ) ) {
-			if ( false !== array_search( 'Invalid login credentials', $res['errors'], true ) ) {
+		$response_body = json_decode( $response['body'], true );
+
+		if ( is_array( $response_body ) && ! empty( $response_body['errors'] ) ) {
+			if ( false !== array_search( 'Invalid login credentials', $response_body['errors'], true ) ) {
 				// The auth_token expired or login failed: Clear the token!
 				// Next time the user visits the settings page, they need to login again.
 				codeable_api_logout();
@@ -278,7 +251,6 @@ class wpcable_api_calls {
 			}
 		}
 
-		return $res;
+		return $response_body;
 	}
-
 }
