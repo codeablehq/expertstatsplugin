@@ -239,6 +239,7 @@ function codeable_tasks_callback() {
 					<th class="col-value"><?php esc_html_e( 'Value', 'wpcable' ); ?></th>
 					<th class="col-title"><?php esc_html_e( 'Title', 'wpcable' ); ?></th>
 					<th class="col-notes"><?php esc_html_e( 'Notes', 'wpcable' ); ?></th>
+					<?php do_action('wpcable_task_table_header'); ?>
 				</tr>
 			</thead>
 			<tbody class="task-list"></tbody>
