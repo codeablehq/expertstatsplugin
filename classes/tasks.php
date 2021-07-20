@@ -91,7 +91,7 @@ class wpcable_tasks {
 			false
 		);
 
-		return $task;
+		return apply_filters( 'wpcable_sanitize_task',$task );
 	}
 
 	/**
