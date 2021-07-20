@@ -1,8 +1,8 @@
 [![Codeable](https://img.shields.io/badge/Codeable-Experts-blue.svg?style=flat-square)]()
 # Codeable Expert Stats Plugin Readme
-*Contributors:* Spyros Vlachopoulos, Panagiotis Synetos, John Leskas, Justin Frydman, Jonathan Bossenger, Rob Scott
+*Contributors:* Spyros Vlachopoulos, Panagiotis Synetos, John Leskas, Justin Frydman, Jonathan Bossenger, Rob Scott, Philipp Stracker, Milan Dinić
 
-*Tested up to:* WordPress 4.7.3
+*Tested up to:* WordPress 5.2.2
 
 Codeable Expert Stats plugin makes it easy for you to track and monitor your success as an expert on Codeable via an easy-to-understand dashboard for your personal/agency WordPress site.
 
@@ -59,6 +59,18 @@ If you don't have it installed, you can:
 5. Hit "Install plugin"
 
 This will give you the normal WP update notification when a new version ships, and its a 1 click update.
+
+### Migrating from Old Version
+
+You may want to truncate these tables, replace wp_ with your database prefix
+
+```
+TRUNCATE TABLE wp_codeable_amounts;
+TRUNCATE TABLE wp_codeable_clients;
+TRUNCATE TABLE wp_codeable_tasks;
+TRUNCATE TABLE wp_codeable_transactions;
+TRUNCATE TABLE wp_codeable_transcactions;
+```
 
 ### Frequently Asked Questions
 
