@@ -298,7 +298,7 @@ img.round {
 }
 
 #clients_table_wrapper img {
-    max-width: 50px;
+    max-width: 100%;
     height: auto;
 }
 
@@ -308,11 +308,6 @@ img.round {
 
 table .avatar {
     width: 64px;
-}
-
-table.dataTable tbody td {
-    display: table-cell;
-    vertical-align: middle;
 }
 
 /**********************/
