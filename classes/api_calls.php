@@ -241,6 +241,15 @@ class wpcable_api_calls {
 		}
 
 		$response_body = json_decode( $response['body'], true );
+		
+		if( isset( $response['headers'] ) ) {
+			
+			$full_header = $response['headers']->getAll();
+			if ( isset( $full_header['auth-token'] ) && !empty( $full_header['auth-token'] ) ) {
+				
+				$response_body['auth_token'] = $full_header['auth-token'];
+			}
+		}
 
 		if ( is_array( $response_body ) && ! empty( $response_body['errors'] ) ) {
 			if ( false !== array_search( 'Invalid login credentials', $response_body['errors'], true ) ) {
